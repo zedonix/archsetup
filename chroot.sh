@@ -62,6 +62,7 @@ su - "$user" -c '
 
   git clone https://github.com/zedonix/scripts.git ~/.scripts
   git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles
+  git clone https://github.com/zedonix/archlinux.git ~/Documents/archlinux
   git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk
 
   cp ~/.dotfiles/archpfp.png ~/Pictures/

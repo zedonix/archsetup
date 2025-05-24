@@ -127,7 +127,7 @@ install_pkgs=(
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
     foot nvtop htop fastfetch newsboat neovim tmux asciinema trash-cli wget yt-dlp aria2
     papirus-icon-theme noto-fonts noto-fonts-emoji ttc-iosevka ttf-iosevkaterm-nerd gnu-free-fonts
-    wl-clip-persist wl-clipboard cliphist libnotify swaync grim slurp swayosd
+    wl-clip-persist wl-clipboard cliphist libnotify swaync grim slurp
     texlive-latex pandoc zathura-pdf-mupdf
     lua python uv python-black stylua pyright bash-language-server shfmt ollama
 )
