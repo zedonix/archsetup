@@ -114,4 +114,4 @@ sudo sed -i \
 ) | crontab -
 
 # Running aur.sh
-bash ~/.scripts/aur.sh
+bash ~/Documents/archsetup/aur.sh

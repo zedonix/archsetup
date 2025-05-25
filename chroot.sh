@@ -8,20 +8,20 @@ timezone="Asia/Kolkata"
 source /root/install.conf
 
 # --- Set hostname ---
-echo "$hostname" > /etc/hostname
-echo "127.0.0.1  localhost" > /etc/hosts
-echo "::1        localhost" >> /etc/hosts
-echo "127.0.1.1  $hostname.localdomain  $hostname" >> /etc/hosts
+echo "$hostname" >/etc/hostname
+echo "127.0.0.1  localhost" >/etc/hosts
+echo "::1        localhost" >>/etc/hosts
+echo "127.0.1.1  $hostname.localdomain  $hostname" >>/etc/hosts
 
 # --- Set root password ---
 echo "root:$root_password" | chpasswd
 
 # --- Create user and set password ---
 if ! id "$user" &>/dev/null; then
-  useradd -m -G wheel,storage,video,audio,kvm,libvirt -s /bin/bash "$user"
-  echo "$user:$user_password" | chpasswd
+    useradd -m -G wheel,storage,video,audio,kvm,libvirt -s /bin/bash "$user"
+    echo "$user:$user_password" | chpasswd
 else
-  echo "User $user already exists, skipping creation."
+    echo "User $user already exists, skipping creation."
 fi
 
 # Local Setup
@@ -29,11 +29,11 @@ ln -sf "/usr/share/zoneinfo/$timezone" /etc/localtime
 hwclock --systohc
 sed -i 's/^#en_US.UTF-8/en_US.UTF-8/g' /etc/locale.gen
 locale-gen
-echo "LANG=en_US.UTF-8" > /etc/locale.conf
+echo "LANG=en_US.UTF-8" >/etc/locale.conf
 
 # Sudo Configuration
-echo "%wheel ALL=(ALL) ALL" > /etc/sudoers.d/wheel
-echo "Defaults timestamp_timeout=-1" > /etc/sudoers.d/timestamp
+echo "%wheel ALL=(ALL) ALL" >/etc/sudoers.d/wheel
+echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
 chmod 440 /etc/sudoers.d/wheel /etc/sudoers.d/timestamp
 
 # Bootloader
@@ -45,7 +45,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 # Reflector and pacman Setup
 sed -i '/^#Color$/c\Color' /etc/pacman.conf
 mkdir -p /etc/xdg/reflector
-cat > /etc/xdg/reflector/reflector.conf << REFCONF
+cat >/etc/xdg/reflector/reflector.conf <<REFCONF
 --save /etc/pacman.d/mirrorlist
 --protocol https
 --country India
@@ -80,7 +80,7 @@ su - "$user" -c '
   git config --global user.name "piyush"
 '
 # Root .config
-echo '[ -f ~/.bashrc ] && . ~/.bashrc' > /root/.bash_profile
+echo '[ -f ~/.bashrc ] && . ~/.bashrc' >/root/.bash_profile
 mkdir /root/.config
 ln -sf /home/"$user"/.dotfiles/.bashrc ~/.bashrc
 ln -sf /home/"$user"/.dotfiles/.config/nvim/ ~/.config
@@ -106,7 +106,7 @@ ZRAM_SIZE=$((TOTAL_MEM / 2))
 # Create zram config
 mkdir -p /etc/systemd/zram-generator.conf.d
 
-cat > /etc/systemd/zram-generator.conf.d/00-zram.conf <<EOF
+cat >/etc/systemd/zram-generator.conf.d/00-zram.conf <<EOF
 [zram0]
 zram-size = ${ZRAM_SIZE}
 compression-algorithm = zstd #lzo-rle
@@ -126,10 +126,10 @@ systemctl disable NetworkManager-wait-online.service systemd-networkd.service sy
 
 # Prevent NetworkManager from using systemd-resolved
 sudo mkdir -p /etc/NetworkManager/conf.d
-echo -e "[main]\nsystemd-resolved=false" | sudo tee /etc/NetworkManager/conf.d/no-systemd-resolved.conf > /dev/null
+echo -e "[main]\nsystemd-resolved=false" | sudo tee /etc/NetworkManager/conf.d/no-systemd-resolved.conf >/dev/null
 
 # Set DNS handling to 'default'
-echo -e "[main]\ndns=default" | sudo tee /etc/NetworkManager/conf.d/dns.conf > /dev/null
+echo -e "[main]\ndns=default" | sudo tee /etc/NetworkManager/conf.d/dns.conf >/dev/null
 
 # Clamav setup
 freshclam

@@ -7,61 +7,61 @@ set -euo pipefail
 disks=($(lsblk -dno NAME))
 echo "Available disks:"
 for i in "${!disks[@]}"; do
-  info=$(lsblk -dno NAME,SIZE,MODEL "/dev/${disks[$i]}")
-  printf "%2d) %s\n" "$((i+1))" "$info"
+    info=$(lsblk -dno NAME,SIZE,MODEL "/dev/${disks[$i]}")
+    printf "%2d) %s\n" "$((i + 1))" "$info"
 done
 while true; do
-  read -p "Select disk [1-${#disks[@]}]: " idx
-  if [[ "$idx" =~ ^[1-9][0-9]*$ ]] && (( idx >= 1 && idx <= ${#disks[@]} )); then
-    disk="/dev/${disks[$((idx-1))]}"
-    break
-  else
-    echo "Invalid selection. Try again."
-  fi
+    read -p "Select disk [1-${#disks[@]}]: " idx
+    if [[ "$idx" =~ ^[1-9][0-9]*$ ]] && ((idx >= 1 && idx <= ${#disks[@]})); then
+        disk="/dev/${disks[$((idx - 1))]}"
+        break
+    else
+        echo "Invalid selection. Try again."
+    fi
 done
 
 # Hostname
 while true; do
-  read -p "Hostname: " hostname
-  # RFC 1123: 1-63 chars, letters, digits, hyphens, not start/end with hyphen
-  if [[ ! "$hostname" =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$ ]]; then
-    echo "Invalid hostname. Use 1-63 letters, digits, or hyphens (not starting or ending with hyphen)."
-    continue
-  fi
-  break
+    read -p "Hostname: " hostname
+    # RFC 1123: 1-63 chars, letters, digits, hyphens, not start/end with hyphen
+    if [[ ! "$hostname" =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$ ]]; then
+        echo "Invalid hostname. Use 1-63 letters, digits, or hyphens (not starting or ending with hyphen)."
+        continue
+    fi
+    break
 done
 
 # Root Password
 while true; do
-  read -s -p "Root password: " root_password
-  echo
-  read -s -p "Confirm root password: " root_password2
-  echo
-  [[ "$root_password" != "$root_password2" ]] && echo "Passwords do not match." && continue
-  [[ -z "$root_password" ]] && echo "Password cannot be empty." && continue
-  break
+    read -s -p "Root password: " root_password
+    echo
+    read -s -p "Confirm root password: " root_password2
+    echo
+    [[ "$root_password" != "$root_password2" ]] && echo "Passwords do not match." && continue
+    [[ -z "$root_password" ]] && echo "Password cannot be empty." && continue
+    break
 done
 
 # Username
 while true; do
-  read -p "Username: " user
-  # Linux username: 1-32 chars, start with letter, then letters/digits/_/-
-  if [[ ! "$user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
-    echo "Invalid username. Use 1-32 lowercase letters, digits, underscores, or hyphens, starting with a letter or underscore."
-    continue
-  fi
-  break
+    read -p "Username: " user
+    # Linux username: 1-32 chars, start with letter, then letters/digits/_/-
+    if [[ ! "$user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
+        echo "Invalid username. Use 1-32 lowercase letters, digits, underscores, or hyphens, starting with a letter or underscore."
+        continue
+    fi
+    break
 done
 
 # User Password
 while true; do
-  read -s -p "User password: " user_password
-  echo
-  read -s -p "Confirm user password: " user_password2
-  echo
-  [[ "$user_password" != "$user_password2" ]] && echo "Passwords do not match." && continue
-  [[ -z "$user_password" ]] && echo "Password cannot be empty." && continue
-  break
+    read -s -p "User password: " user_password
+    echo
+    read -s -p "Confirm user password: " user_password2
+    echo
+    [[ "$user_password" != "$user_password2" ]] && echo "Passwords do not match." && continue
+    [[ -z "$user_password" ]] && echo "Password cannot be empty." && continue
+    break
 done
 
 # Export variables for later use
@@ -69,9 +69,9 @@ export disk hostname root_password user user_password
 
 # Partition Naming
 if [[ "$disk" == *nvme* ]]; then
-  part_prefix="${disk}p"
+    part_prefix="${disk}p"
 else
-  part_prefix="${disk}"
+    part_prefix="${disk}"
 fi
 
 part1="${part_prefix}1"
@@ -135,15 +135,15 @@ install_pkgs=(
 # Pacstrap with error handling
 reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
 if ! pacstrap /mnt "${install_pkgs[@]}"; then
-  echo "pacstrap failed. Please check the package list and network connection."
-  exit 1
+    echo "pacstrap failed. Please check the package list and network connection."
+    exit 1
 fi
 
 # System Configuration
-genfstab -U /mnt > /mnt/etc/fstab
+genfstab -U /mnt >/mnt/etc/fstab
 
 # Exporting variables for chroot
-cat > /mnt/root/install.conf <<EOF
+cat >/mnt/root/install.conf <<EOF
 hostname=$hostname
 root_password=$root_password
 user=$user
@@ -158,6 +158,6 @@ arch-chroot /mnt /root/chroot.sh
 
 # Unmount and finalize
 if mountpoint -q /mnt; then
-  umount -R /mnt
+    umount -R /mnt
 fi
 echo "Installation completed. Please reboot your system."
