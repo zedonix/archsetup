@@ -122,8 +122,8 @@ install_pkgs=(
     man-db man-pages wikiman tldr arch-wiki-docs
     pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack
     xorg-xwayland xdg-desktop-portal-wlr xdg-desktop-portal-gtk
-    sway swaybg swaylock swayidle swayimg autotiling flatpak ly hyprpicker
-    mpv fuzzel qalculate-gtk discord firefox zathura kanshi pcmanfm-gtk3 gimp file-roller blueman
+    sway swaybg swaylock swayidle swayimg autotiling flatpak hyprpicker
+    mpv fuzzel qalculate-gtk discord firefox zathura kanshi pcmanfm-gtk3 gimp file-roller blueman mission-center
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
     foot nvtop htop fastfetch newsboat neovim tmux asciinema trash-cli wget yt-dlp aria2
     papirus-icon-theme noto-fonts noto-fonts-emoji ttc-iosevka ttf-iosevkaterm-nerd gnu-free-fonts
