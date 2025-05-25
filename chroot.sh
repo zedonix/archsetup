@@ -65,11 +65,9 @@ su - "$user" -c '
   git clone https://github.com/zedonix/archsetup.git ~/Documents/archsetup
   git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk
 
+  cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/
   cp ~/.dotfiles/archpfp.png ~/Pictures/
-  cp ~/.dotfiles/.config/sway/arch.png ~/Pictures/
   ln -sf ~/.dotfiles/.bashrc ~/.bashrc
-  ln -sf ~/.dotfiles/home.html ~/Documents/home/home.html
-  ln -sf ~/.dotfiles/archlinux.png ~/Documents/home/archlinux.png
 
   cd ~/.dotfiles/.config
   for link in $(ls); do
