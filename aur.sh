@@ -4,6 +4,8 @@ aur_pkgs=(
     sway-audio-idle-inhibit-git
     sdl-ball
     tlpui
+    cachyos-ananicy-rules
+    logseq-desktop
 )
 
 aur_dir="$HOME/.aur"
@@ -23,5 +25,7 @@ for pkg in "${aur_pkgs[@]}"; do
         cd ..
     fi
 done
+
+sudo systectl enable --now ananicy-cpp
 
 #ollama pull gemma3:1b
