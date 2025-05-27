@@ -6,6 +6,7 @@ aur_pkgs=(
     tlpui
     cachyos-ananicy-rules
     logseq-desktop
+    kvantum-theme-gruvbox-git
 )
 
 aur_dir="$HOME/.aur"
@@ -27,5 +28,6 @@ for pkg in "${aur_pkgs[@]}"; do
 done
 
 sudo systectl enable --now ananicy-cpp
+kvantummanager --set Gruvbox-Kvantum
 
 #ollama pull gemma3:1b

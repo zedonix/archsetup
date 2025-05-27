@@ -1,4 +1,12 @@
 advent of code
+
+tui file mangaer
+
+note taking app
+latex app
+
+inkspace
+
 https://freelinuxpcgames.com/
 https://linuxjourney.com/
 CUPS setup

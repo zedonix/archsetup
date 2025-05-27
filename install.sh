@@ -126,7 +126,8 @@ install_pkgs=(
     mpv fuzzel qalculate-gtk discord firefox zathura kanshi pcmanfm-gtk3 gimp file-roller blueman mission-center
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
     foot nvtop htop fastfetch newsboat neovim tmux asciinema trash-cli wget yt-dlp aria2
-    papirus-icon-theme noto-fonts noto-fonts-emoji ttc-iosevka ttf-iosevkaterm-nerd gnu-free-fonts
+    papirus-icon-theme noto-fonts noto-fonts-emoji ttf-font-awesome ttc-iosevka ttf-iosevkaterm-nerd gnu-free-fonts
+    qt6ct qt6-wayland kvantum
     wl-clip-persist wl-clipboard cliphist libnotify swaync grim slurp
     texlive-latex pandoc zathura-pdf-mupdf
     lua python uv python-black stylua pyright bash-language-server shfmt ollama
