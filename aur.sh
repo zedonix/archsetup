@@ -7,6 +7,7 @@ aur_pkgs=(
     cachyos-ananicy-rules
     logseq-desktop
     kvantum-theme-gruvbox-git
+    texpresso-git
 )
 
 aur_dir="$HOME/.aur"
