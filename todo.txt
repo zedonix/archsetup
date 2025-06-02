@@ -1,11 +1,8 @@
 advent of code
 
-note taking app
-
 https://freelinuxpcgames.com/
 https://linuxjourney.com/
 CUPS setup
-zed setup
 perplexica setup
 
 https://drive.google.com/drive/folders/1GpWxhZZg6jqHb72RBqgbbKAga96UnaBA
