@@ -76,6 +76,7 @@ su - "$user" -c '
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 
   # Git config
+  # Not my primary email so no worries ig?
   git config --global user.email "zedonix@proton.me"
   git config --global user.name "piyush"
 '
