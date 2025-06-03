@@ -62,7 +62,7 @@ su - "$user" -c '
 
   git clone https://github.com/zedonix/scripts.git ~/.scripts
   git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles
-  git clone https://github.com/zedonix/archsetup.git ~/Documents/archsetup
+  git clone https://github.com/zedonix/archsetup.git ~/.archsetup
   git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk
 
   cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/
@@ -91,7 +91,7 @@ make -f ./wikiman-makefile source-tldr
 make -f ./wikiman-makefile source-install
 make -f ./wikiman-makefile clean
 
-# Polkit/Firefox policy
+# Firefox policy
 mkdir -p /etc/firefox/policies
 ln -sf /home/"$user"/.dotfiles/policies.json /etc/firefox/policies/policies.json
 

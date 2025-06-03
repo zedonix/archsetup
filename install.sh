@@ -125,7 +125,7 @@ install_pkgs=(
     sway swaybg swaylock swayidle swayimg autotiling flatpak hyprpicker
     mpv fuzzel qalculate-gtk discord firefox zathura kanshi pcmanfm-gtk3 gimp file-roller blueman mission-center qbittorrent
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
-    foot nvtop htop inxi fastfetch onefetch newsboat neovim tmux asciinema trash-cli wget yt-dlp yazi
+    foot nvtop htop inxi fastfetch onefetch newsboat neovim tmux asciinema trash-cli wget yt-dlp vifm
     papirus-icon-theme noto-fonts noto-fonts-emoji ttf-font-awesome ttc-iosevka ttf-iosevkaterm-nerd gnu-free-fonts
     qt6ct qt6-wayland kvantum
     wl-clip-persist wl-clipboard cliphist libnotify swaync grim slurp satty
