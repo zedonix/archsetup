@@ -5,7 +5,6 @@ aur_pkgs=(
     sdl-ball
     tlpui
     cachyos-ananicy-rules
-    logseq-desktop
     kvantum-theme-gruvbox-git
     texpresso-git
 )
@@ -29,6 +28,6 @@ for pkg in "${aur_pkgs[@]}"; do
 done
 
 sudo systemctl enable --now ananicy-cpp
-kvantummanager --set Gruvbox-Kvantum
+# kvantummanager --set Gruvbox-Kvantum
 
 #ollama pull gemma3:1b
