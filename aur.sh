@@ -28,7 +28,7 @@ for pkg in "${aur_pkgs[@]}"; do
     fi
 done
 
-sudo systectl enable --now ananicy-cpp
+sudo systemctl enable --now ananicy-cpp
 kvantummanager --set Gruvbox-Kvantum
 
 #ollama pull gemma3:1b
