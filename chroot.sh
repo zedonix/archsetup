@@ -58,7 +58,7 @@ systemctl enable reflector.timer
 
 # Copy config and dotfiles as the user
 su - "$user" -c '
-  mkdir -p ~/Downloads ~/Documents/home ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash
+  mkdir -p ~/Desktop ~/Downloads ~/Documents ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash
 
   git clone https://github.com/zedonix/scripts.git ~/.scripts
   git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles
