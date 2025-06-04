@@ -64,9 +64,11 @@ su - "$user" -c '
   git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles
   git clone https://github.com/zedonix/archsetup.git ~/.archsetup
   git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk
+  git clone https://github.com/CachyOS/ananicy-rules.git ~/Downloads/ananicy-rules
 
   cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/
   cp ~/.dotfiles/archpfp.png ~/Pictures/
+  cp ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes
   ln -sf ~/.dotfiles/.bashrc ~/.bashrc
 
   cd ~/.dotfiles/.config
@@ -76,15 +78,27 @@ su - "$user" -c '
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 
   # Git config
-  # Not my primary email so no worries ig?
-  git config --global user.email "zedonix@proton.me"
-  git config --global user.name "piyush"
+  git config --global user.email "$git_email"
+  git config --global user.name "$git_username"
 '
 # Root .config
 echo '[ -f ~/.bashrc ] && . ~/.bashrc' >/root/.bash_profile
 mkdir /root/.config
 ln -sf /home/"$user"/.dotfiles/.bashrc ~/.bashrc
 ln -sf /home/"$user"/.dotfiles/.config/nvim/ ~/.config
+
+# Install CachyOS Ananicy Rules
+ANANICY_RULES_SRC="/home/$user/Downloads/ananicy-rules"
+sudo mkdir -p /etc/ananicy.d
+
+sudo cp -r "$ANANICY_RULES_SRC/00-default" /etc/ananicy.d/
+sudo cp "$ANANICY_RULES_SRC/"*.rules /etc/ananicy.d/ 2>/dev/null || true
+sudo cp "$ANANICY_RULES_SRC/00-cgroups.cgroups" /etc/ananicy.d/
+sudo cp "$ANANICY_RULES_SRC/00-types.types" /etc/ananicy.d/
+sudo cp "$ANANICY_RULES_SRC/ananicy.conf" /etc/ananicy.d/
+
+sudo chmod -R 644 /etc/ananicy.d/*
+sudo chmod 755 /etc/ananicy.d/00-default
 
 # tldr wiki setup
 curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
@@ -116,11 +130,10 @@ fs-type = swap
 EOF
 
 # Services
-# ananicy-cpp = auto nice levels
 # acpid = ACPI events such as pressing the power button or closing a laptop's lid
 # rfkill unblock bluetooth
 # modprobe btusb || true
-systemctl enable NetworkManager NetworkManager-dispatcher sshd fstrim.timer ollama acpid cronie # tlp bluetooth libvirtd
+systemctl enable NetworkManager NetworkManager-dispatcher sshd fstrim.timer ollama acpid cronie ananicy-cpp # tlp bluetooth libvirtd
 systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved

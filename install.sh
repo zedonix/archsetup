@@ -64,8 +64,25 @@ while true; do
     break
 done
 
+# Git Username
+while true; do
+    read -p "Git username: " git_username
+    [[ -z "$git_username" ]] && echo "Git username cannot be empty." && continue
+    break
+done
+
+# Git Email with regex validation and double confirmation
+email_regex="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+while true; do
+    read -p "Git email: " git_email
+    [[ ! "$git_email" =~ $email_regex ]] && echo "Invalid email format." && continue
+    read -p "Confirm git email: " git_email2
+    [[ "$git_email" != "$git_email2" ]] && echo "Emails do not match." && continue
+    break
+done
+
 # Export variables for later use
-export disk hostname root_password user user_password
+export disk hostname root_password user user_password git_username git_email
 
 # Partition Naming
 if [[ "$disk" == *nvme* ]]; then
@@ -149,6 +166,9 @@ hostname=$hostname
 root_password=$root_password
 user=$user
 user_password=$user_password
+git_username=$git_username
+git_email=$git_email
+EOF
 EOF
 chmod 600 /mnt/root/install.conf
 
