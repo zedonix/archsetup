@@ -64,6 +64,7 @@ su - "$user" -c '
   git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles
   git clone https://github.com/zedonix/archsetup.git ~/.archsetup
   git clone https://github.com/CachyOS/ananicy-rules.git ~/Downloads/ananicy-rules
+  git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk
 
   cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/
   cp ~/.dotfiles/archpfp.png ~/Pictures/

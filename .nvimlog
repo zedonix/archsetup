@@ -1,0 +1,2 @@
+ERR 2025-06-05T18:51:28.691 ui.3163    tui_chdir:1730: Failed to chdir to /home/piyush/.archsetup: Unknown error -2
+ERR 2025-06-05T18:51:51.998 ui.3201    tui_chdir:1730: Failed to chdir to /home/piyush/.archsetup: Unknown error -2

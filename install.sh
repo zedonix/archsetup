@@ -169,7 +169,6 @@ user_password=$user_password
 git_username=$git_username
 git_email=$git_email
 EOF
-EOF
 chmod 600 /mnt/root/install.conf
 
 # Run chroot.sh

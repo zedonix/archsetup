@@ -3,6 +3,7 @@
 aur_pkgs=(
     sway-audio-idle-inhibit-git
     tlpui
+    kvantum-theme-gruvbox-git
     texpresso-git
 )
 
@@ -16,5 +17,7 @@ for pkg in "${aur_pkgs[@]}"; do
     makepkg -si --noconfirm --needed
     cd ..
 done
+
+kvantummanager
 
 #ollama pull gemma3:1b
