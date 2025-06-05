@@ -147,6 +147,7 @@ install_pkgs=(
     qt6ct qt6-wayland kvantum
     wl-clip-persist wl-clipboard cliphist libnotify swaync grim slurp satty
     texlive-latex pandoc zathura-pdf-mupdf
+    docker docker-compose
     lua lua-language-server python uv python-black stylua pyright texlab bash-language-server shfmt ollama
 )
 

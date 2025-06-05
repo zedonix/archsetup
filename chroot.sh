@@ -18,7 +18,7 @@ echo "root:$root_password" | chpasswd
 
 # --- Create user and set password ---
 if ! id "$user" &>/dev/null; then
-    useradd -m -G wheel,storage,video,audio,kvm,libvirt -s /bin/bash "$user"
+    useradd -m -G wheel,storage,video,audio,kvm,libvirt,docker -s /bin/bash "$user"
     echo "$user:$user_password" | chpasswd
 else
     echo "User $user already exists, skipping creation."
@@ -65,6 +65,7 @@ su - "$user" -c '
   git clone https://github.com/zedonix/archsetup.git ~/.archsetup
   git clone https://github.com/CachyOS/ananicy-rules.git ~/Downloads/ananicy-rules
   git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk
+  git clone https://github.com/zedonix/GruvboxQT.git ~/Downloads/GruvboxQT
 
   cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/
   cp ~/.dotfiles/archpfp.png ~/Pictures/
@@ -86,6 +87,13 @@ echo '[ -f ~/.bashrc ] && . ~/.bashrc' >/root/.bash_profile
 mkdir /root/.config
 ln -sf /home/"$user"/.dotfiles/.bashrc ~/.bashrc
 ln -sf /home/"$user"/.dotfiles/.config/nvim/ ~/.config
+
+# Setup QT theme
+THEME_SRC="/home/piyush/Downloads/GruvboxQT/"
+THEME_DEST="/usr/share/Kvantum/Gruvbox"
+mkdir -p "$THEME_DEST"
+cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig"
+cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg"
 
 # Install CachyOS Ananicy Rules
 ANANICY_RULES_SRC="/home/$user/Downloads/ananicy-rules"
@@ -133,7 +141,7 @@ EOF
 # acpid = ACPI events such as pressing the power button or closing a laptop's lid
 # rfkill unblock bluetooth
 # modprobe btusb || true
-systemctl enable NetworkManager NetworkManager-dispatcher sshd fstrim.timer acpid cronie ananicy-cpp # tlp bluetooth libvirtd ollama
+systemctl enable NetworkManager NetworkManager-dispatcher sshd fstrim.timer acpid cronie ananicy-cpp docker # tlp bluetooth libvirtd ollama
 systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved
