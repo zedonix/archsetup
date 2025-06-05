@@ -78,8 +78,8 @@ su - "$user" -c '
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 
   # Git config
-  git config --global user.email "$git_email"
-  git config --global user.name "$git_username"
+  git config --global user.email \"$git_email\"
+  git config --global user.name \"$git_username\"
 '
 # Root .config
 echo '[ -f ~/.bashrc ] && . ~/.bashrc' >/root/.bash_profile
@@ -133,7 +133,7 @@ EOF
 # acpid = ACPI events such as pressing the power button or closing a laptop's lid
 # rfkill unblock bluetooth
 # modprobe btusb || true
-systemctl enable NetworkManager NetworkManager-dispatcher sshd fstrim.timer ollama acpid cronie ananicy-cpp # tlp bluetooth libvirtd
+systemctl enable NetworkManager NetworkManager-dispatcher sshd fstrim.timer acpid cronie ananicy-cpp # tlp bluetooth libvirtd ollama
 systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved
