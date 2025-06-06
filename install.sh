@@ -137,12 +137,12 @@ install_pkgs=(
     openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw clamav
     sassc udiskie gvfs gvfs-mtp gvfs-gphoto2 unrar 7zip unzip rsync jq reflector polkit polkit-gnome
     man-db man-pages wikiman tldr arch-wiki-docs
-    pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack
+    pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack brightnessctl
     xorg-xwayland xdg-desktop-portal-wlr xdg-desktop-portal-gtk
     sway swaybg swaylock swayidle swayimg autotiling flatpak hyprpicker
-    mpv fuzzel qalculate-gtk discord firefox zathura kanshi pcmanfm-gtk3 gimp file-roller blueman mission-center qbittorrent
+    mpv fuzzel qalculate-gtk discord firefox zathura kanshi pcmanfm-gtk3 gimp file-roller blueman mission-center deluge-gtk
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
-    foot nvtop htop inxi fastfetch onefetch newsboat neovim tmux asciinema trash-cli wget yt-dlp vifm
+    foot nvtop htop lshw fastfetch onefetch newsboat neovim tmux asciinema trash-cli curl wget yt-dlp vifm
     papirus-icon-theme noto-fonts noto-fonts-emoji ttf-font-awesome ttc-iosevka ttf-iosevkaterm-nerd gnu-free-fonts
     qt6ct qt6-wayland kvantum
     wl-clip-persist wl-clipboard cliphist libnotify swaync grim slurp satty
