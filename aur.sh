@@ -3,7 +3,6 @@
 aur_pkgs=(
     sway-audio-idle-inhibit-git
     tlpui
-    kvantum-theme-gruvbox-git
     texpresso-git
 )
 
