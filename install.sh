@@ -4,6 +4,7 @@ set -euo pipefail
 # --- Prompt Section (collect all user input here) ---
 
 # Disk Selection
+disks=($(lsblk -dno NAME))
 root_device=$(findmnt -n -o SOURCE / | sed 's/[0-9]*$//;s/p[0-9]*$//')
 echo "Available disks:"
 for i in "${!disks[@]}"; do
