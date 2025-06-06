@@ -57,7 +57,9 @@ reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.
 systemctl enable reflector.timer
 
 # Copy config and dotfiles as the user
+mv /root/git.conf /home/$user/
 su - "$user" -c '
+  source git.conf
   mkdir -p ~/Desktop ~/Downloads ~/Documents ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash
 
   git clone https://github.com/zedonix/scripts.git ~/.scripts
@@ -79,8 +81,8 @@ su - "$user" -c '
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 
   # Git config
-  git config --global user.email \"$git_email\"
-  git config --global user.name \"$git_username\"
+  git config --global user.email "$git_email"
+  git config --global user.name "$git_username"
 '
 # Root .config
 echo '[ -f ~/.bashrc ] && . ~/.bashrc' >/root/.bash_profile
@@ -118,8 +120,9 @@ make -f ./wikiman-makefile clean
 mkdir -p /etc/firefox/policies
 ln -sf /home/"$user"/.dotfiles/policies.json /etc/firefox/policies/policies.json
 
-# Delete password
+# Delete variables
 shred -u /root/install.conf
+shred -u /home/$user/git.conf
 
 # zram config
 # Get total memory in MiB

@@ -167,10 +167,15 @@ hostname=$hostname
 root_password=$root_password
 user=$user
 user_password=$user_password
+EOF
+
+cat >/mnt/root/git.conf <<EOF
 git_username=$git_username
 git_email=$git_email
 EOF
+
 chmod 600 /mnt/root/install.conf
+chmod 666 /mnt/root/git.conf
 
 # Run chroot.sh
 cp "$(dirname "$0")/chroot.sh" /mnt/root/chroot.sh
