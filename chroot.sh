@@ -144,7 +144,8 @@ EOF
 # acpid = ACPI events such as pressing the power button or closing a laptop's lid
 # rfkill unblock bluetooth
 # modprobe btusb || true
-systemctl enable NetworkManager NetworkManager-dispatcher sshd fstrim.timer acpid cronie ananicy-cpp docker # tlp bluetooth libvirtd ollama
+systemctl enable NetworkManager NetworkManager-dispatcher
+systemctl enable sshd fstrim.timer acpid cronie ananicy-cpp docker libvirtd # tlp bluetooth ollama
 systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved

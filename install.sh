@@ -5,24 +5,15 @@ set -euo pipefail
 
 # Disk Selection
 disks=($(lsblk -dno NAME))
-root_device=$(findmnt -n -o SOURCE / | sed 's/[0-9]*$//;s/p[0-9]*$//')
 echo "Available disks:"
 for i in "${!disks[@]}"; do
     info=$(lsblk -dno NAME,SIZE,MODEL "/dev/${disks[$i]}")
-    if [[ "/dev/${disks[$i]}" == "$root_device" ]]; then
-        printf "%2d) %s [LIVE SYSTEM - DO NOT SELECT]\n" "$((i + 1))" "$info"
-    else
-        printf "%2d) %s\n" "$((i + 1))" "$info"
-    fi
+    printf "%2d) %s\n" "$((i + 1))" "$info"
 done
 while true; do
     read -p "Select disk [1-${#disks[@]}]: " idx
     if [[ "$idx" =~ ^[1-9][0-9]*$ ]] && ((idx >= 1 && idx <= ${#disks[@]})); then
         disk="/dev/${disks[$((idx - 1))]}"
-        if [[ "$disk" == "$root_device" ]]; then
-            echo "You cannot select the live system disk. Choose another disk."
-            continue
-        fi
         break
     else
         echo "Invalid selection. Try again."
