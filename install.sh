@@ -133,7 +133,7 @@ install_pkgs=(
     networkmanager network-manager-applet bash-completion bluez bluez-utils
     ntfs-3g exfat-utils mtools dosfstools intel-ucode inotify-tools
     grub grub-btrfs efibootmgr os-prober snapper snap-pac
-    qemu-desktop virt-manager libvirt dnsmasq vde2 bridge-utils openbsd-netcat
+    qemu-desktop virt-manager libvirt dnsmasq vde2 bridge-utils openbsd-netcat dmidecode
     openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw clamav
     sassc udiskie gvfs gvfs-mtp gvfs-gphoto2 unrar 7zip unzip rsync jq reflector polkit polkit-gnome
     man-db man-pages wikiman tldr arch-wiki-docs

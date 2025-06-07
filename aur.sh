@@ -20,3 +20,4 @@ done
 kvantummanager
 
 #ollama pull gemma3:1b
+#ollama pull codellama:7b-instruct
