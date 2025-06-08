@@ -145,7 +145,7 @@ EOF
 # rfkill unblock bluetooth
 # modprobe btusb || true
 systemctl enable NetworkManager NetworkManager-dispatcher
-systemctl enable sshd fstrim.timer acpid cronie ananicy-cpp docker libvirtd # tlp bluetooth ollama
+systemctl enable sshd fstrim.timer acpid cronie ananicy-cpp #docker libvirtd tlp bluetooth ollama
 systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved
@@ -156,12 +156,6 @@ echo -e "[main]\nsystemd-resolved=false" | sudo tee /etc/NetworkManager/conf.d/n
 
 # Set DNS handling to 'default'
 echo -e "[main]\ndns=default" | sudo tee /etc/NetworkManager/conf.d/dns.conf >/dev/null
-
-# Clamav setup
-freshclam
-touch /var/log/clamav/freshclam.log
-chown clamav:clamav /var/log/clamav/freshclam.log
-systemctl enable clamav-daemon clamav-freshclam
 
 # Clean up package cache and Wrapping up
 pacman -Scc --noconfirm

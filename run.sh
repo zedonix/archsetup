@@ -50,11 +50,11 @@ if [ -d ~/.mozilla/firefox ]; then
 fi
 
 # UFW setup
-sudo ufw allow 20/tcp # ftp
-sudo ufw allow 21/tcp # ftp (I am server)
-# sudo ufw limit 22/tcp # ssh
-sudo ufw allow 80/tcp # https (I am server)
-sudo ufw allow 443/tcp
+#sudo ufw allow 20/tcp # ftp
+#sudo ufw allow 21/tcp # ftp (I am server)
+sudo ufw limit 22/tcp  # ssh
+sudo ufw allow 80/tcp  # https (I am server)
+sudo ufw allow 443/tcp # https
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw enable

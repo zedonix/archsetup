@@ -128,19 +128,22 @@ mount "$part1" /mnt/boot
 
 # Pacstrap stuff
 install_pkgs=(
-    base base-devel linux-lts linux-lts-headers linux-zen linux-zen-headers linux-firmware sudo btrfs-progs
+    base base-devel linux-lts linux-lts-headers linux-zen linux-zen-headers linux-firmware sudo btrfs-progs bash-completion
     ananicy-cpp zram-generator acpid tlp tlp-rdw
-    networkmanager network-manager-applet bash-completion bluez bluez-utils
-    ntfs-3g exfat-utils mtools dosfstools intel-ucode inotify-tools
+    networkmanager network-manager-applet bluez bluez-utils
+    ntfs-3g exfat-utils mtools dosfstools inotify-tools
+    intel-ucode
+    # amd-ucode
     grub grub-btrfs efibootmgr os-prober snapper snap-pac
     qemu-desktop virt-manager libvirt dnsmasq vde2 bridge-utils openbsd-netcat dmidecode
-    openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw clamav
-    sassc udiskie gvfs gvfs-mtp gvfs-gphoto2 unrar 7zip unzip rsync jq reflector polkit polkit-gnome
+    openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw
+    sassc udiskie gvfs gvfs-mtp gvfs-gphoto2 unrar 7zip unzip rsync jq reflector polkit polkit-gnome file-roller
     man-db man-pages wikiman tldr arch-wiki-docs
     pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack brightnessctl
     xorg-xwayland xdg-desktop-portal-wlr xdg-desktop-portal-gtk
-    sway swaybg swaylock swayidle swayimg autotiling flatpak hyprpicker
-    mpv fuzzel qalculate-gtk discord firefox zathura kanshi pcmanfm-gtk3 gimp file-roller blueman mission-center deluge-gtk
+    sway swaybg swaylock swayidle swayimg autotiling kanshi
+    flatpak hyprpicker mpv fuzzel qalculate-gtk
+    discord firefox zathura pcmanfm-gtk3 gimp blueman mission-center deluge-gtk
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
     foot nvtop htop lshw fastfetch onefetch newsboat neovim tmux asciinema trash-cli curl wget yt-dlp vifm caligula
     papirus-icon-theme noto-fonts noto-fonts-emoji ttf-font-awesome ttc-iosevka ttf-iosevkaterm-nerd gnu-free-fonts
@@ -148,7 +151,7 @@ install_pkgs=(
     wl-clip-persist wl-clipboard cliphist libnotify swaync grim slurp satty
     texlive-latex pandoc zathura-pdf-mupdf
     docker docker-compose
-    lua lua-language-server python uv python-black stylua pyright texlab bash-language-server shfmt ollama
+    lua lua-language-server python uv python-black prettier stylua pyright texlab bash-language-server shfmt ollama
 )
 
 # Pacstrap with error handling

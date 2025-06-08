@@ -3,7 +3,6 @@
 aur_pkgs=(
     sway-audio-idle-inhibit-git
     tlpui
-    texpresso-git
 )
 
 aur_dir="$HOME/.aur"
