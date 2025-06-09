@@ -60,11 +60,11 @@ sudo ufw default allow outgoing
 sudo ufw enable
 sudo systemctl enable ufw
 
-# Libvirt setup
-# sudo virsh net-autostart default
-
 # Flatpak setup
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+# Libvirt setup
+# sudo virsh net-autostart default
 
 # Configure static IP, gateway, and custom DNS
 nmcli con mod "Wired connection 1" \
