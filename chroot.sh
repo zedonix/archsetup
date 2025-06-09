@@ -145,7 +145,7 @@ EOF
 # rfkill unblock bluetooth
 # modprobe btusb || true
 systemctl enable NetworkManager NetworkManager-dispatcher iwd
-systemctl enable sshd fstrim.timer acpid cronie ananicy-cpp #docker libvirtd tlp bluetooth ollama
+systemctl enable sshd fstrim.timer acpid cronie ananicy-cpp #docker libvirtd tlp bluetooth ollama cups
 systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved wpa_supplicant
