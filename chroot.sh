@@ -18,7 +18,7 @@ echo "root:$root_password" | chpasswd
 
 # --- Create user and set password ---
 if ! id "$user" &>/dev/null; then
-    useradd -m -G wheel,storage,video,audio,kvm,libvirt,docker -s /bin/bash "$user"
+    useradd -m -G wheel,storage,video,audio,kvm,libvirt,docker,lp,sys -s /bin/bash "$user"
     echo "$user:$user_password" | chpasswd
 else
     echo "User $user already exists, skipping creation."
@@ -99,16 +99,16 @@ cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg"
 
 # Install CachyOS Ananicy Rules
 ANANICY_RULES_SRC="/home/$user/Downloads/ananicy-rules"
-sudo mkdir -p /etc/ananicy.d
+mkdir -p /etc/ananicy.d
 
-sudo cp -r "$ANANICY_RULES_SRC/00-default" /etc/ananicy.d/
-sudo cp "$ANANICY_RULES_SRC/"*.rules /etc/ananicy.d/ 2>/dev/null || true
-sudo cp "$ANANICY_RULES_SRC/00-cgroups.cgroups" /etc/ananicy.d/
-sudo cp "$ANANICY_RULES_SRC/00-types.types" /etc/ananicy.d/
-sudo cp "$ANANICY_RULES_SRC/ananicy.conf" /etc/ananicy.d/
+cp -r "$ANANICY_RULES_SRC/00-default" /etc/ananicy.d/
+cp "$ANANICY_RULES_SRC/"*.rules /etc/ananicy.d/ 2>/dev/null || true
+cp "$ANANICY_RULES_SRC/00-cgroups.cgroups" /etc/ananicy.d/
+cp "$ANANICY_RULES_SRC/00-types.types" /etc/ananicy.d/
+cp "$ANANICY_RULES_SRC/ananicy.conf" /etc/ananicy.d/
 
-sudo chmod -R 644 /etc/ananicy.d/*
-sudo chmod 755 /etc/ananicy.d/00-default
+chmod -R 644 /etc/ananicy.d/*
+chmod 755 /etc/ananicy.d/00-default
 
 # tldr wiki setup
 curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"

@@ -46,6 +46,7 @@ if [ -d ~/.mozilla/firefox ]; then
     dir=$(ls ~/.mozilla/firefox/ | grep ".default-release" | head -n1)
     if [ -n "$dir" ]; then
         ln -sf /home/$USER/.dotfiles/user.js /home/$USER/.mozilla/firefox/$dir/user.js
+        ln -sf /home/$USER/.dotfiles/chrome /home/$USER/.mozilla/firefox/$dir
     fi
 fi
 
