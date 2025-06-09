@@ -129,7 +129,7 @@ mount "$part1" /mnt/boot
 # Pacstrap stuff
 install_pkgs=(
     base base-devel linux-lts linux-lts-headers linux-zen linux-zen-headers linux-firmware sudo btrfs-progs bash-completion
-    ananicy-cpp zram-generator acpid tlp tlp-rdw
+    ananicy-cpp zram-generator acpid acpi tlp tlp-rdw
     networkmanager network-manager-applet bluez bluez-utils
     ntfs-3g exfat-utils mtools dosfstools inotify-tools
     intel-ucode
