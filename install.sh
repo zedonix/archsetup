@@ -134,6 +134,7 @@ install_pkgs=(
     ntfs-3g exfat-utils mtools dosfstools inotify-tools
     intel-ucode
     # amd-ucode
+    # cups cups-pdf ghostscript gsfonts gutenprint foomatic-db foomatic-db-engine foomatic-db-nonfree foomatic-db-ppds foomatic-filters hplip system-config-printer
     grub grub-btrfs efibootmgr os-prober snapper snap-pac
     qemu-desktop virt-manager libvirt dnsmasq vde2 bridge-utils openbsd-netcat dmidecode
     openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw
