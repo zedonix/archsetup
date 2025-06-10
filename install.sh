@@ -130,7 +130,7 @@ mount "$part1" /mnt/boot
 install_pkgs=(
     base base-devel linux-lts linux-lts-headers linux-zen linux-zen-headers linux-firmware sudo btrfs-progs bash-completion
     ananicy-cpp zram-generator acpid acpi tlp tlp-rdw
-    networkmanager network-manager-applet bluez bluez-utils
+    networkmanager iwd network-manager-applet bluez bluez-utils
     ntfs-3g exfat-utils mtools dosfstools inotify-tools
     intel-ucode
     # amd-ucode
@@ -142,7 +142,7 @@ install_pkgs=(
     man-db man-pages wikiman tldr arch-wiki-docs
     pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack brightnessctl
     xorg-xwayland xdg-desktop-portal-wlr xdg-desktop-portal-gtk
-    sway swaybg swaylock swayidle swayimg autotiling kanshi
+    sway ly swaybg swaylock swayidle swayimg autotiling kanshi
     flatpak hyprpicker mpv fuzzel qalculate-gtk
     discord firefox zathura pcmanfm-gtk3 gimp blueman mission-center deluge-gtk
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
