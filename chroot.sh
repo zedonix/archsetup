@@ -91,7 +91,7 @@ ln -sf /home/"$user"/.dotfiles/.bashrc ~/.bashrc
 ln -sf /home/"$user"/.dotfiles/.config/nvim/ ~/.config
 
 # ly sway setup
-sed -i 's|^Exec=.*|Exec=/home/piyush/.scripts/bin/sway.sh|' /usr/share/wayland-sessions/sway.desktop
+sed -i "s|^Exec=.*|Exec=/home/$USER/.scripts/bin/sway.sh|" /usr/share/wayland-sessions/sway.desktop
 
 # Setup QT theme
 THEME_SRC="/home/piyush/Downloads/GruvboxQT/"
@@ -154,14 +154,14 @@ systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved wpa_supplicant
 
 # Prevent NetworkManager from using systemd-resolved
-sudo mkdir -p /etc/NetworkManager/conf.d
-echo -e "[main]\nsystemd-resolved=false" | sudo tee /etc/NetworkManager/conf.d/no-systemd-resolved.conf >/dev/null
+mkdir -p /etc/NetworkManager/conf.d
+echo -e "[main]\nsystemd-resolved=false" | tee /etc/NetworkManager/conf.d/no-systemd-resolved.conf >/dev/null
 
 # Backend change to iwd
-echo -e "[device]\nwifi.backend=iwd" | sudo tee /etc/NetworkManager/conf.d/wifi_backend.conf
+echo -e "[device]\nwifi.backend=iwd" | tee /etc/NetworkManager/conf.d/wifi_backend.conf
 
 # Set DNS handling to 'default'
-echo -e "[main]\ndns=default" | sudo tee /etc/NetworkManager/conf.d/dns.conf >/dev/null
+echo -e "[main]\ndns=default" | tee /etc/NetworkManager/conf.d/dns.conf >/dev/null
 
 # Clean up package cache and Wrapping up
 pacman -Scc --noconfirm
