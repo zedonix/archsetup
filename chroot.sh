@@ -59,30 +59,29 @@ systemctl enable reflector.timer
 # Copy config and dotfiles as the user
 mv /root/git.conf /home/$user/
 su - "$user" -c '
-  source git.conf
-  mkdir -p ~/Desktop ~/Downloads ~/Documents ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash
+    source git.conf
+    mkdir -p ~/Desktop ~/Downloads ~/Documents ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash
 
-  git clone https://github.com/zedonix/scripts.git ~/.scripts
-  git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles
-  git clone https://github.com/zedonix/archsetup.git ~/.archsetup
-  git clone https://github.com/CachyOS/ananicy-rules.git ~/Downloads/ananicy-rules
-  git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk
-  git clone https://github.com/zedonix/GruvboxQT.git ~/Downloads/GruvboxQT
+    git clone https://github.com/zedonix/scripts.git ~/.scripts
+    git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles
+    git clone https://github.com/zedonix/archsetup.git ~/.archsetup
+    git clone https://github.com/CachyOS/ananicy-rules.git ~/Downloads/ananicy-rules
+    git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk
+    git clone https://github.com/zedonix/GruvboxQT.git ~/Downloads/GruvboxQT
 
-  cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/
-  cp ~/.dotfiles/archpfp.png ~/Pictures/
-  cp ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes
-  ln -sf ~/.dotfiles/.bashrc ~/.bashrc
+    cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/
+    cp ~/.dotfiles/archpfp.png ~/Pictures/
+    cp ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes
+    ln -sf ~/.dotfiles/.bashrc ~/.bashrc
 
-  cd ~/.dotfiles/.config
-  for link in $(ls); do
-    ln -sf ~/.dotfiles/.config/$link ~/.config
-  done
-  git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+    for link in ~/.dotfiles/.config/*; do
+      ln -sf "$link" ~/.config/
+    done
 
-  # Git config
-  git config --global user.email "$git_email"
-  git config --global user.name "$git_username"
+    git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+
+    git config --global user.email "$git_email"
+    git config --global user.name "$git_username"
 '
 # Root .config
 echo '[ -f ~/.bashrc ] && . ~/.bashrc' >/root/.bash_profile
