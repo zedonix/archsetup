@@ -111,6 +111,7 @@ sudo sed -i \
 # A cron job
 (
     crontab -l
+    echo "*/5 * * * * /home/$USER/.scripts/bin/battery-alert.sh"
     echo "@daily $(which trash-empty) 30"
 ) | crontab -
 

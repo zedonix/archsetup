@@ -90,6 +90,9 @@ mkdir /root/.config
 ln -sf /home/"$user"/.dotfiles/.bashrc ~/.bashrc
 ln -sf /home/"$user"/.dotfiles/.config/nvim/ ~/.config
 
+# ly sway setup
+sed -i 's|^Exec=.*|Exec=/home/piyush/.scripts/bin/sway.sh|' /usr/share/wayland-sessions/sway.desktop
+
 # Setup QT theme
 THEME_SRC="/home/piyush/Downloads/GruvboxQT/"
 THEME_DEST="/usr/share/Kvantum/Gruvbox"
@@ -145,7 +148,7 @@ EOF
 # rfkill unblock bluetooth
 # modprobe btusb || true
 systemctl enable NetworkManager NetworkManager-dispatcher iwd
-systemctl enable sshd fstrim.timer acpid cronie ananicy-cpp #docker libvirtd tlp bluetooth ollama cups
+systemctl enable ly fstrim.timer acpid cronie ananicy-cpp #docker sshd libvirtd tlp bluetooth ollama cups
 systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved wpa_supplicant
