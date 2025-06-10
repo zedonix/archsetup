@@ -147,7 +147,7 @@ EOF
 # acpid = ACPI events such as pressing the power button or closing a laptop's lid
 # rfkill unblock bluetooth
 # modprobe btusb || true
-systemctl enable NetworkManager NetworkManager-dispatcher iwd
+systemctl enable NetworkManager NetworkManager-dispatcher
 systemctl enable ly fstrim.timer acpid cronie ananicy-cpp #docker sshd libvirtd tlp bluetooth ollama cups
 systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
@@ -156,9 +156,6 @@ systemctl disable NetworkManager-wait-online.service systemd-networkd.service sy
 # Prevent NetworkManager from using systemd-resolved
 mkdir -p /etc/NetworkManager/conf.d
 echo -e "[main]\nsystemd-resolved=false" | tee /etc/NetworkManager/conf.d/no-systemd-resolved.conf >/dev/null
-
-# Backend change to iwd
-echo -e "[device]\nwifi.backend=iwd" | tee /etc/NetworkManager/conf.d/wifi_backend.conf
 
 # Set DNS handling to 'default'
 echo -e "[main]\ndns=default" | tee /etc/NetworkManager/conf.d/dns.conf >/dev/null
