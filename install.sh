@@ -126,14 +126,24 @@ mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshot
 mkdir -p /mnt/boot
 mount "$part1" /mnt/boot
 
+# Detect CPU vendor and set microcode package
+cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
+if [[ "$cpu_vendor" == "GenuineIntel" ]]; then
+    microcode_pkg="intel-ucode"
+elif [[ "$cpu_vendor" == "AuthenticAMD" ]]; then
+    microcode_pkg="amd-ucode"
+else
+    microcode_pkg=""
+    echo "Warning: Unknown CPU vendor. No microcode package will be installed."
+fi
+
 # Pacstrap stuff
 install_pkgs=(
     base base-devel linux-lts linux-lts-headers linux-zen linux-zen-headers linux-firmware sudo btrfs-progs bash-completion
     ananicy-cpp zram-generator acpid acpi tlp tlp-rdw
     networkmanager iwd network-manager-applet bluez bluez-utils
     ntfs-3g exfat-utils mtools dosfstools inotify-tools
-    intel-ucode
-    # amd-ucode
+    "$microcode_pkg"
     # cups cups-pdf ghostscript gsfonts gutenprint foomatic-db foomatic-db-engine foomatic-db-nonfree foomatic-db-ppds foomatic-filters hplip system-config-printer
     grub grub-btrfs efibootmgr os-prober snapper snap-pac
     qemu-desktop virt-manager libvirt dnsmasq vde2 bridge-utils openbsd-netcat dmidecode

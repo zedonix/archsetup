@@ -150,7 +150,7 @@ systemctl enable NetworkManager NetworkManager-dispatcher
 systemctl enable ly fstrim.timer acpid cronie ananicy-cpp #docker sshd libvirtd tlp bluetooth ollama cups
 systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
-systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved wpa_supplicant
+systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved
 
 # Prevent NetworkManager from using systemd-resolved
 mkdir -p /etc/NetworkManager/conf.d
