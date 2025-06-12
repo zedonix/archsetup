@@ -90,7 +90,7 @@ ln -sf /home/"$user"/.dotfiles/.bashrc ~/.bashrc
 ln -sf /home/"$user"/.dotfiles/.config/nvim/ ~/.config
 
 # ly sway setup
-sed -i "s|^Exec=.*|Exec=/home/$user/.scripts/bin/sway.sh|" /usr/share/wayland-sessions/sway.desktop
+sed -i "s|^Exec=.*|Exec=/home/$user/.scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
 
 # Setup QT theme
 THEME_SRC="/home/piyush/Downloads/GruvboxQT/"

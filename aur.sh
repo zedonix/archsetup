@@ -3,6 +3,8 @@
 aur_pkgs=(
     sway-audio-idle-inhibit-git
     tlpui
+    bashmount
+    #cnijfilter2
 )
 
 aur_dir="$HOME/.aur"

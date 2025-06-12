@@ -144,15 +144,15 @@ install_pkgs=(
     networkmanager iwd network-manager-applet bluez bluez-utils
     ntfs-3g exfat-utils mtools dosfstools inotify-tools
     "$microcode_pkg"
-    # cups cups-pdf ghostscript gsfonts gutenprint foomatic-db foomatic-db-engine foomatic-db-nonfree foomatic-db-ppds foomatic-filters hplip system-config-printer
+    # cups cups-pdf ghostscript gsfonts gutenprint foomatic-db foomatic-db-engine foomatic-db-nonfree foomatic-db-ppds hplip system-config-printer
     grub grub-btrfs efibootmgr os-prober snapper snap-pac
     qemu-desktop virt-manager libvirt dnsmasq vde2 bridge-utils openbsd-netcat dmidecode
     openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw
-    sassc udiskie gvfs gvfs-mtp gvfs-gphoto2 unrar 7zip unzip rsync jq reflector polkit polkit-gnome file-roller
+    sassc udisks2 udisks2-btrfs gvfs gvfs-mtp gvfs-gphoto2 unrar 7zip unzip rsync jq reflector polkit polkit-gnome file-roller
     man-db man-pages wikiman tldr arch-wiki-docs
     pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack brightnessctl
     xorg-xwayland xdg-desktop-portal-wlr xdg-desktop-portal-gtk
-    sway ly swaybg swaylock swayidle swayimg autotiling kanshi
+    sway ly swaybg swaylock swayidle swayimg kanshi
     flatpak hyprpicker mpv fuzzel qalculate-gtk
     discord firefox zathura pcmanfm-gtk3 gimp blueman mission-center deluge-gtk
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
@@ -162,7 +162,11 @@ install_pkgs=(
     wl-clip-persist wl-clipboard cliphist libnotify swaync grim slurp satty
     texlive-latex pandoc zathura-pdf-mupdf
     docker docker-compose
-    lua lua-language-server python uv python-black prettier stylua pyright texlab bash-language-server shfmt ollama
+    lua lua-language-server stylua
+    python uv python-black pyright
+    prettier nodejs npm
+    bash-language-server shfmt
+    ollama
 )
 
 # Pacstrap with error handling
