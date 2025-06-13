@@ -156,7 +156,7 @@ install_pkgs=(
     flatpak hyprpicker mpv fuzzel qalculate-gtk
     discord firefox zathura pcmanfm-gtk3 gimp blueman mission-center deluge-gtk
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
-    foot nvtop htop lshw fastfetch onefetch newsboat neovim tmux asciinema trash-cli curl wget yt-dlp vifm caligula
+    foot nvtop htop powertop lshw fastfetch onefetch newsboat neovim tmux asciinema trash-cli curl wget yt-dlp vifm caligula
     papirus-icon-theme noto-fonts noto-fonts-emoji ttf-font-awesome ttc-iosevka ttf-iosevkaterm-nerd gnu-free-fonts
     qt6ct qt6-wayland kvantum
     wl-clip-persist wl-clipboard cliphist libnotify swaync grim slurp satty
