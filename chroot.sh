@@ -70,7 +70,7 @@ su - "$user" -c '
     git clone https://github.com/zedonix/GruvboxQT.git ~/Downloads/GruvboxQT
 
     cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/
-    cp ~/.dotfiles/archpfp.png ~/Pictures/
+    cp ~/.dotfiles/pics/* ~/Pictures/
     cp ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes
     ln -sf ~/.dotfiles/.bashrc ~/.bashrc
 
@@ -82,6 +82,7 @@ su - "$user" -c '
 
     git config --global user.email "$git_email"
     git config --global user.name "$git_username"
+    git config --global init.defaultBranch main
 '
 # Root .config
 echo '[ -f ~/.bashrc ] && . ~/.bashrc' >/root/.bash_profile

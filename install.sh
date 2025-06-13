@@ -163,7 +163,7 @@ install_pkgs=(
     texlive-latex pandoc zathura-pdf-mupdf #texlive-mathscience
     docker docker-compose
     lua lua-language-server stylua
-    python uv python-black pyright
+    python uv ruff pyright
     typescript-language-server prettier nodejs npm #pnpm
     bash-language-server shfmt
     ollama
