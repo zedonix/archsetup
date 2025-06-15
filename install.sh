@@ -153,7 +153,7 @@ install_pkgs=(
     man-db man-pages wikiman tldr arch-wiki-docs
     pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack brightnessctl
     xorg-xwayland xdg-desktop-portal-wlr xdg-desktop-portal-gtk
-    sway ly swaybg swaylock swayidle swayimg kanshi
+    ly sway swaybg swaylock swayidle swayimg waybar kanshi
     discord firefox zathura pcmanfm-gtk3 gimp blueman mission-center deluge-gtk mpv fuzzel qalculate-gtk
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
     foot nvtop htop powertop lshw fastfetch onefetch newsboat neovim tmux asciinema yt-dlp vifm caligula
