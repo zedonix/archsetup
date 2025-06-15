@@ -4,6 +4,7 @@ aur_pkgs=(
     sway-audio-idle-inhibit-git
     tlpui
     bashmount
+    newsraft
     #cnijfilter2
 )
 

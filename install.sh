@@ -148,7 +148,7 @@ install_pkgs=(
     # hplip
     grub grub-btrfs efibootmgr os-prober snapper snap-pac
     qemu-desktop virt-manager libvirt dnsmasq vde2 bridge-utils openbsd-netcat dmidecode
-    openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw trash-cli curl wget flatpak
+    openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw trash-cli curl wget flatpak playerctl
     sassc udisks2 udisks2-btrfs gvfs gvfs-mtp gvfs-gphoto2 unrar 7zip unzip rsync jq reflector polkit polkit-gnome file-roller
     man-db man-pages wikiman tldr arch-wiki-docs
     pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack brightnessctl
