@@ -117,14 +117,11 @@ btrfs subvolume create /mnt/@
 umount /mnt
 
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@ "$part2" /mnt
-mkdir -p /mnt/{home,var,.snapshots}
+mkdir -p /mnt/{boot/efi,home,var,.snapshots}
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$part2" /mnt/home
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$part2" /mnt/var
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$part2" /mnt/.snapshots
-
-# Mount EFI System Partition
-mkdir -p /mnt/boot
-mount "$part1" /mnt/boot
+mount "$part1" /mnt/boot/efi/
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
@@ -148,13 +145,13 @@ install_pkgs=(
     # hplip
     grub grub-btrfs efibootmgr os-prober snapper snap-pac
     qemu-desktop virt-manager libvirt dnsmasq vde2 bridge-utils openbsd-netcat dmidecode
-    openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw trash-cli curl wget flatpak playerctl
+    openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw trash-cli curl wget flatpak playerctl bc
     sassc udisks2 udisks2-btrfs gvfs gvfs-mtp gvfs-gphoto2 unrar 7zip unzip rsync jq reflector polkit polkit-gnome file-roller
     man-db man-pages wikiman tldr arch-wiki-docs
     pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack brightnessctl
     xorg-xwayland xdg-desktop-portal-wlr xdg-desktop-portal-gtk
     ly sway swaybg swaylock swayidle swayimg waybar kanshi
-    discord firefox zathura pcmanfm-gtk3 gimp blueman mission-center deluge-gtk mpv fuzzel qalculate-gtk
+    discord firefox zathura pcmanfm-gtk3 gimp blueman mission-center deluge-gtk mpv fuzzel rofimoji
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
     foot nvtop htop powertop lshw fastfetch onefetch newsboat neovim tmux asciinema yt-dlp vifm caligula
     papirus-icon-theme noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-font-awesome ttc-iosevka ttf-iosevkaterm-nerd gnu-free-fonts

@@ -56,6 +56,10 @@ sudo ufw limit 22/tcp              # ssh
 sudo ufw allow 80/tcp              # https (I am server)
 sudo ufw allow 443/tcp             # https
 sudo ufw allow from 192.168.0.0/24 #lan
+sudo ufw allow in on virbr0 to any port 67 proto udp
+sudo ufw allow in on virbr0 to any port 53
+sudo ufw allow out on virbr0 to any port 68 proto udp
+sudo ufw allow out on virbr0 to any port 53
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw enable
@@ -65,7 +69,8 @@ sudo systemctl enable ufw
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # Libvirt setup
-# sudo virsh net-autostart default
+sudo virsh net-autostart default
+sudo virsh net-start default
 
 # Configure static IP, gateway, and custom DNS
 nmcli con mod "Wired connection 1" \
