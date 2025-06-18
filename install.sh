@@ -96,9 +96,9 @@ part2="${part_prefix}2"
 
 # Partitioning --
 parted -s "$disk" mklabel gpt
-parted -s "$disk" mkpart ESP fat32 1MiB 1025MiB
+parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
 parted -s "$disk" set 1 esp on
-parted -s "$disk" mkpart primary btrfs 1025MiB 100%
+parted -s "$disk" mkpart primary btrfs 2049MiB 100%
 
 # Formatting
 mkfs.vfat -F 32 -n EFI "$part1"
@@ -117,11 +117,11 @@ btrfs subvolume create /mnt/@
 umount /mnt
 
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@ "$part2" /mnt
-mkdir -p /mnt/{boot/efi,home,var,.snapshots}
+mkdir -p /mnt/{boot,home,var,.snapshots}
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$part2" /mnt/home
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$part2" /mnt/var
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$part2" /mnt/.snapshots
-mount "$part1" /mnt/boot/efi/
+mount "$part1" /mnt/boot
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
@@ -141,7 +141,7 @@ install_pkgs=(
     networkmanager network-manager-applet bluez bluez-utils
     ntfs-3g exfat-utils mtools dosfstools inotify-tools
     "$microcode_pkg"
-    # cups cups-pdf ghostscript gsfonts gutenprint foomatic-db foomatic-db-engine foomatic-db-nonfree foomatic-db-ppds system-config-printer
+    cups cups-pdf ghostscript gsfonts gutenprint foomatic-db foomatic-db-engine foomatic-db-nonfree foomatic-db-ppds system-config-printer
     # hplip
     grub grub-btrfs efibootmgr os-prober snapper snap-pac
     qemu-desktop virt-manager libvirt dnsmasq vde2 bridge-utils openbsd-netcat dmidecode
