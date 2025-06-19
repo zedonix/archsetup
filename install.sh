@@ -1,7 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-# To prevent relative paths hell
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 cd "$SCRIPT_DIR"
 
@@ -118,7 +117,7 @@ fi
 # Pacstrap stuff
 #
 #texlive-mathscience
-sed -i "s/\"\$microcode_pkg\"/$microcode_pkg/g" pkgs.txt
+sed -i "s|\"\$microcode_pkg\"|$microcode_pkg|g" pkgs.txt
 
 # Which type of packages?
 case "$first:$second" in
@@ -165,12 +164,15 @@ EOF
 chmod 600 /mnt/root/install.conf
 
 # Run chroot.sh
-cp "$(dirname "$0")/chroot.sh" /mnt/root/chroot.sh
+cp chroot.sh /mnt/root/chroot.sh
 chmod +x /mnt/root/chroot.sh
 arch-chroot /mnt /root/chroot.sh
 
 # Unmount and finalize
 if mountpoint -q /mnt; then
-    umount -R /mnt
+    umount -R /mnt || {
+        echo "Failed to unmount /mnt. Please check."
+        exit 1
+    }
 fi
 echo "Installation completed. Please reboot your system."
