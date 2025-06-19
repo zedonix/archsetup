@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
+# To prevent relative paths hell
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+cd "$SCRIPT_DIR"
+
 # --- Prompt Section (collect all user input here) ---
 #
 # Which type of install?
