@@ -75,6 +75,8 @@ initrd  /initramfs-linux-lts.img
 options root=LABEL=ROOT rw
 EOF
 
+chmod 700 /boot/loader
+
 # Reflector and pacman Setup
 sed -i '/^#Color$/c\Color' /etc/pacman.conf
 mkdir -p /etc/xdg/reflector

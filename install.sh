@@ -118,6 +118,14 @@ fi
 #
 #texlive-mathscience
 sed -i "s|\"\$microcode_pkg\"|$microcode_pkg|g" pkgs.txt
+grep -q '^"' pkglist.txt && {
+    echo "Error: pkglist.txt contains quoted package names"
+    exit 1
+}
+grep -q '^$' pkglist.txt && {
+    echo "Error: pkglist.txt contains empty lines"
+    exit 1
+}
 
 # Which type of packages?
 case "$first:$second" in
