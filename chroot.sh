@@ -1,8 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-# Configuration
+# Variable set
 timezone="Asia/Kolkata"
+username="piyush"
+git_name="piyush"
+git_email="zedonix@proton.me"
 
 # Load variables from install.conf
 source /root/install.conf
@@ -17,11 +20,15 @@ echo "127.0.1.1  $hostname.localdomain  $hostname" >>/etc/hosts
 echo "root:$root_password" | chpasswd
 
 # --- Create user and set password ---
-if ! id "$user" &>/dev/null; then
-    useradd -m -G wheel,storage,video,audio,kvm,libvirt,docker,lp,sys -s /bin/bash "$user"
-    echo "$user:$user_password" | chpasswd
+if ! id "$username" &>/dev/null; then
+    if [[ "$second" == "full" && "$first" == "hardware" ]]; then
+        useradd -m -G wheel,storage,video,audio,lp,sys,kvm,libvirt,docker -s /bin/bash "$username"
+    else
+        useradd -m -G wheel,storage,video,audio,lp,sys -s /bin/bash "$username"
+    fi
+    echo "$username:$user_password" | chpasswd
 else
-    echo "User $user already exists, skipping creation."
+    echo "User $username already exists, skipping creation."
 fi
 
 # Local Setup
@@ -37,10 +44,36 @@ echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
 chmod 440 /etc/sudoers.d/wheel /etc/sudoers.d/timestamp
 
 # Bootloader
-grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi
-sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-#sed -i 's/^#GRUB_DISABLE_SUBMENU=y/GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
-grub-mkconfig -o /boot/grub/grub.cfg
+if [[ "$microcode_pkg" == "intel-ucode" ]]; then
+    microcode_img="initrd /intel-ucode.img"
+elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
+    microcode_img="initrd /amd-ucode.img"
+else
+    microcode_img=""
+fi
+bootctl install
+
+cat >/boot/loader/loader.conf <<EOF
+default arch-zen
+timeout 3
+editor no
+EOF
+
+cat >/boot/loader/entries/arch-zen.conf <<EOF
+title   Arch Linux (ZEN)
+linux   /vmlinuz-linux-zen
+$microcode_img
+initrd  /initramfs-linux-zen.img
+options root=LABEL=ROOT rw
+EOF
+
+cat >/boot/loader/entries/arch-lts.conf <<EOF
+title   Arch Linux (LTS)
+linux   /vmlinuz-linux-lts
+$microcode_img
+initrd  /initramfs-linux-lts.img
+options root=LABEL=ROOT rw
+EOF
 
 # Reflector and pacman Setup
 sed -i '/^#Color$/c\Color' /etc/pacman.conf
@@ -53,81 +86,109 @@ cat >/etc/xdg/reflector/reflector.conf <<REFCONF
 --age 24
 --sort rate
 REFCONF
+
 reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
 systemctl enable reflector.timer
 
 # Copy config and dotfiles as the user
-mv /root/git.conf /home/$user/
-su - "$user" -c '
-    source git.conf
+if [[ "$second" == "min" ]]; then
+    su - "$username" -c '
+        xdg-user-dirs-update
+        mkdir -p ~/Pictures/Screenshots ~/.config ~/.local/state/bash
 
-    xdg-user-dirs-update
-    mkdir -p ~/Pictures/Screenshots ~/.config ~/.local/state/bash
+        # Clone scripts
+        if ! git clone https://github.com/zedonix/scripts.git ~/.scripts; then
+            echo "Failed to clone scripts. Continuing..."
+        fi
 
-    git clone https://github.com/zedonix/scripts.git ~/.scripts
-    git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles
-    git clone https://github.com/zedonix/archsetup.git ~/.archsetup
-    git clone https://github.com/CachyOS/ananicy-rules.git ~/Downloads/ananicy-rules
-    git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk
-    git clone https://github.com/zedonix/GruvboxQT.git ~/Downloads/GruvboxQT
+        # Clone dotfiles
+        if ! git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles; then
+            echo "Failed to clone dotfiles. Continuing..."
+        fi
 
-    cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/
-    cp ~/.dotfiles/pics/* ~/Pictures/
-    cp ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes
-    ln -sf ~/.dotfiles/.bashrc ~/.bashrc
+        # Clone archsetup
+        if ! git clone https://github.com/zedonix/archsetup.git ~/.archsetup; then
+            echo "Failed to clone archsetup. Continuing..."
+        fi
 
-    for link in ~/.dotfiles/.config/*; do
-      ln -sf "$link" ~/.config/
-    done
+        # Clone ananicy-rules
+        if ! git clone https://github.com/CachyOS/ananicy-rules.git ~/Downloads/ananicy-rules; then
+            echo "Failed to clone ananicy-rules. Continuing..."
+        fi
 
-    git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+        # Clone GruvboxGtk
+        if ! git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk; then
+            echo "Failed to clone GruvboxGtk. Continuing..."
+        fi
 
-    git config --global user.email "$git_email"
-    git config --global user.name "$git_username"
-    git config --global init.defaultBranch main
-'
-# Root .config
-echo '[ -f ~/.bashrc ] && . ~/.bashrc' >/root/.bash_profile
-mkdir /root/.config
-ln -sf /home/"$user"/.dotfiles/.bashrc ~/.bashrc
-ln -sf /home/"$user"/.dotfiles/.config/nvim/ ~/.config
+        # Clone GruvboxQT
+        if ! git clone https://github.com/zedonix/GruvboxQT.git ~/Downloads/GruvboxQT; then
+            echo "Failed to clone GruvboxQT. Continuing..."
+        fi
 
-# ly sway setup
-sed -i "s|^Exec=.*|Exec=/home/$user/.scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
+        # Copy and link files (only if dotfiles exists)
+        if [[ -d ~/.dotfiles ]]; then
+            cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
+            cp ~/.dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
+            cp -r ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
+            ln -sf ~/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
 
-# Setup QT theme
-THEME_SRC="/home/piyush/Downloads/GruvboxQT/"
-THEME_DEST="/usr/share/Kvantum/Gruvbox"
-mkdir -p "$THEME_DEST"
-cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig"
-cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg"
+            for link in ~/.dotfiles/.config/*; do
+                ln -sf "$link" ~/.config/ 2>/dev/null || true
+            done
+        fi
 
-# Install CachyOS Ananicy Rules
-ANANICY_RULES_SRC="/home/$user/Downloads/ananicy-rules"
-mkdir -p /etc/ananicy.d
+        # Clone tpm
+        if ! git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm; then
+            echo "Failed to clone tpm. Continuing..."
+        fi
 
-cp -r "$ANANICY_RULES_SRC/00-default" /etc/ananicy.d/
-cp "$ANANICY_RULES_SRC/"*.rules /etc/ananicy.d/ 2>/dev/null || true
-cp "$ANANICY_RULES_SRC/00-cgroups.cgroups" /etc/ananicy.d/
-cp "$ANANICY_RULES_SRC/00-types.types" /etc/ananicy.d/
-cp "$ANANICY_RULES_SRC/ananicy.conf" /etc/ananicy.d/
+        git config --global user.name "'"$git_name"'"
+        git config --global user.email "'"$git_email"'"
+        git config --global init.defaultBranch main
+    '
+    # Root .config
+    echo '[ -f ~/.bashrc ] && . ~/.bashrc' >/root/.bash_profile
+    mkdir /root/.config
+    ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc
+    ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
 
-chmod -R 644 /etc/ananicy.d/*
-chmod 755 /etc/ananicy.d/00-default
+    # ly sway setup
+    sed -i "s|^Exec=.*|Exec=/home/$username/.scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
 
-# tldr wiki setup
-curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
-make -f ./wikiman-makefile source-tldr
-make -f ./wikiman-makefile source-install
-make -f ./wikiman-makefile clean
+    # Setup QT theme
+    THEME_SRC="/home/$username/Downloads/GruvboxQT/"
+    THEME_DEST="/usr/share/Kvantum/Gruvbox"
+    mkdir -p "$THEME_DEST"
+    cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig" 2>/dev/null || true
+    cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg" 2>/dev/null || true
 
-# Firefox policy
-mkdir -p /etc/firefox/policies
-ln -sf /home/"$user"/.dotfiles/policies.json /etc/firefox/policies/policies.json
+    # Install CachyOS Ananicy Rules
+    ANANICY_RULES_SRC="/home/$username/Downloads/ananicy-rules"
+    mkdir -p /etc/ananicy.d
+
+    cp -r "$ANANICY_RULES_SRC/00-default" /etc/ananicy.d/ 2>/dev/null || true
+    cp "$ANANICY_RULES_SRC/"*.rules /etc/ananicy.d/ 2>/dev/null || true
+    cp "$ANANICY_RULES_SRC/00-cgroups.cgroups" /etc/ananicy.d/ 2>/dev/null || true
+    cp "$ANANICY_RULES_SRC/00-types.types" /etc/ananicy.d/ 2>/dev/null || true
+    cp "$ANANICY_RULES_SRC/ananicy.conf" /etc/ananicy.d/ 2>/dev/null || true
+
+    chmod -R 644 /etc/ananicy.d/*
+    chmod 755 /etc/ananicy.d/00-default
+
+    # tldr wiki setup
+    curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
+    make -f ./wikiman-makefile source-tldr
+    make -f ./wikiman-makefile source-install
+    make -f ./wikiman-makefile clean
+
+    # Firefox policy
+    mkdir -p /etc/firefox/policies
+    ln -sf "/home/$username/.dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
+fi
 
 # Delete variables
 shred -u /root/install.conf
-shred -u /home/$user/git.conf
 
 # zram config
 # Get total memory in MiB
@@ -146,11 +207,16 @@ fs-type = swap
 EOF
 
 # Services
-# acpid = ACPI events such as pressing the power button or closing a laptop's lid
 # rfkill unblock bluetooth
 # modprobe btusb || true
 systemctl enable NetworkManager NetworkManager-dispatcher
-systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd ollama cups #docker sshd tlp bluetooth
+if [[ "$second" == "full" ]]; then
+    if [[ "$first" == "hardware" ]]; then
+        systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd ollama cups docker sshd #tlp bluetooth
+    else
+        systemctl enable ly cronie ananicy-cpp ollama sshd
+    fi
+fi
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved
 

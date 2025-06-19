@@ -2,6 +2,22 @@
 set -euo pipefail
 
 # --- Prompt Section (collect all user input here) ---
+#
+# Which type of install?
+#
+# First choice: vm or hardware
+echo "Choose one:"
+select first in "vm" "hardware"; do
+    [[ -n $first ]] && break
+    echo "Invalid choice. Please select 1 for vm or 2 for hardware."
+done
+
+# Second choice: min or full
+echo "Choose one:"
+select second in "min" "full"; do
+    [[ -n $second ]] && break
+    echo "Invalid choice. Please select 1 for min or 2 for full."
+done
 
 # Disk Selection
 disks=($(lsblk -dno NAME))
@@ -23,7 +39,6 @@ done
 # Hostname
 while true; do
     read -p "Hostname: " hostname
-    # RFC 1123: 1-63 chars, letters, digits, hyphens, not start/end with hyphen
     if [[ ! "$hostname" =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$ ]]; then
         echo "Invalid hostname. Use 1-63 letters, digits, or hyphens (not starting or ending with hyphen)."
         continue
@@ -42,17 +57,6 @@ while true; do
     break
 done
 
-# Username
-while true; do
-    read -p "Username: " user
-    # Linux username: 1-32 chars, start with letter, then letters/digits/_/-
-    if [[ ! "$user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
-        echo "Invalid username. Use 1-32 lowercase letters, digits, underscores, or hyphens, starting with a letter or underscore."
-        continue
-    fi
-    break
-done
-
 # User Password
 while true; do
     read -s -p "User password: " user_password
@@ -64,25 +68,8 @@ while true; do
     break
 done
 
-# Git Username
-while true; do
-    read -p "Git username: " git_username
-    [[ -z "$git_username" ]] && echo "Git username cannot be empty." && continue
-    break
-done
-
-# Git Email with regex validation and double confirmation
-email_regex="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
-while true; do
-    read -p "Git email: " git_email
-    [[ ! "$git_email" =~ $email_regex ]] && echo "Invalid email format." && continue
-    read -p "Confirm git email: " git_email2
-    [[ "$git_email" != "$git_email2" ]] && echo "Emails do not match." && continue
-    break
-done
-
 # Export variables for later use
-export disk hostname root_password user user_password git_username git_email
+export disk hostname root_password user_password
 
 # Partition Naming
 if [[ "$disk" == *nvme* ]]; then
@@ -99,18 +86,18 @@ part3="${part_prefix}3"
 parted -s "$disk" mklabel gpt
 parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
 parted -s "$disk" set 1 esp on
-parted -s "$disk" mkpart primary ext4 2049MiB 50%
-parted -s "$disk" mkpart primary ext4 50% 100%
+parted -s "$disk" mkpart primary ext4 2049MiB 102449MiB
+parted -s "$disk" mkpart primary ext4 102449MiB 100%
 
 # Formatting
-mkfs.vfat -F 32 -n EFI "$part1"
+mkfs.fat -F 32 -n EFI "$part1"
 mkfs.ext4 -L ROOT "$part2"
 mkfs.ext4 -L HOME "$part3"
 
 # Mounting
 mount "$part2" /mnt
-mkdir /mnt/boot /mnt/boot/efi /mnt/home
-mount "$part1" /mnt/boot/efi
+mkdir /mnt/boot /mnt/home
+mount "$part1" /mnt/boot
 mount "$part3" /mnt/home
 
 # Detect CPU vendor and set microcode package
@@ -125,40 +112,35 @@ else
 fi
 
 # Pacstrap stuff
-install_pkgs=(
-    base base-devel linux-lts linux-lts-headers linux-zen linux-zen-headers linux-firmware sudo bash-completion
-    ananicy-cpp zram-generator acpid acpi tlp tlp-rdw
-    networkmanager network-manager-applet bluez bluez-utils
-    ntfs-3g exfat-utils mtools dosfstools inotify-tools
-    "$microcode_pkg"
-    cups cups-pdf ghostscript gsfonts gutenprint foomatic-db foomatic-db-engine foomatic-db-nonfree foomatic-db-ppds system-config-printer
-    # hplip
-    grub efibootmgr os-prober
-    qemu-desktop virt-manager libvirt dnsmasq vde2 bridge-utils openbsd-netcat dmidecode
-    openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw trash-cli curl wget playerctl bc ffmpegthumbnailer
-    sassc udisks2 gvfs gvfs-mtp gvfs-gphoto2 unrar 7zip unzip rsync jq reflector polkit polkit-gnome file-roller flatpak imagemagick
-    man-db man-pages wikiman tldr arch-wiki-docs
-    pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack brightnessctl
-    xorg-xwayland xdg-desktop-portal-wlr xdg-desktop-portal-gtk xdg-user-dirs
-    ly sway swaybg swaylock swayidle swayimg waybar kanshi
-    discord firefox zathura pcmanfm-gtk3 gimp blueman mission-center deluge-gtk mpv fuzzel rofimoji
-    easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
-    foot nvtop htop powertop lshw fastfetch onefetch neovim tmux asciinema yt-dlp vifm caligula
-    papirus-icon-theme noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-font-awesome ttc-iosevka ttf-iosevkaterm-nerd gnu-free-fonts
-    qt6-wayland kvantum
-    wl-clip-persist wl-clipboard cliphist libnotify swaync grim slurp satty hyprpicker
-    texlive-latex pandoc zathura-pdf-mupdf #texlive-mathscience
-    docker docker-compose
-    lua lua-language-server stylua
-    python uv pip ruff pyright
-    typescript-language-server prettier nodejs npm pnpm
-    bash-language-server shfmt
-    ollama
-)
+#
+#texlive-mathscience
+sed -i "s/\"\$microcode_pkg\"/$microcode_pkg/g" pkgs.txt
+
+# Which type of packages?
+case "$first:$second" in
+vm:min)
+    # Install only line 1
+    sed -n '1p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
+    ;;
+vm:full)
+    # Install lines 1 and 3
+    sed -n '1,3p' pkgs.txt | head -n 3 | tr ' ' '\n' | grep -v '^$' >pkglist.txt
+    # Or, if you only want lines 1 and 3 (not 2), use:
+    # sed -n '1p;3p' pkgs.txt | tr ' ' '\n' | grep -v '^$' > pkglist.txt
+    ;;
+hardware:min)
+    # Install lines 1 and 2
+    sed -n '1,2p' pkgs.txt | head -n 2 | tr ' ' '\n' | grep -v '^$' >pkglist.txt
+    ;;
+hardware:full)
+    # Install all lines
+    cat pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
+    ;;
+esac
 
 # Pacstrap with error handling
 reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
-if ! pacstrap /mnt "${install_pkgs[@]}"; then
+if ! pacstrap /mnt - <pkglist.txt; then
     echo "pacstrap failed. Please check the package list and network connection."
     exit 1
 fi
@@ -170,17 +152,13 @@ genfstab -U /mnt >/mnt/etc/fstab
 cat >/mnt/root/install.conf <<EOF
 hostname=$hostname
 root_password=$root_password
-user=$user
 user_password=$user_password
-EOF
-
-cat >/mnt/root/git.conf <<EOF
-git_username=$git_username
-git_email=$git_email
+first=$first
+second=$second
+microcode_pkg=$microcode_pkg
 EOF
 
 chmod 600 /mnt/root/install.conf
-chmod 666 /mnt/root/git.conf
 
 # Run chroot.sh
 cp "$(dirname "$0")/chroot.sh" /mnt/root/chroot.sh

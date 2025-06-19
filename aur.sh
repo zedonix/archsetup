@@ -5,6 +5,7 @@ aur_pkgs=(
     tlpui
     bashmount
     newsraft
+    systemd-boot-pacman-hook
     #cnijfilter2
 )
 
