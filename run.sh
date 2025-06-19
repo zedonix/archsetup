@@ -73,11 +73,7 @@ sudo virsh net-autostart default
 sudo virsh net-start default
 
 # Configure static IP, gateway, and custom DNS
-nmcli con mod "Wired connection 1" \
-    ipv4.method manual \
-    ipv4.addresses 192.168.1.100/24 \
-    ipv4.gateway 192.168.1.1 \
-    ipv4.dns "1.1.1.1,1.0.0.1"
+nmcli con mod "Wired connection 1" ipv4.dns "1.1.1.1,1.0.0.1"
 # 8.8.8.8,8.8.4.4
 nmcli con mod "Wired connection 1" ipv4.ignore-auto-dns yes
 
@@ -85,39 +81,10 @@ nmcli con mod "Wired connection 1" ipv4.ignore-auto-dns yes
 nmcli con down "Wired connection 1"
 nmcli con up "Wired connection 1"
 
-# Snapper setup
-if mountpoint -q /.snapshots; then
-    sudo umount /.snapshots/
-fi
-[[ -d /.snapshots ]] && sudo rm -rf /.snapshots/
-sudo snapper -c root create-config /
-sudo snapper -c home create-config /home
-sudo mount -a
-
-sudo systemctl enable --now snapper-timeline.timer
-sudo systemctl enable --now snapper-cleanup.timer
-sudo systemctl enable --now grub-btrfsd
-
-sudo sed -i \
-    -e 's/^TIMELINE_MIN_AGE="3600"/TIMELINE_MIN_AGE="1800"/' \
-    -e 's/^TIMELINE_LIMIT_HOURLY="10"/TIMELINE_LIMIT_HOURLY="5"/' \
-    -e 's/^TIMELINE_LIMIT_DAILY="10"/TIMELINE_LIMIT_DAILY="7"/' \
-    -e 's/^TIMELINE_LIMIT_MONTHLY="10"/TIMELINE_LIMIT_MONTHLY="0"/' \
-    -e 's/^TIMELINE_LIMIT_YEARLY="10"/TIMELINE_LIMIT_YEARLY="0"/' \
-    "/etc/snapper/configs/root"
-
-sudo sed -i \
-    -e 's/^TIMELINE_MIN_AGE="3600"/TIMELINE_MIN_AGE="1800"/' \
-    -e 's/^TIMELINE_LIMIT_HOURLY="10"/TIMELINE_LIMIT_HOURLY="5"/' \
-    -e 's/^TIMELINE_LIMIT_DAILY="10"/TIMELINE_LIMIT_DAILY="0"/' \
-    -e 's/^TIMELINE_LIMIT_MONTHLY="10"/TIMELINE_LIMIT_MONTHLY="0"/' \
-    -e 's/^TIMELINE_LIMIT_YEARLY="10"/TIMELINE_LIMIT_YEARLY="0"/' \
-    "/etc/snapper/configs/home"
-
 # A cron job
 (
     crontab -l
-    echo "*/5 * * * * /home/$USER/.scripts/bin/battery-alert.sh"
+    echo "*/5 * * * * battery-alert.sh"
     echo "@daily $(which trash-empty) 30"
 ) | crontab -
 

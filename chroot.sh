@@ -37,7 +37,7 @@ echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
 chmod 440 /etc/sudoers.d/wheel /etc/sudoers.d/timestamp
 
 # Bootloader
-grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
+grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi
 sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
 #sed -i 's/^#GRUB_DISABLE_SUBMENU=y/GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
@@ -60,7 +60,9 @@ systemctl enable reflector.timer
 mv /root/git.conf /home/$user/
 su - "$user" -c '
     source git.conf
-    mkdir -p ~/Desktop ~/Downloads ~/Documents ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash
+
+    xdg-user-dirs-update
+    mkdir -p ~/Pictures/Screenshots ~/.config ~/.local/state/bash
 
     git clone https://github.com/zedonix/scripts.git ~/.scripts
     git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles
@@ -149,7 +151,6 @@ EOF
 # modprobe btusb || true
 systemctl enable NetworkManager NetworkManager-dispatcher
 systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd ollama cups #docker sshd tlp bluetooth
-systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved
 

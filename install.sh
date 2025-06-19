@@ -93,35 +93,25 @@ fi
 
 part1="${part_prefix}1"
 part2="${part_prefix}2"
+part3="${part_prefix}3"
 
-# Partitioning --
+# Partitioning
 parted -s "$disk" mklabel gpt
 parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
 parted -s "$disk" set 1 esp on
-parted -s "$disk" mkpart primary btrfs 2049MiB 100%
+parted -s "$disk" mkpart primary ext4 2049MiB 50%
+parted -s "$disk" mkpart primary ext4 50% 100%
 
 # Formatting
 mkfs.vfat -F 32 -n EFI "$part1"
-mkfs.btrfs -f -L ROOT "$part2"
+mkfs.ext4 -L ROOT "$part2"
+mkfs.ext4 -L HOME "$part3"
 
+# Mounting
 mount "$part2" /mnt
-# --
-
-# mount -o subvolid=5 "$part2" /mnt
-# btrfs subvolume delete /mnt/@ || true
-btrfs subvolume create /mnt/@
-[ ! -d /mnt/@home ] && btrfs subvolume create /mnt/@home
-[ ! -d /mnt/@var ] && btrfs subvolume create /mnt/@var
-[ ! -d /mnt/@snapshots ] && btrfs subvolume create /mnt/@snapshots
-
-umount /mnt
-
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@ "$part2" /mnt
-mkdir -p /mnt/{boot,home,var,.snapshots}
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$part2" /mnt/home
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$part2" /mnt/var
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$part2" /mnt/.snapshots
-mount "$part1" /mnt/boot
+mkdir /mnt/boot /mnt/boot/efi /mnt/home
+mount "$part1" /mnt/boot/efi
+mount "$part3" /mnt/home
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
@@ -136,32 +126,32 @@ fi
 
 # Pacstrap stuff
 install_pkgs=(
-    base base-devel linux-lts linux-lts-headers linux-zen linux-zen-headers linux-firmware sudo btrfs-progs bash-completion
+    base base-devel linux-lts linux-lts-headers linux-zen linux-zen-headers linux-firmware sudo bash-completion
     ananicy-cpp zram-generator acpid acpi tlp tlp-rdw
     networkmanager network-manager-applet bluez bluez-utils
     ntfs-3g exfat-utils mtools dosfstools inotify-tools
     "$microcode_pkg"
     cups cups-pdf ghostscript gsfonts gutenprint foomatic-db foomatic-db-engine foomatic-db-nonfree foomatic-db-ppds system-config-printer
     # hplip
-    grub grub-btrfs efibootmgr os-prober snapper snap-pac
+    grub efibootmgr os-prober
     qemu-desktop virt-manager libvirt dnsmasq vde2 bridge-utils openbsd-netcat dmidecode
     openssh ncdu bat bat-extras eza fzf git github-cli ripgrep ripgrep-all fd sqlite cronie ufw trash-cli curl wget playerctl bc ffmpegthumbnailer
-    sassc udisks2 udisks2-btrfs gvfs gvfs-mtp gvfs-gphoto2 unrar 7zip unzip rsync jq reflector polkit polkit-gnome file-roller flatpak imagemagick
+    sassc udisks2 gvfs gvfs-mtp gvfs-gphoto2 unrar 7zip unzip rsync jq reflector polkit polkit-gnome file-roller flatpak imagemagick
     man-db man-pages wikiman tldr arch-wiki-docs
     pipewire wireplumber pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack brightnessctl
-    xorg-xwayland xdg-desktop-portal-wlr xdg-desktop-portal-gtk
+    xorg-xwayland xdg-desktop-portal-wlr xdg-desktop-portal-gtk xdg-user-dirs
     ly sway swaybg swaylock swayidle swayimg waybar kanshi
     discord firefox zathura pcmanfm-gtk3 gimp blueman mission-center deluge-gtk mpv fuzzel rofimoji
     easyeffects audacity lsp-plugins-lv2 mda.lv2 zam-plugins-lv2 calf
-    foot nvtop htop powertop lshw fastfetch onefetch newsboat neovim tmux asciinema yt-dlp vifm caligula
+    foot nvtop htop powertop lshw fastfetch onefetch neovim tmux asciinema yt-dlp vifm caligula
     papirus-icon-theme noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-font-awesome ttc-iosevka ttf-iosevkaterm-nerd gnu-free-fonts
-    qt6ct qt6-wayland kvantum
+    qt6-wayland kvantum
     wl-clip-persist wl-clipboard cliphist libnotify swaync grim slurp satty hyprpicker
     texlive-latex pandoc zathura-pdf-mupdf #texlive-mathscience
     docker docker-compose
     lua lua-language-server stylua
-    python uv ruff pyright
-    typescript-language-server prettier nodejs npm #pnpm
+    python uv pip ruff pyright
+    typescript-language-server prettier nodejs npm pnpm
     bash-language-server shfmt
     ollama
 )
