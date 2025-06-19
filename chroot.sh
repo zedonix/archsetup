@@ -91,7 +91,7 @@ reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.
 systemctl enable reflector.timer
 
 # Copy config and dotfiles as the user
-if [[ "$second" == "min" ]]; then
+if [[ "$second" == "full" ]]; then
     su - "$username" -c '
         xdg-user-dirs-update
         mkdir -p ~/Pictures/Screenshots ~/.config ~/.local/state/bash
