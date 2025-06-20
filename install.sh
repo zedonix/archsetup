@@ -145,7 +145,7 @@ esac
 
 # Pacstrap with error handling
 reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
-if ! pacstrap -v /mnt - <pkglist.txt; then
+if ! pacstrap /mnt - <pkglist.txt; then
     echo "pacstrap failed. Please check the package list and network connection."
     exit 1
 fi
