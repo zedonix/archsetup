@@ -7,6 +7,8 @@ username="piyush"
 git_name="piyush"
 git_email="zedonix@proton.me"
 
+mount --bind /sys/firmware/efi /mnt/sys/firmware/efi
+
 # Load variables from install.conf
 source /root/install.conf
 
