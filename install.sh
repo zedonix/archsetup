@@ -23,7 +23,7 @@ select second in "min" "full"; do
 done
 
 # Disk Selection
-disks=($(lsblk -dno NAME))
+disks=($(lsblk -dno NAME,TYPE,RM | awk '$2 == "disk" && $3 == "0" {print $1}'))
 echo "Available disks:"
 for i in "${!disks[@]}"; do
     info=$(lsblk -dno NAME,SIZE,MODEL "/dev/${disks[$i]}")
