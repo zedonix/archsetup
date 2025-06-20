@@ -67,7 +67,7 @@ initrd  /initramfs-linux-zen.img
 options root=LABEL=ROOT rw
 EOF
 
-if [[ "$second" == "min" ]]; then
+if [[ "$second" == "full" ]]; then
     cat >/boot/loader/entries/arch-lts.conf <<EOF
 title   Arch Linux (LTS)
 linux   /vmlinuz-linux-lts
