@@ -89,9 +89,10 @@ parted -s "$disk" set 1 esp on
 if [[ "$first" == "vm" ]]; then
     parted -s "$disk" mkpart primary ext4 2049MiB 50%
     parted -s "$disk" mkpart primary ext4 50% 100%
+else
+    parted -s "$disk" mkpart primary ext4 2049MiB 102449MiB
+    parted -s "$disk" mkpart primary ext4 102449MiB 100%
 fi
-parted -s "$disk" mkpart primary ext4 2049MiB 102449MiB
-parted -s "$disk" mkpart primary ext4 102449MiB 100%
 
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
@@ -99,9 +100,9 @@ mkfs.ext4 -L ROOT "$part2"
 mkfs.ext4 -L HOME "$part3"
 
 # Mounting
+mount "$part2" /mnt
 mkdir /mnt/boot /mnt/home
 mount "$part1" /mnt/boot
-mount "$part2" /mnt
 mount "$part3" /mnt/home
 
 # Detect CPU vendor and set microcode package
