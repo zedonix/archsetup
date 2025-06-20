@@ -51,7 +51,7 @@ elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
 else
     microcode_img=""
 fi
-bootctl install
+bootctl --path=/boot install
 
 cat >/boot/loader/loader.conf <<EOF
 default arch-zen
@@ -67,15 +67,15 @@ initrd  /initramfs-linux-zen.img
 options root=LABEL=ROOT rw
 EOF
 
-cat >/boot/loader/entries/arch-lts.conf <<EOF
+if [[ "$second" == "min" ]]; then
+    cat >/boot/loader/entries/arch-lts.conf <<EOF
 title   Arch Linux (LTS)
 linux   /vmlinuz-linux-lts
 $microcode_img
 initrd  /initramfs-linux-lts.img
 options root=LABEL=ROOT rw
 EOF
-
-chmod 700 /boot/loader
+fi
 
 # Reflector and pacman Setup
 sed -i '/^#Color$/c\Color' /etc/pacman.conf

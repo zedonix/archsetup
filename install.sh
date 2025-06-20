@@ -71,9 +71,6 @@ while true; do
     break
 done
 
-# Export variables for later use
-export disk hostname root_password user_password
-
 # Partition Naming
 if [[ "$disk" == *nvme* ]]; then
     part_prefix="${disk}p"
@@ -98,9 +95,9 @@ mkfs.ext4 -L ROOT "$part2"
 mkfs.ext4 -L HOME "$part3"
 
 # Mounting
-mount "$part2" /mnt
 mkdir /mnt/boot /mnt/home
 mount "$part1" /mnt/boot
+mount "$part2" /mnt
 mount "$part3" /mnt/home
 
 # Detect CPU vendor and set microcode package
@@ -118,14 +115,6 @@ fi
 #
 #texlive-mathscience
 sed -i "s|\"\$microcode_pkg\"|$microcode_pkg|g" pkgs.txt
-grep -q '^"' pkglist.txt && {
-    echo "Error: pkglist.txt contains quoted package names"
-    exit 1
-}
-grep -q '^$' pkglist.txt && {
-    echo "Error: pkglist.txt contains empty lines"
-    exit 1
-}
 
 # Which type of packages?
 case "$first:$second" in
@@ -135,9 +124,9 @@ vm:min)
     ;;
 vm:full)
     # Install lines 1 and 3
-    sed -n '1,3p' pkgs.txt | head -n 3 | tr ' ' '\n' | grep -v '^$' >pkglist.txt
+    # sed -n '1,3p' pkgs.txt | head -n 3 | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     # Or, if you only want lines 1 and 3 (not 2), use:
-    # sed -n '1p;3p' pkgs.txt | tr ' ' '\n' | grep -v '^$' > pkglist.txt
+    sed -n '1p;3p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     ;;
 hardware:min)
     # Install lines 1 and 2

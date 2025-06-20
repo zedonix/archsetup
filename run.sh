@@ -60,6 +60,7 @@ sudo ufw allow in on virbr0 to any port 67 proto udp
 sudo ufw allow in on virbr0 to any port 53
 sudo ufw allow out on virbr0 to any port 68 proto udp
 sudo ufw allow out on virbr0 to any port 53
+sudo ufw default allow routed
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw enable
