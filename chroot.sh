@@ -53,7 +53,6 @@ elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
 else
     microcode_img=""
 fi
-bootctl --path=/boot install
 
 cat >/boot/loader/loader.conf <<EOF
 default arch-zen
