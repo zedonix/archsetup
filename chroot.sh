@@ -231,3 +231,4 @@ echo -e "[main]\ndns=default" | tee /etc/NetworkManager/conf.d/dns.conf >/dev/nu
 
 # Clean up package cache and Wrapping up
 pacman -Scc --noconfirm
+bootctl list

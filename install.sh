@@ -177,5 +177,4 @@ if mountpoint -q /mnt; then
         exit 1
     }
 fi
-bootctl list
 echo "Installation completed. Please reboot your system."
