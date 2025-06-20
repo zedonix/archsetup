@@ -7,8 +7,6 @@ username="piyush"
 git_name="piyush"
 git_email="zedonix@proton.me"
 
-mount --bind /sys/firmware/efi /mnt/sys/firmware/efi
-
 # Load variables from install.conf
 source /root/install.conf
 
@@ -23,7 +21,7 @@ echo "root:$root_password" | chpasswd
 
 # --- Create user and set password ---
 if ! id "$username" &>/dev/null; then
-    if [[ "$second" == "full" && "$first" == "hardware" ]]; then
+    if [[ "$second" == "max" && "$first" == "hardware" ]]; then
         useradd -m -G wheel,storage,video,audio,lp,sys,kvm,libvirt,docker -s /bin/bash "$username"
     else
         useradd -m -G wheel,storage,video,audio,lp,sys -s /bin/bash "$username"
@@ -69,7 +67,7 @@ initrd  /initramfs-linux-zen.img
 options root=LABEL=ROOT rw
 EOF
 
-if [[ "$second" == "full" ]]; then
+if [[ "$second" == "max" ]]; then
     cat >/boot/loader/entries/arch-lts.conf <<EOF
 title   Arch Linux (LTS)
 linux   /vmlinuz-linux-lts
@@ -95,7 +93,7 @@ reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.
 systemctl enable reflector.timer
 
 # Copy config and dotfiles as the user
-if [[ "$second" == "full" ]]; then
+if [[ "$second" == "max" ]]; then
     su - "$username" -c '
         xdg-user-dirs-update
         mkdir -p ~/Pictures/Screenshots ~/.config ~/.local/state/bash
@@ -214,7 +212,7 @@ EOF
 # rfkill unblock bluetooth
 # modprobe btusb || true
 systemctl enable NetworkManager NetworkManager-dispatcher
-if [[ "$second" == "full" ]]; then
+if [[ "$second" == "max" ]]; then
     if [[ "$first" == "hardware" ]]; then
         systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd ollama cups docker sshd #tlp bluetooth
     else

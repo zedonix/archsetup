@@ -15,11 +15,11 @@ select first in "vm" "hardware"; do
     echo "Invalid choice. Please select 1 for vm or 2 for hardware."
 done
 
-# Second choice: min or full
+# Second choice: min or max
 echo "Choose one:"
-select second in "min" "full"; do
+select second in "min" "max"; do
     [[ -n $second ]] && break
-    echo "Invalid choice. Please select 1 for min or 2 for full."
+    echo "Invalid choice. Please select 1 for min or 2 for max."
 done
 
 # Disk Selection
@@ -127,7 +127,7 @@ vm:min)
     # Install only line 1
     sed -n '1p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     ;;
-vm:full)
+vm:max)
     # Install lines 1 and 3
     # sed -n '1,3p' pkgs.txt | head -n 3 | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     # Or, if you only want lines 1 and 3 (not 2), use:
@@ -137,7 +137,7 @@ hardware:min)
     # Install lines 1 and 2
     sed -n '1,2p' pkgs.txt | head -n 2 | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     ;;
-hardware:full)
+hardware:max)
     # Install all lines
     cat pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     ;;
