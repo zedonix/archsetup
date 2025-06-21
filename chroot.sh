@@ -9,6 +9,8 @@ git_email="zedonix@proton.me"
 
 # Load variables from install.conf
 source /root/install.conf
+echo $part2
+sleep 10
 
 # --- Set hostname ---
 echo "$hostname" >/etc/hostname
@@ -44,10 +46,43 @@ echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
 chmod 440 /etc/sudoers.d/wheel /etc/sudoers.d/timestamp
 
 # Bootloader
-grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
-sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+# grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
+# sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
 #sed -i 's/^#GRUB_DISABLE_SUBMENU=y/GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
-grub-mkconfig -o /boot/grub/grub.cfg
+# grub-mkconfig -o /boot/grub/grub.cfg
+
+if [[ "$microcode_pkg" == "intel-ucode" ]]; then
+    microcode_img="initrd /intel-ucode.img"
+elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
+    microcode_img="initrd /amd-ucode.img"
+else
+    microcode_img=""
+fi
+bootctl install
+
+cat >/boot/loader/loader.conf <<EOF
+default arch-zen
+timeout 3
+editor no
+EOF
+
+cat >/boot/loader/entries/arch-zen.conf <<EOF
+title   Arch Linux (ZEN)
+linux   /vmlinuz-linux-zen
+$microcode_img
+initrd  /initramfs-linux-zen.img
+options root=$part2 rw
+EOF
+
+if [[ "$second" == "max" ]]; then
+    cat >/boot/loader/entries/arch-lts.conf <<EOF
+title   Arch Linux (LTS)
+linux   /vmlinuz-linux-lts
+$microcode_img
+initrd  /initramfs-linux-lts.img
+options root=$part2 rw
+EOF
+fi
 
 # Reflector and pacman Setup
 sed -i '/^#Color$/c\Color' /etc/pacman.conf

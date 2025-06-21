@@ -180,6 +180,8 @@ user_password=$user_password
 first=$first
 second=$second
 third=$third
+microcode_pkg=$microcode_pkg
+part2=$part2
 EOF
 
 chmod 600 /mnt/root/install.conf
