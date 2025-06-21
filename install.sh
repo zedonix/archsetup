@@ -97,13 +97,8 @@ part3="${part_prefix}3"
 parted -s "$disk" mklabel gpt
 parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
 parted -s "$disk" set 1 esp on
-if [[ "$first" == "vm" ]]; then
-    parted -s "$disk" mkpart primary ext4 2049MiB 50%
-    parted -s "$disk" mkpart primary ext4 50% 100%
-else
-    parted -s "$disk" mkpart primary ext4 2049MiB 102449MiB
-    parted -s "$disk" mkpart primary ext4 102449MiB 100%
-fi
+parted -s "$disk" mkpart primary ext4 2049MiB 50%
+parted -s "$disk" mkpart primary ext4 50% 100%
 
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
@@ -185,8 +180,6 @@ user_password=$user_password
 first=$first
 second=$second
 third=$third
-part2=$part2
-microcode_pkg=$microcode_pkg
 EOF
 
 chmod 600 /mnt/root/install.conf
