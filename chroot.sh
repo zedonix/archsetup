@@ -6,6 +6,7 @@ timezone="Asia/Kolkata"
 username="piyush"
 git_name="piyush"
 git_email="zedonix@proton.me"
+uuid=$(blkid -s UUID -o value "$part2")
 
 # Load variables from install.conf
 source /root/install.conf
@@ -69,7 +70,7 @@ title   Arch Linux (ZEN)
 linux   /vmlinuz-linux-zen
 $microcode_img
 initrd  /initramfs-linux-zen.img
-options root=$part2 rw
+options root=UUID=$uuid rw
 EOF
 
 if [[ "$second" == "max" ]]; then
