@@ -64,7 +64,7 @@ title   Arch Linux (ZEN)
 linux   /vmlinuz-linux-zen
 $microcode_img
 initrd  /initramfs-linux-zen.img
-options root=LABEL=ROOT rw
+options root=$part2 rw
 EOF
 
 if [[ "$second" == "max" ]]; then
@@ -73,7 +73,7 @@ title   Arch Linux (LTS)
 linux   /vmlinuz-linux-lts
 $microcode_img
 initrd  /initramfs-linux-lts.img
-options root=LABEL=ROOT rw
+options root=$part2 rw
 EOF
 fi
 
@@ -216,7 +216,13 @@ if [[ "$second" == "max" ]]; then
     if [[ "$first" == "hardware" ]]; then
         systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd ollama cups docker sshd #tlp bluetooth
     else
-        systemctl enable ly cronie ananicy-cpp ollama sshd
+        systemctl enable ly cronie ananicy-cpp ollama sshd cronie
+    fi
+    if [[ "$third" == "laptop" || "$third" == "bluetooth" ]]; then
+        systemctl enable bluetooth
+    fi
+    if [[ "$third" == "laptop" ]]; then
+        systemctl enable tlp
     fi
 fi
 systemctl mask systemd-rfkill systemd-rfkill.socket

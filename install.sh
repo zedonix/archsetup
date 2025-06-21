@@ -22,6 +22,17 @@ select second in "min" "max"; do
     echo "Invalid choice. Please select 1 for min or 2 for max."
 done
 
+# third choice: laptop or bluetooth or none
+if [[ "$second" == "max" && "$first" == "hardware" ]]; then
+    echo "Choose one:"
+    select third in "laptop" "bluetooth" "none"; do
+        [[ -n $third ]] && break
+        echo "Invalid choice."
+    done
+else
+    third = "none"
+fi
+
 # Disk Selection
 disks=($(lsblk -dno NAME,TYPE,RM | awk '$2 == "disk" && $3 == "0" {print $1}'))
 echo "Available disks:"
@@ -119,29 +130,42 @@ fi
 # Pacstrap stuff
 #
 #texlive-mathscience
-sed -i "s|\"\$microcode_pkg\"|$microcode_pkg|g" pkgs.txt
+sed -i "s|microcode|$microcode_pkg|g" pkgs.txt
 
 # Which type of packages?
+# Main package selection
 case "$first:$second" in
 vm:min)
-    # Install only line 1
     sed -n '1p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     ;;
 vm:max)
-    # Install lines 1 and 3
-    # sed -n '1,3p' pkgs.txt | head -n 3 | tr ' ' '\n' | grep -v '^$' >pkglist.txt
-    # Or, if you only want lines 1 and 3 (not 2), use:
     sed -n '1p;3p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     ;;
 hardware:min)
-    # Install lines 1 and 2
     sed -n '1,2p' pkgs.txt | head -n 2 | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     ;;
 hardware:max)
-    # Install all lines
-    cat pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
+    # For hardware:max, we will add lines 5 and/or 6 later based on $third
+    sed -n '1,4p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     ;;
 esac
+
+# For hardware:max, add lines 5 and/or 6 based on $third
+if [[ "$first" == "hardware" && "$second" == "max" ]]; then
+    case "$third" in
+    laptop)
+        # Add both line 5 and 6
+        sed -n '5,6p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >>pkglist.txt
+        ;;
+    bluetooth)
+        # Add only line 5
+        sed -n '5p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >>pkglist.txt
+        ;;
+    none)
+        # Do not add line 5 or 6
+        ;;
+    esac
+fi
 
 # Pacstrap with error handling
 reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
@@ -160,6 +184,8 @@ root_password=$root_password
 user_password=$user_password
 first=$first
 second=$second
+third=$third
+part2=$part2
 microcode_pkg=$microcode_pkg
 EOF
 
@@ -170,7 +196,6 @@ chmod 600 /mnt/root/install.conf
 bootctl --esp-path=/mnt/boot install
 cp chroot.sh /mnt/root/chroot.sh
 chmod +x /mnt/root/chroot.sh
-arch-chroot /mnt /root/chroot.sh
 
 # Unmount and finalize
 if mountpoint -q /mnt; then
