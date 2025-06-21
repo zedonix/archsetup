@@ -30,7 +30,7 @@ if [[ "$second" == "max" && "$first" == "hardware" ]]; then
         echo "Invalid choice."
     done
 else
-    third = "none"
+    third="none"
 fi
 
 # Disk Selection
