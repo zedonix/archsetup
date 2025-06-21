@@ -9,8 +9,6 @@ git_email="zedonix@proton.me"
 
 # Load variables from install.conf
 source /root/install.conf
-echo $part2
-sleep 10
 
 # --- Set hostname ---
 echo "$hostname" >/etc/hostname
