@@ -6,10 +6,10 @@ timezone="Asia/Kolkata"
 username="piyush"
 git_name="piyush"
 git_email="zedonix@proton.me"
-uuid=$(blkid -s UUID -o value "$part2")
 
 # Load variables from install.conf
 source /root/install.conf
+uuid=$(blkid -s UUID -o value "$part2")
 
 # --- Set hostname ---
 echo "$hostname" >/etc/hostname
