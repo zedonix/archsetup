@@ -192,8 +192,6 @@ EOF
 chmod 600 /mnt/root/install.conf
 
 # Run chroot.sh
-# hackaround for systemd not working - github.com/systemd/systemd/issues/36174
-bootctl --esp-path=/mnt/boot install
 cp chroot.sh /mnt/root/chroot.sh
 chmod +x /mnt/root/chroot.sh
 
