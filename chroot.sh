@@ -9,6 +9,7 @@ git_email="zedonix@proton.me"
 
 # Load variables from install.conf
 source /root/install.conf
+uuid=$(blkid -s UUID -o value "$part2")
 
 # --- Set hostname ---
 echo "$hostname" >/etc/hostname
@@ -69,7 +70,7 @@ title   Arch Linux (ZEN)
 linux   /vmlinuz-linux-zen
 $microcode_img
 initrd  /initramfs-linux-zen.img
-options root=$part2 rw
+options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4
 EOF
 
 if [[ "$second" == "max" ]]; then
@@ -78,7 +79,7 @@ title   Arch Linux (LTS)
 linux   /vmlinuz-linux-lts
 $microcode_img
 initrd  /initramfs-linux-lts.img
-options root=$part2 rw
+options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4
 EOF
 fi
 
