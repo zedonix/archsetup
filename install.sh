@@ -94,11 +94,30 @@ part2="${part_prefix}2"
 part3="${part_prefix}3"
 
 # Partitioning
+#
+# Get total disk size in MiB
+total_mib=$(parted -s "$disk" unit MiB print | grep "Disk $disk" | awk '{print $3}' | tr -d 'MiB')
+# Convert MiB to GB (1GB ≈ 1024MiB)
+total_gb=$(echo "$total_mib / 1024" | bc)
+
 parted -s "$disk" mklabel gpt
 parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
 parted -s "$disk" set 1 esp on
-parted -s "$disk" mkpart primary ext4 2049MiB 50%
-parted -s "$disk" mkpart primary ext4 50% 100%
+if [ "$total_gb" -lt 70 ]; then
+    # Root and home 50% each
+    parted -s "$disk" mkpart primary ext4 2049MiB 50% # root
+    parted -s "$disk" mkpart primary ext4 50% 100%    #home
+elif [ "$total_gb" -lt 120 ]; then
+    # Root 40GB, home the rest (convert 40GB to MiB)
+    root_end=$((2049 + 40 * 1024))
+    parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
+    parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
+else
+    # Root 50GB, home the rest (convert 50GB to MiB)
+    root_end=$((2049 + 50 * 1024))
+    parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
+    parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
+fi
 
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
@@ -188,7 +207,7 @@ chmod 600 /mnt/root/install.conf
 
 # Run chroot.sh
 # hackaround for systemd not working - github.com/systemd/systemd/issues/36174
-bootctl --esp-path=/mnt/boot install
+# bootctl --esp-path=/mnt/boot install
 cp chroot.sh /mnt/root/chroot.sh
 chmod +x /mnt/root/chroot.sh
 arch-chroot /mnt /root/chroot.sh
