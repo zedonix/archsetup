@@ -171,8 +171,9 @@ declare -A driver_to_pkg=(
 # Identify required packages
 required_pkgs=()
 for driver in "${drivers[@]}"; do
-    pkg="${driver_to_pkg[$driver]}"
-    [[ -n "$pkg" ]] && required_pkgs+=("$pkg")
+    if [[ -n "${driver_to_pkg[$driver]:-}" ]]; then
+        required_pkgs+=("${driver_to_pkg[$driver]}")
+    fi
 done
 
 # Deduplication
