@@ -6,7 +6,7 @@ aur_pkgs=(
     bashmount
     newsraft
     systemd-boot-pacman-hook
-    networkmanager_dmenu
+    networkmanager-dmenu-git
     #cnijfilter2
 )
 
