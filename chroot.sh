@@ -60,16 +60,16 @@ fi
 bootctl install
 
 cat >/boot/loader/loader.conf <<EOF
-default arch-zen
+default arch
 timeout 3
 editor no
 EOF
 
-cat >/boot/loader/entries/arch-zen.conf <<EOF
-title   Arch Linux (ZEN)
-linux   /vmlinuz-linux-zen
+cat >/boot/loader/entries/arch.conf <<EOF
+title   Arch Linux
+linux   /vmlinuz-linux
 $microcode_img
-initrd  /initramfs-linux-zen.img
+initrd  /initramfs-linux.img
 options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4
 EOF
 
