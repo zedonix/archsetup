@@ -7,7 +7,7 @@ aur_pkgs=(
     newsraft
     systemd-boot-pacman-hook
     networkmanager-dmenu-git
-    #cnijfilter2
+    cnijfilter2
 )
 
 aur_dir="$HOME/.aur"
