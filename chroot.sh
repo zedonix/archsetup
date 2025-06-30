@@ -102,7 +102,7 @@ systemctl enable reflector.timer
 if [[ "$second" == "max" ]]; then
     su - "$username" -c '
         xdg-user-dirs-update
-        mkdir -p ~/Pictures/Screenshots ~/.config ~/.local/state/bash
+        mkdir -p ~/Pictures/Screenshots ~/Documents/projects ~/.config ~/.local/state/bash
 
         # Clone scripts
         if ! git clone https://github.com/zedonix/scripts.git ~/.scripts; then
@@ -156,8 +156,7 @@ if [[ "$second" == "max" ]]; then
         git config --global init.defaultBranch main
     '
     # Root .config
-    echo '[ -f ~/.bashrc ] && . ~/.bashrc' >/root/.bash_profile
-    mkdir /root/.config
+    mkdir -p ~/.config ~/.local/state/bash
     ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc
     ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
 
@@ -220,9 +219,9 @@ EOF
 systemctl enable NetworkManager NetworkManager-dispatcher
 if [[ "$second" == "max" ]]; then
     if [[ "$first" == "hardware" ]]; then
-        systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd ollama cups docker sshd #tlp bluetooth
+        systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd.socket cups docker sshd.socket #tlp bluetooth
     else
-        systemctl enable ly cronie ananicy-cpp ollama sshd cronie
+        systemctl enable ly cronie ananicy-cpp sshd.socket cronie
     fi
     if [[ "$third" == "laptop" || "$third" == "bluetooth" ]]; then
         systemctl enable bluetooth

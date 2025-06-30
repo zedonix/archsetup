@@ -104,16 +104,20 @@ parted -s "$disk" mklabel gpt
 parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
 parted -s "$disk" set 1 esp on
 if [ "$total_gb" -lt 70 ]; then
-    # Root and home 50% each
-    parted -s "$disk" mkpart primary ext4 2049MiB 50% # root
-    parted -s "$disk" mkpart primary ext4 50% 100%    #home
+    if [ "$first" = "vm" ]; then
+        parted -s "$disk" mkpart primary ext4 2049MiB 50% # root
+        parted -s "$disk" mkpart primary ext4 50% 100%    #home
+    else
+        echo "Too small disk space $total_gb"
+        exit 1
+    fi
 elif [ "$total_gb" -lt 120 ]; then
-    # Root 40GB, home the rest (convert 40GB to MiB)
+    # Root 40GB
     root_end=$((2049 + 40 * 1024))
     parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
     parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
 else
-    # Root 50GB, home the rest (convert 50GB to MiB)
+    # Root 50GB
     root_end=$((2049 + 50 * 1024))
     parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
     parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
