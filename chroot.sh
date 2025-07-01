@@ -219,7 +219,7 @@ EOF
 systemctl enable NetworkManager NetworkManager-dispatcher
 if [[ "$second" == "max" ]]; then
     if [[ "$first" == "hardware" ]]; then
-        systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd.socket cups docker sshd.socket #tlp bluetooth
+        systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd.socket cups docker sshd.socket
     else
         systemctl enable ly cronie ananicy-cpp sshd.socket cronie
     fi
