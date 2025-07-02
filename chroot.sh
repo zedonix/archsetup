@@ -160,9 +160,6 @@ if [[ "$second" == "max" ]]; then
     ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc
     ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
 
-    # ly sway setup
-    sed -i "s|^Exec=.*|Exec=/home/$username/.scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
-
     # Setup QT theme
     THEME_SRC="/home/$username/Downloads/GruvboxQT/"
     THEME_DEST="/usr/share/Kvantum/Gruvbox"
