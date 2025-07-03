@@ -99,10 +99,11 @@ reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.
 systemctl enable reflector.timer
 
 # Copy config and dotfiles as the user
-if [[ "$second" == "max" ]]; then
+if [[ "$second" == "max" && "$recon" != "y"]]; then
     su - "$username" -c '
         xdg-user-dirs-update
-        mkdir -p ~/Pictures/Screenshots ~/Documents/projects ~/.config ~/.local/state/bash
+        mkdir -p ~/Pictures/Screenshots ~/Documents/projects ~/.config ~/.local/state/bash ~/.wiki
+        touch ~/.wiki/index.md
 
         # Clone scripts
         if ! git clone https://github.com/zedonix/scripts.git ~/.scripts; then

@@ -6,6 +6,7 @@ cd "$SCRIPT_DIR"
 
 # --- Prompt Section (collect all user input here) ---
 #
+read -p "Recovery Install (y/n)? " recon
 # Which type of install?
 #
 # First choice: vm or hardware
@@ -93,40 +94,44 @@ part1="${part_prefix}1"
 part2="${part_prefix}2"
 part3="${part_prefix}3"
 
-# Partitioning
-#
-# Get total disk size in MiB
-total_mib=$(parted -s "$disk" unit MiB print | grep "Disk $disk" | awk '{print $3}' | tr -d 'MiB')
-# Convert MiB to GB (1GB ≈ 1024MiB)
-total_gb=$(echo "$total_mib / 1024" | bc)
+if [[ "$recon" != "y" ]]; then
+    # Partitioning
+    #
+    # Get total disk size in MiB
+    total_mib=$(parted -s "$disk" unit MiB print | grep "Disk $disk" | awk '{print $3}' | tr -d 'MiB')
+    # Convert MiB to GB (1GB ≈ 1024MiB)
+    total_gb=$(echo "$total_mib / 1024" | bc)
 
-parted -s "$disk" mklabel gpt
-parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
-parted -s "$disk" set 1 esp on
-if [ "$total_gb" -lt 70 ]; then
-    if [ "$first" = "vm" ]; then
-        parted -s "$disk" mkpart primary ext4 2049MiB 50% # root
-        parted -s "$disk" mkpart primary ext4 50% 100%    #home
+    parted -s "$disk" mklabel gpt
+    parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
+    parted -s "$disk" set 1 esp on
+    if [ "$total_gb" -lt 70 ]; then
+        if [ "$first" = "vm" ]; then
+            parted -s "$disk" mkpart primary ext4 2049MiB 50% # root
+            parted -s "$disk" mkpart primary ext4 50% 100%    #home
+        else
+            echo "Too small disk space $total_gb"
+            exit 1
+        fi
+    elif [ "$total_gb" -lt 120 ]; then
+        # Root 40GB
+        root_end=$((2049 + 40 * 1024))
+        parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
+        parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
     else
-        echo "Too small disk space $total_gb"
-        exit 1
+        # Root 50GB
+        root_end=$((2049 + 50 * 1024))
+        parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
+        parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
     fi
-elif [ "$total_gb" -lt 120 ]; then
-    # Root 40GB
-    root_end=$((2049 + 40 * 1024))
-    parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
-    parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
-else
-    # Root 50GB
-    root_end=$((2049 + 50 * 1024))
-    parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
-    parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
 fi
 
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
 mkfs.ext4 -L ROOT "$part2"
-mkfs.ext4 -L HOME "$part3"
+if [[ "$recon" == "y" ]]; then
+    mkfs.ext4 -L HOME "$part3"
+fi
 
 # Mounting
 mount "$part2" /mnt
@@ -249,6 +254,7 @@ second=$second
 third=$third
 microcode_pkg=$microcode_pkg
 part2=$part2
+recon=$recon
 EOF
 
 chmod 600 /mnt/root/install.conf
