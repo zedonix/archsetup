@@ -9,8 +9,8 @@ cd "$SCRIPT_DIR"
 while true; do
     read -p "Recovery Install (y/n)? " recon
     case "$recon" in
-        y|n) break ;;
-        *) echo "Invalid input. Please enter 'y' or 'n'." ;;
+    y | n) break ;;
+    *) echo "Invalid input. Please enter 'y' or 'n'." ;;
     esac
 done
 # Which type of install?
@@ -141,7 +141,10 @@ fi
 
 # Mounting
 mount "$part2" /mnt
-mkdir /mnt/boot /mnt/home
+mkdir /mnt/boot
+if [[ "$recon" != "yes" ]]; then
+    mkdir /mnt/home
+fi
 mount "$part1" /mnt/boot
 mount "$part3" /mnt/home
 
