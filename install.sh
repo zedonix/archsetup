@@ -5,8 +5,14 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 cd "$SCRIPT_DIR"
 
 # --- Prompt Section (collect all user input here) ---
-#
-read -p "Recovery Install (y/n)? " recon
+# Prompt for home recovery Installation
+while true; do
+    read -p "Recovery Install (y/n)? " recon
+    case "$recon" in
+        y|n) break ;;
+        *) echo "Invalid input. Please enter 'y' or 'n'." ;;
+    esac
+done
 # Which type of install?
 #
 # First choice: vm or hardware
@@ -94,7 +100,7 @@ part1="${part_prefix}1"
 part2="${part_prefix}2"
 part3="${part_prefix}3"
 
-if [[ "$recon" != "y" ]]; then
+if [[ "$recon" != "yes" ]]; then
     # Partitioning
     #
     # Get total disk size in MiB
@@ -129,7 +135,7 @@ fi
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
 mkfs.ext4 -L ROOT "$part2"
-if [[ "$recon" == "y" ]]; then
+if [[ "$recon" == "yes" ]]; then
     mkfs.ext4 -L HOME "$part3"
 fi
 
