@@ -193,10 +193,11 @@ if [[ "$second" == "max" && "$recon" != "yes" ]]; then
     # Firefox policy
     mkdir -p /etc/firefox/policies
     ln -sf "/home/$username/.dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
-elif [[ "$second" == "max" && "$recon" == "yes" ]]; then
 
+elif [[ "$second" == "max" && "$recon" == "yes" ]]; then
     # Root .config
     mkdir -p ~/.config ~/.local/state/bash
+    echo "[[ -f ~/.bashrc ]] && . ~/.bashrc" >~/.bash_profile
     ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc
     ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
 
