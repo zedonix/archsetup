@@ -38,9 +38,7 @@ gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 
 # Firefox user.js linking
-echo 'https://nsfw.oisd.nl/
-https://raw.githubusercontent.com/iam-py-test/uBlock-combo/main/list.txt
-https://raw.githubusercontent.com/yokoffing/filterlists/main/click2load.txt' | wl-copy
+echo "/home/$USER/.dotfiles/ublock.txt" | wl-copy
 gh auth login
 if [ -d ~/.mozilla/firefox ]; then
     dir=$(ls ~/.mozilla/firefox/ | grep ".default-release" | head -n1)
