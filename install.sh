@@ -17,27 +17,27 @@ done
 #
 # First choice: vm or hardware
 echo "Choose one:"
-select first in "vm" "hardware"; do
-    [[ -n $first ]] && break
+select hardware in "vm" "hardware"; do
+    [[ -n $hardware ]] && break
     echo "Invalid choice. Please select 1 for vm or 2 for hardware."
 done
 
 # Second choice: min or max
 echo "Choose one:"
-select second in "min" "max"; do
-    [[ -n $second ]] && break
+select howMuch in "min" "max"; do
+    [[ -n $howMuch ]] && break
     echo "Invalid choice. Please select 1 for min or 2 for max."
 done
 
-# third choice: laptop or bluetooth or none
-if [[ "$second" == "max" && "$first" == "hardware" ]]; then
+# extra choice: laptop or bluetooth or none
+if [[ "$howMuch" == "max" && "$hardware" == "hardware" ]]; then
     echo "Choose one:"
-    select third in "laptop" "bluetooth" "none"; do
-        [[ -n $third ]] && break
+    select extra in "laptop" "bluetooth" "none"; do
+        [[ -n $extra ]] && break
         echo "Invalid choice."
     done
 else
-    third="none"
+    extra="none"
 fi
 
 # Disk Selection
@@ -56,6 +56,7 @@ while true; do
         echo "Invalid selection. Try again."
     fi
 done
+mount | grep -q "$disk" && echo "Disk appears to be in use!" && exit 1
 
 # Hostname
 while true; do
@@ -89,6 +90,48 @@ while true; do
     break
 done
 
+# --- Disk Size Calculation ---
+total_mib=$(parted -s "$disk" unit MiB print | awk '/^Disk.*:/{gsub("MiB","",$3); print $3}')
+total_gb=$(echo "$total_mib / 1024" | bc)
+half_gb=$(echo "$total_gb / 2" | bc)
+
+# --- Root Partition Size Selection ---
+while true; do
+    echo "Choose root partition size:"
+    echo "1) 40GB"
+    echo "2) 50GB"
+    echo "3) 50% of disk ($half_gb GB)"
+    echo "4) Custom"
+
+    read -p "Enter choice [1-4]: " choice
+    case "$choice" in
+    1) rootSize=40 ;;
+    2) rootSize=50 ;;
+    3) rootSize=$half_gb ;;
+    4)
+        read -p "Enter custom size in GB (max: $half_gb GB): " rootSize
+        if ! [[ "$rootSize" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+            echo "Invalid number. Enter a positive number (e.g., 45 or 45.5)."
+            continue
+        fi
+        if (($(echo "$rootSize > $half_gb" | bc -l))); then
+            echo "Root size exceeds 50% of total disk size ($half_gb GB). Try again."
+            continue
+        fi
+        ;;
+    *)
+        echo "Invalid option. Try again."
+        continue
+        ;;
+    esac
+
+    if ((rootSize > half_gb)); then
+        echo "Root size exceeds 50% of total disk size ($total_gb GB). Try again."
+    else
+        break
+    fi
+done
+
 # Partition Naming
 if [[ "$disk" == *nvme* ]]; then
     part_prefix="${disk}p"
@@ -100,49 +143,26 @@ part1="${part_prefix}1"
 part2="${part_prefix}2"
 part3="${part_prefix}3"
 
-if [[ "$recon" != "yes" ]]; then
+if [[ "$recon" == "no" ]]; then
     # Partitioning
-    #
-    # Get total disk size in MiB
-    total_mib=$(parted -s "$disk" unit MiB print | grep "Disk $disk" | awk '{print $3}' | tr -d 'MiB')
-    # Convert MiB to GB (1GB ≈ 1024MiB)
-    total_gb=$(echo "$total_mib / 1024" | bc)
-
     parted -s "$disk" mklabel gpt
     parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
     parted -s "$disk" set 1 esp on
-    if [ "$total_gb" -lt 70 ]; then
-        if [ "$first" = "vm" ]; then
-            parted -s "$disk" mkpart primary ext4 2049MiB 50% # root
-            parted -s "$disk" mkpart primary ext4 50% 100%    #home
-        else
-            echo "Too small disk space $total_gb"
-            exit 1
-        fi
-    elif [ "$total_gb" -lt 120 ]; then
-        # Root 40GB
-        root_end=$((2049 + 40 * 1024))
-        parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
-        parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
-    else
-        # Root 50GB
-        root_end=$((2049 + 50 * 1024))
-        parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
-        parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
-    fi
+    root_end=$((2049 + $rootSize * 1024))
+    parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
+    parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
 fi
 
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
 mkfs.ext4 -L ROOT "$part2"
-if [[ "$recon" != "yes" ]]; then
+if [[ "$recon" == "no" ]]; then
     mkfs.ext4 -L HOME "$part3"
 fi
 
 # Mounting
 mount "$part2" /mnt
-mkdir /mnt/boot
-mkdir /mnt/home
+mkdir -p /mnt/boot /mnt/home
 mount "$part1" /mnt/boot
 mount "$part3" /mnt/home
 
@@ -208,7 +228,7 @@ sed -i "s|linux-firmware|$firmware_string|g" pkgs.txt
 
 # Which type of packages?
 # Main package selection
-case "$first:$second" in
+case "$hardware:$howMuch" in
 vm:min)
     sed -n '1p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     ;;
@@ -219,14 +239,14 @@ hardware:min)
     sed -n '1,2p' pkgs.txt | head -n 2 | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     ;;
 hardware:max)
-    # For hardware:max, we will add lines 5 and/or 6 later based on $third
+    # For hardware:max, we will add lines 5 and/or 6 later based on $extra
     sed -n '1,4p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
     ;;
 esac
 
-# For hardware:max, add lines 5 and/or 6 based on $third
-if [[ "$first" == "hardware" && "$second" == "max" ]]; then
-    case "$third" in
+# For hardware:max, add lines 5 and/or 6 based on $extra
+if [[ "$hardware" == "hardware" && "$howMuch" == "max" ]]; then
+    case "$extra" in
     laptop)
         # Add both line 5 and 6
         sed -n '5,6p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >>pkglist.txt
@@ -256,9 +276,9 @@ cat >/mnt/root/install.conf <<EOF
 hostname=$hostname
 root_password=$root_password
 user_password=$user_password
-first=$first
-second=$second
-third=$third
+hardware=$hardware
+howMuch=$howMuch
+extra=$extra
 microcode_pkg=$microcode_pkg
 part2=$part2
 recon=$recon
@@ -267,8 +287,6 @@ EOF
 chmod 600 /mnt/root/install.conf
 
 # Run chroot.sh
-# hackaround for systemd not working - github.com/systemd/systemd/issues/36174
-# bootctl --esp-path=/mnt/boot install
 cp chroot.sh /mnt/root/chroot.sh
 chmod +x /mnt/root/chroot.sh
 arch-chroot /mnt /root/chroot.sh

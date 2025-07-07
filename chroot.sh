@@ -22,7 +22,7 @@ echo "root:$root_password" | chpasswd
 
 # --- Create user and set password ---
 if ! id "$username" &>/dev/null; then
-    if [[ "$second" == "max" && "$first" == "hardware" ]]; then
+    if [[ "$howMuch" == "max" && "$hardware" == "hardware" ]]; then
         useradd -m -G wheel,storage,video,audio,lp,sys,kvm,libvirt,docker -s /bin/bash "$username"
     else
         useradd -m -G wheel,storage,video,audio,lp,sys -s /bin/bash "$username"
@@ -44,12 +44,7 @@ echo "%wheel ALL=(ALL) ALL" >/etc/sudoers.d/wheel
 echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
 chmod 440 /etc/sudoers.d/wheel /etc/sudoers.d/timestamp
 
-# Bootloader
-# grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
-# sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-#sed -i 's/^#GRUB_DISABLE_SUBMENU=y/GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
-# grub-mkconfig -o /boot/grub/grub.cfg
-
+# Boot Manager setup
 if [[ "$microcode_pkg" == "intel-ucode" ]]; then
     microcode_img="initrd /intel-ucode.img"
 elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
@@ -73,7 +68,7 @@ initrd  /initramfs-linux.img
 options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4
 EOF
 
-if [[ "$second" == "max" ]]; then
+if [[ "$howMuch" == "max" ]]; then
     cat >/boot/loader/entries/arch-lts.conf <<EOF
 title   Arch Linux (LTS)
 linux   /vmlinuz-linux-lts
@@ -99,7 +94,7 @@ reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.
 systemctl enable reflector.timer
 
 # Copy config and dotfiles as the user
-if [[ "$second" == "max" && "$recon" != "yes" ]]; then
+if [[ "$howMuch" == "max" && "$recon" == "no" ]]; then
     su - "$username" -c '
         xdg-user-dirs-update
         mkdir -p ~/Pictures/Screenshots ~/Documents/projects ~/.config ~/.local/state/bash ~/.wiki
@@ -194,7 +189,7 @@ if [[ "$second" == "max" && "$recon" != "yes" ]]; then
     mkdir -p /etc/firefox/policies
     ln -sf "/home/$username/.dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
 
-elif [[ "$second" == "max" && "$recon" == "yes" ]]; then
+elif [[ "$howMuch" == "max" && "$recon" == "yes" ]]; then
     # Root .config
     mkdir -p ~/.config ~/.local/state/bash
     echo "[[ -f ~/.bashrc ]] && . ~/.bashrc" >~/.bash_profile
@@ -251,16 +246,16 @@ EOF
 # rfkill unblock bluetooth
 # modprobe btusb || true
 systemctl enable NetworkManager NetworkManager-dispatcher
-if [[ "$second" == "max" ]]; then
-    if [[ "$first" == "hardware" ]]; then
+if [[ "$howMuch" == "max" ]]; then
+    if [[ "$hardware" == "hardware" ]]; then
         systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd.socket cups docker sshd
     else
         systemctl enable ly cronie ananicy-cpp sshd cronie
     fi
-    if [[ "$third" == "laptop" || "$third" == "bluetooth" ]]; then
+    if [[ "$extra" == "laptop" || "$extra" == "bluetooth" ]]; then
         systemctl enable bluetooth
     fi
-    if [[ "$third" == "laptop" ]]; then
+    if [[ "$extra" == "laptop" ]]; then
         systemctl enable tlp
     fi
 fi
