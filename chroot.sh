@@ -94,12 +94,8 @@ reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.
 systemctl enable reflector.timer
 
 # Copy config and dotfiles as the user
-if [[ "$howMuch" == "max" && "$recon" == "no" ]]; then
+if [[ "$howMuch" == "max" ]]; then
     su - "$username" -c '
-        xdg-user-dirs-update
-        mkdir -p ~/Pictures/Screenshots ~/Documents/projects ~/.config ~/.local/state/bash ~/.wiki
-        touch ~/.wiki/index.md
-
         # Clone scripts
         if ! git clone https://github.com/zedonix/scripts.git ~/.scripts; then
             echo "Failed to clone scripts. Continuing..."
@@ -130,69 +126,13 @@ if [[ "$howMuch" == "max" && "$recon" == "no" ]]; then
             echo "Failed to clone GruvboxQT. Continuing..."
         fi
 
-        # Copy and link files (only if dotfiles exists)
-        if [[ -d ~/.dotfiles ]]; then
-            cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
-            cp ~/.dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
-            cp -r ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
-            ln -sf ~/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-
-            for link in ~/.dotfiles/.config/*; do
-                ln -sf "$link" ~/.config/ 2>/dev/null || true
-            done
-        fi
-
         # Clone tpm
         if ! git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm; then
             echo "Failed to clone tpm. Continuing..."
         fi
-
-        git config --global user.name "'"$git_name"'"
-        git config --global user.email "'"$git_email"'"
-        git config --global init.defaultBranch main
     '
     # Root .config
     mkdir -p ~/.config ~/.local/state/bash
-    ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc
-    ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
-
-    # ly sway setup
-    sed -i "s|^Exec=.*|Exec=/home/$username/.scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
-
-    # Setup QT theme
-    THEME_SRC="/home/$username/Downloads/GruvboxQT/"
-    THEME_DEST="/usr/share/Kvantum/Gruvbox"
-    mkdir -p "$THEME_DEST"
-    cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig" 2>/dev/null || true
-    cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg" 2>/dev/null || true
-
-    # Install CachyOS Ananicy Rules
-    ANANICY_RULES_SRC="/home/$username/Downloads/ananicy-rules"
-    mkdir -p /etc/ananicy.d
-
-    cp -r "$ANANICY_RULES_SRC/00-default" /etc/ananicy.d/ 2>/dev/null || true
-    cp "$ANANICY_RULES_SRC/"*.rules /etc/ananicy.d/ 2>/dev/null || true
-    cp "$ANANICY_RULES_SRC/00-cgroups.cgroups" /etc/ananicy.d/ 2>/dev/null || true
-    cp "$ANANICY_RULES_SRC/00-types.types" /etc/ananicy.d/ 2>/dev/null || true
-    cp "$ANANICY_RULES_SRC/ananicy.conf" /etc/ananicy.d/ 2>/dev/null || true
-
-    chmod -R 644 /etc/ananicy.d/*
-    chmod 755 /etc/ananicy.d/00-default
-
-    # tldr wiki setup
-    curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
-    make -f ./wikiman-makefile source-tldr
-    make -f ./wikiman-makefile source-install
-    make -f ./wikiman-makefile clean
-
-    # Firefox policy
-    mkdir -p /etc/firefox/policies
-    ln -sf "/home/$username/.dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
-
-elif [[ "$howMuch" == "max" && "$recon" == "yes" ]]; then
-    # Root .config
-    mkdir -p ~/.config ~/.local/state/bash
-    echo "[[ -f ~/.bashrc ]] && . ~/.bashrc" >~/.bash_profile
     ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc
     ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
 
@@ -223,6 +163,35 @@ elif [[ "$howMuch" == "max" && "$recon" == "yes" ]]; then
     mkdir -p /etc/firefox/policies
     ln -sf "/home/$username/.dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
 fi
+if [[ "$recon" == "no" ]]; then
+    su - "$username" -c '
+        xdg-user-dirs-update
+        mkdir -p ~/Pictures/Screenshots ~/Documents/projects ~/.config ~/.local/state/bash ~/.wiki
+        touch ~/.wiki/index.md
+
+        # Copy and link files (only if dotfiles exists)
+        if [[ -d ~/.dotfiles ]]; then
+            cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
+            cp ~/.dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
+            cp -r ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
+            ln -sf ~/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+
+            for link in ~/.dotfiles/.config/*; do
+                ln -sf "$link" ~/.config/ 2>/dev/null || true
+            done
+        fi
+
+        git config --global user.name "'"$git_name"'"
+        git config --global user.email "'"$git_email"'"
+        git config --global init.defaultBranch main
+    '
+    # tldr wiki setup
+    curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
+    make -f ./wikiman-makefile source-tldr
+    make -f ./wikiman-makefile source-install
+    make -f ./wikiman-makefile clean
+fi
+
 # Delete variables
 shred -u /root/install.conf
 
