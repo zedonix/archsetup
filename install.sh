@@ -142,9 +142,7 @@ fi
 # Mounting
 mount "$part2" /mnt
 mkdir /mnt/boot
-if [[ "$recon" != "yes" ]]; then
-    mkdir /mnt/home
-fi
+mkdir /mnt/home
 mount "$part1" /mnt/boot
 mount "$part3" /mnt/home
 
