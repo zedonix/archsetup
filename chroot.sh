@@ -193,8 +193,40 @@ if [[ "$second" == "max" && "$recon" != "yes" ]]; then
     # Firefox policy
     mkdir -p /etc/firefox/policies
     ln -sf "/home/$username/.dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
-fi
+elif [[ $second == "max" && $recon == "yes" ]]; then
 
+    # Root .config
+    mkdir -p ~/.config ~/.local/state/bash
+    ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc
+    ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
+
+    # ly sway setup
+    sed -i "s|^Exec=.*|Exec=/home/$username/.scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
+
+    # Setup QT theme
+    THEME_SRC="/home/$username/Downloads/GruvboxQT/"
+    THEME_DEST="/usr/share/Kvantum/Gruvbox"
+    mkdir -p "$THEME_DEST"
+    cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig" 2>/dev/null || true
+    cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg" 2>/dev/null || true
+
+    # Install CachyOS Ananicy Rules
+    ANANICY_RULES_SRC="/home/$username/Downloads/ananicy-rules"
+    mkdir -p /etc/ananicy.d
+
+    cp -r "$ANANICY_RULES_SRC/00-default" /etc/ananicy.d/ 2>/dev/null || true
+    cp "$ANANICY_RULES_SRC/"*.rules /etc/ananicy.d/ 2>/dev/null || true
+    cp "$ANANICY_RULES_SRC/00-cgroups.cgroups" /etc/ananicy.d/ 2>/dev/null || true
+    cp "$ANANICY_RULES_SRC/00-types.types" /etc/ananicy.d/ 2>/dev/null || true
+    cp "$ANANICY_RULES_SRC/ananicy.conf" /etc/ananicy.d/ 2>/dev/null || true
+
+    chmod -R 644 /etc/ananicy.d/*
+    chmod 755 /etc/ananicy.d/00-default
+
+    # Firefox policy
+    mkdir -p /etc/firefox/policies
+    ln -sf "/home/$username/.dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
+fi
 # Delete variables
 shred -u /root/install.conf
 
