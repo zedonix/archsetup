@@ -7,10 +7,10 @@ cd "$SCRIPT_DIR"
 # --- Prompt Section (collect all user input here) ---
 # Prompt for home recovery Installation
 while true; do
-    read -p "Recovery Install (y/n)? " recon
+    read -p "Recovery Install (yes/no)? " recon
     case "$recon" in
-    y | n) break ;;
-    *) echo "Invalid input. Please enter 'y' or 'n'." ;;
+    yes | no) break ;;
+    *) echo "Invalid input. Please enter 'yes' or 'no'." ;;
     esac
 done
 # Which type of install?
@@ -135,7 +135,7 @@ fi
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
 mkfs.ext4 -L ROOT "$part2"
-if [[ "$recon" == "yes" ]]; then
+if [[ "$recon" != "yes" ]]; then
     mkfs.ext4 -L HOME "$part3"
 fi
 
