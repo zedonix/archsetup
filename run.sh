@@ -88,6 +88,6 @@ nmcli con up "Wired connection 1"
 ) | crontab -
 
 # Installing tools
-nvim +MasonToolsInstall
+foot -e nvim +MasonToolsInstall &
 # Running aur.sh
 bash ~/.archsetup/aur.sh
