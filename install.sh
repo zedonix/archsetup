@@ -13,11 +13,42 @@ while true; do
     *) echo "Invalid input. Please enter 'yes' or 'no'." ;;
     esac
 done
+
+# Disk Selection
+disks=($(lsblk -dno NAME,TYPE,RM | awk '$2 == "disk" && $3 == "0" {print $1}'))
+echo "Available disks:"
+for i in "${!disks[@]}"; do
+    info=$(lsblk -dno NAME,SIZE,MODEL "/dev/${disks[$i]}")
+    printf "%2d) %s\n" "$((i + 1))" "$info"
+done
+while true; do
+    read -p "Select disk [1-${#disks[@]}]: " idx
+    if [[ "$idx" =~ ^[1-9][0-9]*$ ]] && ((idx >= 1 && idx <= ${#disks[@]})); then
+        disk="/dev/${disks[$((idx - 1))]}"
+        break
+    else
+        echo "Invalid selection. Try again."
+    fi
+done
+mount | grep -q "$disk" && echo "Disk appears to be in use!" && exit 1
+
+# Partition Naming
+if [[ "$disk" == *nvme* ]]; then
+    part_prefix="${disk}p"
+else
+    part_prefix="${disk}"
+fi
+
+part1="${part_prefix}1"
+part2="${part_prefix}2"
+part3="${part_prefix}3"
+
 if [[ "$recon" == "yes" ]]; then
     for p in "$part1" "$part2" "$part3"; do
         [[ ! -b "$p" ]] && echo "Missing partition $p. Recovery mode expects disk to be pre-partitioned." && exit 1
     done
 fi
+
 # Which type of install?
 #
 # First choice: vm or hardware
@@ -44,24 +75,6 @@ if [[ "$howMuch" == "max" && "$hardware" == "hardware" ]]; then
 else
     extra="none"
 fi
-
-# Disk Selection
-disks=($(lsblk -dno NAME,TYPE,RM | awk '$2 == "disk" && $3 == "0" {print $1}'))
-echo "Available disks:"
-for i in "${!disks[@]}"; do
-    info=$(lsblk -dno NAME,SIZE,MODEL "/dev/${disks[$i]}")
-    printf "%2d) %s\n" "$((i + 1))" "$info"
-done
-while true; do
-    read -p "Select disk [1-${#disks[@]}]: " idx
-    if [[ "$idx" =~ ^[1-9][0-9]*$ ]] && ((idx >= 1 && idx <= ${#disks[@]})); then
-        disk="/dev/${disks[$((idx - 1))]}"
-        break
-    else
-        echo "Invalid selection. Try again."
-    fi
-done
-mount | grep -q "$disk" && echo "Disk appears to be in use!" && exit 1
 
 # Hostname
 while true; do
@@ -138,17 +151,6 @@ if [[ $recon == "no" ]]; then
         fi
     done
 fi
-
-# Partition Naming
-if [[ "$disk" == *nvme* ]]; then
-    part_prefix="${disk}p"
-else
-    part_prefix="${disk}"
-fi
-
-part1="${part_prefix}1"
-part2="${part_prefix}2"
-part3="${part_prefix}3"
 
 if [[ "$recon" == "no" ]]; then
     # Partitioning
