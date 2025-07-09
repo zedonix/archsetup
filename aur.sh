@@ -4,6 +4,7 @@ aur_pkgs=(
     sway-audio-idle-inhibit-git
     tlpui
     bashmount
+    bemoji
     newsraft
     systemd-boot-pacman-hook
     networkmanager-dmenu-git
