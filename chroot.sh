@@ -133,6 +133,7 @@ if [[ "$howMuch" == "max" ]]; then
     '
     # Root .config
     mkdir -p ~/.config ~/.local/state/bash
+    echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >.bash_profile
     ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc
     ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
 
