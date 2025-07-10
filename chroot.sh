@@ -70,11 +70,11 @@ EOF
 
 if [[ "$howMuch" == "max" ]]; then
     cat >/boot/loader/entries/arch-lts.conf <<EOF
-title   Arch Linux (LTS)
-linux   /vmlinuz-linux-lts
-$microcode_img
-initrd  /initramfs-linux-lts.img
-options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4
+    title   Arch Linux (LTS)
+    linux   /vmlinuz-linux-lts
+    $microcode_img
+    initrd  /initramfs-linux-lts.img
+    options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4
 EOF
 fi
 
@@ -96,10 +96,10 @@ systemctl enable reflector.timer
 # Copy config and dotfiles as the user
 if [[ "$howMuch" == "max" ]]; then
     su - "$username" -c '
-        # Clone scripts
-        if ! git clone https://github.com/zedonix/scripts.git ~/.scripts; then
-            echo "Failed to clone scripts. Continuing..."
-        fi
+    # Clone scripts
+    if ! git clone https://github.com/zedonix/scripts.git ~/.scripts; then
+        echo "Failed to clone scripts. Continuing..."
+    fi
 
         # Clone dotfiles
         if ! git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles; then
@@ -130,12 +130,12 @@ if [[ "$howMuch" == "max" ]]; then
         if ! git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm; then
             echo "Failed to clone tpm. Continuing..."
         fi
-    '
-    # Root .config
-    mkdir -p ~/.config ~/.local/state/bash
-    echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >.bash_profile
-    ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc
-    ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
+        '
+        # Root .config
+        mkdir -p ~/.config ~/.local/state/bash
+        echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >.bash_profile
+        ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc
+        ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
 
     # ly sway setup
     sed -i "s|^Exec=.*|Exec=/home/$username/.scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
@@ -166,9 +166,8 @@ if [[ "$howMuch" == "max" ]]; then
 fi
 if [[ "$recon" == "no" ]]; then
     su - "$username" -c '
-        xdg-user-dirs-update
-        mkdir -p ~/Pictures/Screenshots ~/Documents/projects ~/.config ~/.local/state/bash ~/.wiki
-        touch ~/.wiki/index.md
+    mkdir -p ~/Downloads ~/Documents/home ~/Documents/projects ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.wiki
+    touch ~/.wiki/index.md
 
         # Copy and link files (only if dotfiles exists)
         if [[ -d ~/.dotfiles ]]; then
@@ -185,12 +184,12 @@ if [[ "$recon" == "no" ]]; then
         git config --global user.name "'"$git_name"'"
         git config --global user.email "'"$git_email"'"
         git config --global init.defaultBranch main
-    '
-    # tldr wiki setup
-    curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
-    make -f ./wikiman-makefile source-tldr
-    make -f ./wikiman-makefile source-install
-    make -f ./wikiman-makefile clean
+        '
+        # tldr wiki setup
+        curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
+        make -f ./wikiman-makefile source-tldr
+        make -f ./wikiman-makefile source-install
+        make -f ./wikiman-makefile clean
 fi
 
 # Delete variables
