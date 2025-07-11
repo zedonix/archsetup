@@ -167,7 +167,7 @@ fi
 if [[ "$recon" == "no" ]]; then
     su - "$username" -c '
     mkdir -p ~/Downloads ~/Documents/home ~/Documents/projects ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.wiki
-    touch ~/.wiki/index.md
+    touch ~/.wiki/index
 
         # Copy and link files (only if dotfiles exists)
         if [[ -d ~/.dotfiles ]]; then
