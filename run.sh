@@ -90,11 +90,8 @@ nmcli con up "Wired connection 1"
 ) | crontab -
 
 
-# Plugins install and mason tools install
-foot -e nvim
-echo ">>> Finished plugin install. Now launching MasonToolsInstall..."
+# Nvim tools install
 foot -e nvim +MasonToolsInstall &
 
-echo ">>> Running AUR setup..."
+# Running aur.sh
 bash ~/.archsetup/aur.sh
-echo ">>> Script complete."
