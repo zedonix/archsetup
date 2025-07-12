@@ -92,7 +92,9 @@ nmcli con up "Wired connection 1"
 
 # Plugins install and mason tools install
 foot -e nvim
+echo ">>> Finished plugin install. Now launching MasonToolsInstall..."
 foot -e nvim +MasonToolsInstall &
 
-# Running aur.sh
+echo ">>> Running AUR setup..."
 bash ~/.archsetup/aur.sh
+echo ">>> Script complete."
