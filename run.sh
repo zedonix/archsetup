@@ -86,7 +86,10 @@ nmcli con up "Wired connection 1"
     echo "@daily $(which trash-empty) 30"
 ) | crontab -
 
-# Installing tools
+
+# Plugins install and mason tools install
+foot -e nvim
 foot -e nvim +MasonToolsInstall &
+
 # Running aur.sh
 bash ~/.archsetup/aur.sh
