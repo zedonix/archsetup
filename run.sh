@@ -37,6 +37,9 @@ gsettings set org.gnome.desktop.interface gtk-theme 'Gruvbox-Dark'
 gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 
+# Flatpak theming
+sudo flatpak override --filesystem=$HOME/.local/share/themes
+
 # Firefox user.js linking
 echo "/home/$USER/.dotfiles/ublock.txt" | wl-copy
 gh auth login
