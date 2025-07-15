@@ -129,8 +129,9 @@ if [[ "$howMuch" == "max" ]]; then
         '
   # Root .config
   mkdir -p ~/.config ~/.local/state/bash
-  echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >.bash_profile
-  ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc
+  echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
+  ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+  ln -sf /home/$username/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
   ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
 
   # ly sway setup
@@ -171,6 +172,7 @@ if [[ "$recon" == "no" ]]; then
             cp ~/.dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
             cp -r ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
             ln -sf ~/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+            ln -sf ~/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
 
             for link in ~/.dotfiles/.config/*; do
                 ln -sf "$link" ~/.config/ 2>/dev/null || true
