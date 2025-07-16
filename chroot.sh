@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Variable set
@@ -23,7 +23,7 @@ echo "root:$root_password" | chpasswd
 # --- Create user and set password ---
 if ! id "$username" &>/dev/null; then
   if [[ "$howMuch" == "max" && "$hardware" == "hardware" ]]; then
-    useradd -m -G wheel,storage,video,audio,lp,sys,kvm,libvirt,docker -s /bin/bash "$username"
+    useradd -m -G wheel,storage,video,audio,lp,scanner,sys,kvm,libvirt,docker -s /bin/bash "$username"
   else
     useradd -m -G wheel,storage,video,audio,lp,sys -s /bin/bash "$username"
   fi
@@ -220,7 +220,7 @@ EOF
 systemctl enable NetworkManager NetworkManager-dispatcher
 if [[ "$howMuch" == "max" ]]; then
   if [[ "$hardware" == "hardware" ]]; then
-    systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd.socket cups docker sshd
+    systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd.socket cups ipp-usb docker sshd
   else
     systemctl enable ly cronie ananicy-cpp sshd cronie
   fi

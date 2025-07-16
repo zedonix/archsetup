@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 aur_pkgs=(
     sway-audio-idle-inhibit-git
