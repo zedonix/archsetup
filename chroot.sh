@@ -187,6 +187,7 @@ if [[ "$recon" == "no" ]]; then
         git config --global user.name "'"$git_name"'"
         git config --global user.email "'"$git_email"'"
         git config --global init.defaultBranch main
+        git config --global core.pager "less"
         '
   # tldr wiki setup
   curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
