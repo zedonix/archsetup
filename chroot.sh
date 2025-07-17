@@ -130,6 +130,7 @@ if [[ "$howMuch" == "max" ]]; then
   # Root .config
   mkdir -p ~/.config ~/.local/state/bash
   echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
+  touch ~/.local/state/zsh/history ~/.local/state/bash/history
   ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
   ln -sf /home/$username/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
   ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
@@ -163,8 +164,8 @@ if [[ "$howMuch" == "max" ]]; then
 fi
 if [[ "$recon" == "no" ]]; then
   su - "$username" -c '
-    mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.wiki
-    touch ~/.wiki/index
+    mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.local/state/zsh ~/.wiki
+    touch ~/.wiki/index ~/.local/state/bash/history ~/.local/state/zsh/history
 
         # Copy and link files (only if dotfiles exists)
         if [[ -d ~/.dotfiles ]]; then
@@ -188,6 +189,7 @@ if [[ "$recon" == "no" ]]; then
         git config --global user.email "'"$git_email"'"
         git config --global init.defaultBranch main
         git config --global core.pager "less"
+        git config --global color.ui auto
         '
   # tldr wiki setup
   curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
