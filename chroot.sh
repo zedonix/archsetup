@@ -4,8 +4,6 @@ set -euo pipefail
 # Variable set
 timezone="Asia/Kolkata"
 username="piyush"
-git_name="zedonarch"
-git_email="zedonix@proton.me"
 
 # Load variables from install.conf
 source /root/install.conf
@@ -132,13 +130,13 @@ if [[ "$howMuch" == "max" ]]; then
         fi
 
         '
-        # Root .config
-        mkdir -p ~/.config ~/.local/state/bash
-        echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
-        touch ~/.local/state/zsh/history ~/.local/state/bash/history
-        ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-        ln -sf /home/$username/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
-        ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
+  # Root .config
+  mkdir -p ~/.config ~/.local/state/bash
+  echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
+  touch ~/.local/state/zsh/history ~/.local/state/bash/history
+  ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+  ln -sf /home/$username/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+  ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
 
   # ly sway setup
   sed -i "s|^Exec=.*|Exec=/home/$username/.scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
@@ -172,35 +170,30 @@ if [[ "$recon" == "no" ]]; then
   mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.local/state/zsh ~/.wiki
   touch ~/.wiki/index ~/.local/state/bash/history ~/.local/state/zsh/history
 
-        # Copy and link files (only if dotfiles exists)
-        if [[ -d ~/.dotfiles ]]; then
-          cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
-          cp ~/.dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
-          cp -r ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
-          ln -sf ~/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-          ln -sf ~/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+  # Copy and link files (only if dotfiles exists)
+  if [[ -d ~/.dotfiles ]]; then
+    cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
+    cp ~/.dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
+    cp -r ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
+    ln -sf ~/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+    ln -sf ~/.dotfiles/.gitconfig ~/.gitconfig 2>/dev/null || true
+    ln -sf ~/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
 
-          for link in ~/.dotfiles/.config/*; do
-            ln -sf "$link" ~/.config/ 2>/dev/null || true
-          done
-        fi
+    for link in ~/.dotfiles/.config/*; do
+      ln -sf "$link" ~/.config/ 2>/dev/null || true
+    done
+  fi
 
-        # Clone tpm
-        if ! git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm; then
-          echo "Failed to clone tpm. Continuing..."
-        fi
-
-        git config --global user.name "'"$git_name"'"
-        git config --global user.email "'"$git_email"'"
-        git config --global init.defaultBranch main
-        git config --global core.pager "less"
-        git config --global color.ui auto
-        '
-        # tldr wiki setup
-        curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
-        make -f ./wikiman-makefile source-tldr
-        make -f ./wikiman-makefile source-install
-        make -f ./wikiman-makefile clean
+  # Clone tpm
+  if ! git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm; then
+    echo "Failed to clone tpm. Continuing..."
+  fi
+  '
+  # tldr wiki setup
+  curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
+  make -f ./wikiman-makefile source-tldr
+  make -f ./wikiman-makefile source-install
+  make -f ./wikiman-makefile clean
 fi
 
 # Delete variables
