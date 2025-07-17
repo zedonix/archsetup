@@ -111,18 +111,23 @@ if [[ "$howMuch" == "max" ]]; then
           echo "Failed to clone archsetup. Continuing..."
         fi
 
+        # Clone Notes
+        if ! git clone https://github.com/zedonix/notes.git ~/Documents/notes; then
+          echo "Failed to clone ananicy-rules. Continuing..."
+        fi
+
         # Clone ananicy-rules
-        if ! git clone https://github.com/CachyOS/ananicy-rules.git ~/Downloads/ananicy-rules; then
+        if ! git clone https://github.com/CachyOS/ananicy-rules.git ~/Documents/ananicy-rules; then
           echo "Failed to clone ananicy-rules. Continuing..."
         fi
 
         # Clone GruvboxGtk
-        if ! git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk; then
+        if ! git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/GruvboxGtk; then
           echo "Failed to clone GruvboxGtk. Continuing..."
         fi
 
         # Clone GruvboxQT
-        if ! git clone https://github.com/zedonix/GruvboxQT.git ~/Downloads/GruvboxQT; then
+        if ! git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/GruvboxQT; then
           echo "Failed to clone GruvboxQT. Continuing..."
         fi
 
@@ -139,14 +144,14 @@ if [[ "$howMuch" == "max" ]]; then
   sed -i "s|^Exec=.*|Exec=/home/$username/.scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
 
   # Setup QT theme
-  THEME_SRC="/home/$username/Downloads/GruvboxQT/"
+  THEME_SRC="/home/$username/Documents/GruvboxQT/"
   THEME_DEST="/usr/share/Kvantum/Gruvbox"
   mkdir -p "$THEME_DEST"
   cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig" 2>/dev/null || true
   cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg" 2>/dev/null || true
 
   # Install CachyOS Ananicy Rules
-  ANANICY_RULES_SRC="/home/$username/Downloads/ananicy-rules"
+  ANANICY_RULES_SRC="/home/$username/Documents/ananicy-rules"
   mkdir -p /etc/ananicy.d
 
   cp -r "$ANANICY_RULES_SRC/00-default" /etc/ananicy.d/ 2>/dev/null || true
