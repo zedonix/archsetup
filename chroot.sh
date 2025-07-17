@@ -70,11 +70,11 @@ EOF
 
 if [[ "$howMuch" == "max" ]]; then
   cat >/boot/loader/entries/arch-lts.conf <<EOF
-    title   Arch Linux (LTS)
-    linux   /vmlinuz-linux-lts
-    $microcode_img
-    initrd  /initramfs-linux-lts.img
-    options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4
+  title   Arch Linux (LTS)
+  linux   /vmlinuz-linux-lts
+  $microcode_img
+  initrd  /initramfs-linux-lts.img
+  options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4
 EOF
 fi
 
@@ -96,44 +96,44 @@ systemctl enable reflector.timer
 # Copy config and dotfiles as the user
 if [[ "$howMuch" == "max" ]]; then
   su - "$username" -c '
-    # Clone scripts
-    if ! git clone https://github.com/zedonix/scripts.git ~/.scripts; then
-        echo "Failed to clone scripts. Continuing..."
-    fi
+  # Clone scripts
+  if ! git clone https://github.com/zedonix/scripts.git ~/.scripts; then
+    echo "Failed to clone scripts. Continuing..."
+  fi
 
         # Clone dotfiles
         if ! git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles; then
-            echo "Failed to clone dotfiles. Continuing..."
+          echo "Failed to clone dotfiles. Continuing..."
         fi
 
         # Clone archsetup
         if ! git clone https://github.com/zedonix/archsetup.git ~/.archsetup; then
-            echo "Failed to clone archsetup. Continuing..."
+          echo "Failed to clone archsetup. Continuing..."
         fi
 
         # Clone ananicy-rules
         if ! git clone https://github.com/CachyOS/ananicy-rules.git ~/Downloads/ananicy-rules; then
-            echo "Failed to clone ananicy-rules. Continuing..."
+          echo "Failed to clone ananicy-rules. Continuing..."
         fi
 
         # Clone GruvboxGtk
         if ! git clone https://github.com/zedonix/GruvboxGtk.git ~/Downloads/GruvboxGtk; then
-            echo "Failed to clone GruvboxGtk. Continuing..."
+          echo "Failed to clone GruvboxGtk. Continuing..."
         fi
 
         # Clone GruvboxQT
         if ! git clone https://github.com/zedonix/GruvboxQT.git ~/Downloads/GruvboxQT; then
-            echo "Failed to clone GruvboxQT. Continuing..."
+          echo "Failed to clone GruvboxQT. Continuing..."
         fi
 
         '
-  # Root .config
-  mkdir -p ~/.config ~/.local/state/bash
-  echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
-  touch ~/.local/state/zsh/history ~/.local/state/bash/history
-  ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-  ln -sf /home/$username/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
-  ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
+        # Root .config
+        mkdir -p ~/.config ~/.local/state/bash
+        echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
+        touch ~/.local/state/zsh/history ~/.local/state/bash/history
+        ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+        ln -sf /home/$username/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+        ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
 
   # ly sway setup
   sed -i "s|^Exec=.*|Exec=/home/$username/.scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
@@ -164,25 +164,25 @@ if [[ "$howMuch" == "max" ]]; then
 fi
 if [[ "$recon" == "no" ]]; then
   su - "$username" -c '
-    mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.local/state/zsh ~/.wiki
-    touch ~/.wiki/index ~/.local/state/bash/history ~/.local/state/zsh/history
+  mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.local/state/zsh ~/.wiki
+  touch ~/.wiki/index ~/.local/state/bash/history ~/.local/state/zsh/history
 
         # Copy and link files (only if dotfiles exists)
         if [[ -d ~/.dotfiles ]]; then
-            cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
-            cp ~/.dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
-            cp -r ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
-            ln -sf ~/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-            ln -sf ~/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+          cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
+          cp ~/.dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
+          cp -r ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
+          ln -sf ~/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+          ln -sf ~/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
 
-            for link in ~/.dotfiles/.config/*; do
-                ln -sf "$link" ~/.config/ 2>/dev/null || true
-            done
+          for link in ~/.dotfiles/.config/*; do
+            ln -sf "$link" ~/.config/ 2>/dev/null || true
+          done
         fi
 
         # Clone tpm
         if ! git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm; then
-            echo "Failed to clone tpm. Continuing..."
+          echo "Failed to clone tpm. Continuing..."
         fi
 
         git config --global user.name "'"$git_name"'"
@@ -191,11 +191,11 @@ if [[ "$recon" == "no" ]]; then
         git config --global core.pager "less"
         git config --global color.ui auto
         '
-  # tldr wiki setup
-  curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
-  make -f ./wikiman-makefile source-tldr
-  make -f ./wikiman-makefile source-install
-  make -f ./wikiman-makefile clean
+        # tldr wiki setup
+        curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
+        make -f ./wikiman-makefile source-tldr
+        make -f ./wikiman-makefile source-install
+        make -f ./wikiman-makefile clean
 fi
 
 # Delete variables
