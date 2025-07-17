@@ -4,7 +4,7 @@ set -euo pipefail
 # Variable set
 timezone="Asia/Kolkata"
 username="piyush"
-git_name="piyush"
+git_name="zedonarch"
 git_email="zedonix@proton.me"
 
 # Load variables from install.conf
