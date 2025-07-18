@@ -131,7 +131,7 @@ if [[ "$howMuch" == "max" ]]; then
 
         '
   # Root .config
-  mkdir -p ~/.config ~/.local/state/bash
+  mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
   echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
   touch ~/.local/state/zsh/history ~/.local/state/bash/history
   ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
