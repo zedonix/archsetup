@@ -221,7 +221,7 @@ EOF
 systemctl enable NetworkManager NetworkManager-dispatcher
 if [[ "$howMuch" == "max" ]]; then
   if [[ "$hardware" == "hardware" ]]; then
-    systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd.socket cups ipp-usb docker sshd
+    systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd.socket cups ipp-usb docker.socket sshd
   else
     systemctl enable ly cronie ananicy-cpp sshd cronie
   fi
