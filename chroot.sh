@@ -94,52 +94,50 @@ systemctl enable reflector.timer
 # Copy config and dotfiles as the user
 if [[ "$howMuch" == "max" ]]; then
   su - "$username" -c '
-  # Clone scripts
-  if ! git clone https://github.com/zedonix/scripts.git ~/.scripts; then
-    echo "Failed to clone scripts. Continuing..."
-  fi
+    # Clone scripts
+    if ! git clone https://github.com/zedonix/scripts.git ~/Documents/scripts; then
+      echo "Failed to clone scripts. Continuing..."
+    fi
+    # Clone dotfiles
+    if ! git clone https://github.com/zedonix/dotfiles.git ~/Documents/dotfiles; then
+      echo "Failed to clone dotfiles. Continuing..."
+    fi
 
-        # Clone dotfiles
-        if ! git clone https://github.com/zedonix/dotfiles.git ~/.dotfiles; then
-          echo "Failed to clone dotfiles. Continuing..."
-        fi
+    # Clone archsetup
+    if ! git clone https://github.com/zedonix/archsetup.git ~/Documents/archsetup; then
+      echo "Failed to clone archsetup. Continuing..."
+    fi
 
-        # Clone archsetup
-        if ! git clone https://github.com/zedonix/archsetup.git ~/.archsetup; then
-          echo "Failed to clone archsetup. Continuing..."
-        fi
+    # Clone Notes
+    if ! git clone https://github.com/zedonix/notes.git ~/Documents/notes; then
+      echo "Failed to clone ananicy-rules. Continuing..."
+    fi
 
-        # Clone Notes
-        if ! git clone https://github.com/zedonix/notes.git ~/Documents/notes; then
-          echo "Failed to clone ananicy-rules. Continuing..."
-        fi
+    # Clone ananicy-rules
+    if ! git clone https://github.com/CachyOS/ananicy-rules.git ~/Documents/ananicy-rules; then
+      echo "Failed to clone ananicy-rules. Continuing..."
+    fi
 
-        # Clone ananicy-rules
-        if ! git clone https://github.com/CachyOS/ananicy-rules.git ~/Documents/ananicy-rules; then
-          echo "Failed to clone ananicy-rules. Continuing..."
-        fi
+    # Clone GruvboxGtk
+    if ! git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/GruvboxGtk; then
+      echo "Failed to clone GruvboxGtk. Continuing..."
+    fi
 
-        # Clone GruvboxGtk
-        if ! git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/GruvboxGtk; then
-          echo "Failed to clone GruvboxGtk. Continuing..."
-        fi
-
-        # Clone GruvboxQT
-        if ! git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/GruvboxQT; then
-          echo "Failed to clone GruvboxQT. Continuing..."
-        fi
-
-        '
+    # Clone GruvboxQT
+    if ! git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/GruvboxQT; then
+      echo "Failed to clone GruvboxQT. Continuing..."
+    fi
+  '
   # Root .config
   mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
   echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
   touch ~/.local/state/zsh/history ~/.local/state/bash/history
-  ln -sf /home/$username/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-  ln -sf /home/$username/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
-  ln -sf /home/$username/.dotfiles/.config/nvim/ ~/.config
+  ln -sf /home/$username/Documents/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+  ln -sf /home/$username/Documents/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+  ln -sf /home/$username/Documents/dotfiles/.config/nvim/ ~/.config
 
   # ly sway setup
-  sed -i "s|^Exec=.*|Exec=/home/$username/.scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
+  sed -i "s|^Exec=.*|Exec=/home/$username/Documents/scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
 
   # Setup QT theme
   THEME_SRC="/home/$username/Documents/GruvboxQT/"
@@ -163,23 +161,24 @@ if [[ "$howMuch" == "max" ]]; then
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
-  ln -sf "/home/$username/.dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
+  ln -sf "/home/$username/Documents/dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
 fi
 if [[ "$recon" == "no" ]]; then
   su - "$username" -c '
-  mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.local/state/zsh ~/.wiki
+  mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates/projects ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.local/state/zsh ~/.wiki
   touch ~/.wiki/index ~/.local/state/bash/history ~/.local/state/zsh/history
 
   # Copy and link files (only if dotfiles exists)
-  if [[ -d ~/.dotfiles ]]; then
-    cp ~/.dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
-    cp ~/.dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
-    cp -r ~/.dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
-    ln -sf ~/.dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-    ln -sf ~/.dotfiles/.gitconfig ~/.gitconfig 2>/dev/null || true
-    ln -sf ~/.dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+  if [[ -d ~/Documents/dotfiles ]]; then
+    cp ~/Documents/dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
+    cp ~/Documents/dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
+    cp -r ~/Documents/dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
+    ln -sf ~/Documents/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+    ln -sf ~/Documents/dotfiles/.gitconfig ~/.gitconfig 2>/dev/null || true
+    ln -sf ~/Documents/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+    ln -sf ~/Documents/dotfiles/.gtk-bookmarks ~/.git-bookmarks || true
 
-    for link in ~/.dotfiles/.config/*; do
+    for link in ~/Documents/dotfiles/.config/*; do
       ln -sf "$link" ~/.config/ 2>/dev/null || true
     done
   fi

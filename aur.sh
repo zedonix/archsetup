@@ -3,6 +3,7 @@
 aur_pkgs=(
   sway-audio-idle-inhibit-git
   bashmount
+  ventoy-bin
   bemoji
   newsraft
   systemd-boot-pacman-hook
@@ -10,7 +11,7 @@ aur_pkgs=(
   cnijfilter2
 )
 
-aur_dir="$HOME/.aur"
+aur_dir="$HOME/Templates/aur"
 mkdir -p "$aur_dir"
 cd "$aur_dir" || exit 1
 
