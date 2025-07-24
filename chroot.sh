@@ -94,6 +94,7 @@ systemctl enable reflector.timer
 # Copy config and dotfiles as the user
 if [[ "$howMuch" == "max" ]]; then
   su - "$username" -c '
+    mkdir -p ~/Documents
     # Clone scripts
     if ! git clone https://github.com/zedonix/scripts.git ~/Documents/scripts; then
       echo "Failed to clone scripts. Continuing..."
