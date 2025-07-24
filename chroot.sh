@@ -175,7 +175,6 @@ if [[ "$recon" == "no" ]]; then
     cp ~/Documents/dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
     cp -r ~/Documents/dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
     ln -sf ~/Documents/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-    ln -sf ~/Documents/dotfiles/.gitconfig ~/.gitconfig 2>/dev/null || true
     ln -sf ~/Documents/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
     ln -sf ~/Documents/dotfiles/.gtk-bookmarks ~/.git-bookmarks || true
 
