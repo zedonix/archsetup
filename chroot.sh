@@ -137,9 +137,6 @@ if [[ "$howMuch" == "max" ]]; then
   ln -sf /home/$username/Documents/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
   ln -sf /home/$username/Documents/dotfiles/.config/nvim/ ~/.config
 
-  # ly sway setup
-  sed -i "s|^Exec=.*|Exec=/home/$username/Documents/scripts/sway.sh|" /usr/share/wayland-sessions/sway.desktop
-
   # Setup QT theme
   THEME_SRC="/home/$username/Documents/GruvboxQT/"
   THEME_DEST="/usr/share/Kvantum/Gruvbox"
@@ -167,6 +164,7 @@ fi
 if [[ "$recon" == "no" ]]; then
   su - "$username" -c '
   mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates/projects ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.local/state/zsh ~/.wiki
+  mkdir -p ~/.local/share/npm ~/.cache/npm ~/.config/npm/config ~/.local/bin
   touch ~/.wiki/index ~/.local/state/bash/history ~/.local/state/zsh/history
 
   # Copy and link files (only if dotfiles exists)
@@ -180,6 +178,9 @@ if [[ "$recon" == "no" ]]; then
 
     for link in ~/Documents/dotfiles/.config/*; do
       ln -sf "$link" ~/.config/ 2>/dev/null || true
+    done
+    for link in ~/Documents/scripts/bin/*; do
+      ln -sf "$link" ~/.local/bin 2>/dev/null || true
     done
   fi
 
