@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-SRC_DIR="$HOME/Documents/GruvboxGtk"
+SRC_DIR="$HOME/Documents/default/GruvboxGtk"
 DEST_DIR="$HOME/.local/share/themes"
 THEME_NAME="Gruvbox-Dark"
 THEME_DIR="${DEST_DIR}/${THEME_NAME}"
@@ -38,11 +38,11 @@ gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 
 # Firefox user.js linking
-echo "/home/$USER/Documents/dotfiles/ublock.txt" | wl-copy
+echo "/home/$USER/Documents/default/dotfiles/ublock.txt" | wl-copy
 gh auth login
 for dir in ~/.mozilla/firefox/*.default-release/; do
   [ -d "$dir" ] || continue
-  ln -sf ~/Documents/dotfiles/user.js "$dir/user.js"
+  ln -sf ~/Documents/default/dotfiles/user.js "$dir/user.js"
   break
 done
 
@@ -89,4 +89,4 @@ nmcli con up "Wired connection 1"
 foot -e nvim +MasonToolsInstall &
 
 # Running aur.sh
-bash ~/Documents/archsetup/aur.sh
+bash ~/Documents/default/archsetup/aur.sh

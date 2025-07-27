@@ -94,38 +94,38 @@ systemctl enable reflector.timer
 # Copy config and dotfiles as the user
 if [[ "$howMuch" == "max" ]]; then
   su - "$username" -c '
-    mkdir -p ~/Documents
+    mkdir -p ~/Documents/default
     # Clone scripts
-    if ! git clone https://github.com/zedonix/scripts.git ~/Documents/scripts; then
+    if ! git clone https://github.com/zedonix/scripts.git ~/Documents/default/scripts; then
       echo "Failed to clone scripts. Continuing..."
     fi
     # Clone dotfiles
-    if ! git clone https://github.com/zedonix/dotfiles.git ~/Documents/dotfiles; then
+    if ! git clone https://github.com/zedonix/dotfiles.git ~/Documents/default/dotfiles; then
       echo "Failed to clone dotfiles. Continuing..."
     fi
 
     # Clone archsetup
-    if ! git clone https://github.com/zedonix/archsetup.git ~/Documents/archsetup; then
+    if ! git clone https://github.com/zedonix/archsetup.git ~/Documents/default/archsetup; then
       echo "Failed to clone archsetup. Continuing..."
     fi
 
     # Clone Notes
-    if ! git clone https://github.com/zedonix/notes.git ~/Documents/notes; then
+    if ! git clone https://github.com/zedonix/notes.git ~/Documents/default/notes; then
       echo "Failed to clone ananicy-rules. Continuing..."
     fi
 
     # Clone ananicy-rules
-    if ! git clone https://github.com/CachyOS/ananicy-rules.git ~/Documents/ananicy-rules; then
+    if ! git clone https://github.com/CachyOS/ananicy-rules.git ~/Documents/default/ananicy-rules; then
       echo "Failed to clone ananicy-rules. Continuing..."
     fi
 
     # Clone GruvboxGtk
-    if ! git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/GruvboxGtk; then
+    if ! git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/default/GruvboxGtk; then
       echo "Failed to clone GruvboxGtk. Continuing..."
     fi
 
     # Clone GruvboxQT
-    if ! git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/GruvboxQT; then
+    if ! git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/default/GruvboxQT; then
       echo "Failed to clone GruvboxQT. Continuing..."
     fi
   '
@@ -133,19 +133,19 @@ if [[ "$howMuch" == "max" ]]; then
   mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
   echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
   touch ~/.local/state/zsh/history ~/.local/state/bash/history
-  ln -sf /home/$username/Documents/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-  ln -sf /home/$username/Documents/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
-  ln -sf /home/$username/Documents/dotfiles/.config/nvim/ ~/.config
+  ln -sf /home/$username/Documents/default/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+  ln -sf /home/$username/Documents/default/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+  ln -sf /home/$username/Documents/default/dotfiles/.config/nvim/ ~/.config
 
   # Setup QT theme
-  THEME_SRC="/home/$username/Documents/GruvboxQT/"
+  THEME_SRC="/home/$username/Documents/default/GruvboxQT/"
   THEME_DEST="/usr/share/Kvantum/Gruvbox"
   mkdir -p "$THEME_DEST"
   cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig" 2>/dev/null || true
   cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg" 2>/dev/null || true
 
   # Install CachyOS Ananicy Rules
-  ANANICY_RULES_SRC="/home/$username/Documents/ananicy-rules"
+  ANANICY_RULES_SRC="/home/$username/Documents/default/ananicy-rules"
   mkdir -p /etc/ananicy.d
 
   cp -r "$ANANICY_RULES_SRC/00-default" /etc/ananicy.d/ 2>/dev/null || true
@@ -159,27 +159,27 @@ if [[ "$howMuch" == "max" ]]; then
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
-  ln -sf "/home/$username/Documents/dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
+  ln -sf "/home/$username/Documents/default/dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
 fi
 if [[ "$recon" == "no" ]]; then
   su - "$username" -c '
-  mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates/projects ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.local/state/zsh ~/.wiki
+  mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates/wiki ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.local/state/zsh
   mkdir -p ~/.local/share/npm ~/.cache/npm ~/.config/npm/config ~/.local/bin
-  touch ~/.wiki/index ~/.local/state/bash/history ~/.local/state/zsh/history
+  touch ~/.local/state/bash/history ~/.local/state/zsh/history ~/Templates/wiki/index.md
 
   # Copy and link files (only if dotfiles exists)
-  if [[ -d ~/Documents/dotfiles ]]; then
-    cp ~/Documents/dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
-    cp ~/Documents/dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
-    cp -r ~/Documents/dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
-    ln -sf ~/Documents/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-    ln -sf ~/Documents/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
-    ln -sf ~/Documents/dotfiles/.gtk-bookmarks ~/.git-bookmarks || true
+  if [[ -d ~/Documents/default/dotfiles ]]; then
+    cp ~/Documents/default/dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
+    cp ~/Documents/default/dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
+    cp -r ~/Documents/default/dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
+    ln -sf ~/Documents/default/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+    ln -sf ~/Documents/default/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+    ln -sf ~/Documents/default/dotfiles/.gtk-bookmarks ~/.git-bookmarks || true
 
-    for link in ~/Documents/dotfiles/.config/*; do
+    for link in ~/Documents/default/dotfiles/.config/*; do
       ln -sf "$link" ~/.config/ 2>/dev/null || true
     done
-    for link in ~/Documents/scripts/bin/*; do
+    for link in ~/Documents/default/scripts/bin/*; do
       ln -sf "$link" ~/.local/bin 2>/dev/null || true
     done
   fi
