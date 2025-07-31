@@ -70,13 +70,15 @@ sudo virsh net-autostart default
 sudo virsh net-start default
 
 # Configure static IP, gateway, and custom DNS
-nmcli con mod "Wired connection 1" ipv4.dns "1.1.1.1,1.0.0.1"
-# 8.8.8.8,8.8.4.4
-nmcli con mod "Wired connection 1" ipv4.ignore-auto-dns yes
-
-# Apply changes
-nmcli con down "Wired connection 1"
-nmcli con up "Wired connection 1"
+sudo tee /etc/NetworkManager/conf.d/dns.conf > /dev/null <<EOF
+[main]
+dns=none
+EOF
+sudo tee /etc/resolv.conf > /dev/null <<EOF
+nameserver 1.1.1.1
+nameserver 1.0.0.1
+EOF
+sudo systemctl restart NetworkManager
 
 # A cron job
 (
