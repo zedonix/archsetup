@@ -235,12 +235,5 @@ fi
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved
 
-# Prevent NetworkManager from using systemd-resolved
-mkdir -p /etc/NetworkManager/conf.d
-echo -e "[main]\nsystemd-resolved=false" | tee /etc/NetworkManager/conf.d/no-systemd-resolved.conf >/dev/null
-
-# Set DNS handling to 'default'
-echo -e "[main]\ndns=default" | tee /etc/NetworkManager/conf.d/dns.conf >/dev/null
-
 # Clean up package cache and Wrapping up
 pacman -Scc --noconfirm

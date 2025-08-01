@@ -73,6 +73,7 @@ sudo virsh net-start default
 sudo tee /etc/NetworkManager/conf.d/dns.conf > /dev/null <<EOF
 [main]
 dns=none
+systemd-resolved=false
 EOF
 sudo tee /etc/resolv.conf > /dev/null <<EOF
 nameserver 1.1.1.1
