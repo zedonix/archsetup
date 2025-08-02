@@ -33,9 +33,13 @@ Type=X-GNOME-Metatheme
 Name=${THEME_NAME}
 Comment=Gruvbox Dark GTK Theme
 EOF
+
 gsettings set org.gnome.desktop.interface gtk-theme 'Gruvbox-Dark'
 gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+gsettings set org.virt-manager.virt-manager.new-vm firmware 'uefi'
+gsettings set org.virt-manager.virt-manager.new-vm.cpu-default 'host-passthrough'
+gsettings set org.virt-manager.virt-manager.new-vm.graphics-type 'spice'
 
 # Firefox user.js linking
 echo "/home/$USER/Documents/default/dotfiles/ublock.txt" | wl-copy
