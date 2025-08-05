@@ -174,7 +174,6 @@ if [[ "$recon" == "no" ]]; then
     cp -r ~/Documents/default/dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
     ln -sf ~/Documents/default/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
     ln -sf ~/Documents/default/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
-    ln -sf ~/Documents/default/dotfiles/.gtk-bookmarks ~/.gtk-bookmarks || true
 
     for link in ~/Documents/default/dotfiles/.config/*; do
       ln -sf "$link" ~/.config/ 2>/dev/null || true
