@@ -110,7 +110,7 @@ done
 
 if [[ $recon == "no" ]]; then
   # --- Disk Size Calculation ---
-  total_mib=$(parted -s "$disk" unit MiB print | awk '/^Disk.*:/{gsub("MiB","",$3); print $3}')
+  total_mib=$(($(blockdev --getsize64 "$disk") / 1024 / 1024))
   total_gb=$(echo "$total_mib / 1024" | bc)
   half_gb=$(echo "$total_gb / 2" | bc)
 
