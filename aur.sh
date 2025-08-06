@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
 aur_pkgs=(
+  cachyos-ananicy-rules
+  systemd-boot-pacman-hook
   sway-audio-idle-inhibit-git
   bashmount
   ventoy-bin
   bemoji
   newsraft
-  systemd-boot-pacman-hook
   networkmanager-dmenu-git
   cnijfilter2
 )

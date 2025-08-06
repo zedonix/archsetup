@@ -94,38 +94,12 @@ if [[ "$howMuch" == "max" ]]; then
   su - "$username" -c '
     mkdir -p ~/Documents/default
     # Clone scripts
-    if ! git clone https://github.com/zedonix/scripts.git ~/Documents/default/scripts; then
-      echo "Failed to clone scripts. Continuing..."
-    fi
-    # Clone dotfiles
-    if ! git clone https://github.com/zedonix/dotfiles.git ~/Documents/default/dotfiles; then
-      echo "Failed to clone dotfiles. Continuing..."
-    fi
-
-    # Clone archsetup
-    if ! git clone https://github.com/zedonix/archsetup.git ~/Documents/default/archsetup; then
-      echo "Failed to clone archsetup. Continuing..."
-    fi
-
-    # Clone Notes
-    if ! git clone https://github.com/zedonix/notes.git ~/Documents/default/notes; then
-      echo "Failed to clone ananicy-rules. Continuing..."
-    fi
-
-    # Clone ananicy-rules
-    if ! git clone https://github.com/CachyOS/ananicy-rules.git ~/Documents/default/ananicy-rules; then
-      echo "Failed to clone ananicy-rules. Continuing..."
-    fi
-
-    # Clone GruvboxGtk
-    if ! git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/default/GruvboxGtk; then
-      echo "Failed to clone GruvboxGtk. Continuing..."
-    fi
-
-    # Clone GruvboxQT
-    if ! git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/default/GruvboxQT; then
-      echo "Failed to clone GruvboxQT. Continuing..."
-    fi
+    git clone https://github.com/zedonix/scripts.git ~/Documents/default/scripts
+    git clone https://github.com/zedonix/dotfiles.git ~/Documents/default/dotfiles
+    git clone https://github.com/zedonix/archsetup.git ~/Documents/default/archsetup
+    git clone https://github.com/zedonix/notes.git ~/Documents/default/notes
+    git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/default/GruvboxGtk
+    git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/default/GruvboxQT
   '
   # Root .config
   mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
@@ -141,19 +115,6 @@ if [[ "$howMuch" == "max" ]]; then
   mkdir -p "$THEME_DEST"
   cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig" 2>/dev/null || true
   cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg" 2>/dev/null || true
-
-  # Install CachyOS Ananicy Rules
-  ANANICY_RULES_SRC="/home/$username/Documents/default/ananicy-rules"
-  mkdir -p /etc/ananicy.d
-
-  cp -r "$ANANICY_RULES_SRC/00-default" /etc/ananicy.d/ 2>/dev/null || true
-  cp "$ANANICY_RULES_SRC/"*.rules /etc/ananicy.d/ 2>/dev/null || true
-  cp "$ANANICY_RULES_SRC/00-cgroups.cgroups" /etc/ananicy.d/ 2>/dev/null || true
-  cp "$ANANICY_RULES_SRC/00-types.types" /etc/ananicy.d/ 2>/dev/null || true
-  cp "$ANANICY_RULES_SRC/ananicy.conf" /etc/ananicy.d/ 2>/dev/null || true
-
-  chmod -R 644 /etc/ananicy.d/*
-  chmod 755 /etc/ananicy.d/00-default
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
@@ -182,9 +143,7 @@ if [[ "$recon" == "no" ]]; then
   fi
 
   # Clone tpm
-  if ! git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm; then
-    echo "Failed to clone tpm. Continuing..."
-  fi
+  git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
   '
   # tldr wiki setup
   curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
