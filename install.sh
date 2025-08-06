@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+trap 'echo "Aborted. Cleaning up..."; umount -R /mnt >/dev/null 2>&1 || true' EXIT
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 cd "$SCRIPT_DIR"
 
