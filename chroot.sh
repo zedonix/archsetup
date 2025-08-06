@@ -205,14 +205,13 @@ ZRAM_SIZE=$((TOTAL_MEM / 2))
 
 # Create zram config
 mkdir -p /etc/systemd/zram-generator.conf.d
-
-cat >/etc/systemd/zram-generator.conf.d/00-zram.conf <<EOF
-[zram0]
-zram-size = ${ZRAM_SIZE}
-compression-algorithm = zstd #lzo-rle
-swap-priority = 100
-fs-type = swap
-EOF
+{
+  echo "[zram0]"
+  echo "zram-size = ${ZRAM_SIZE}"
+  echo "compression-algorithm = zstd #lzo-rle"
+  echo "swap-priority = 100"
+  echo "fs-type = swap"
+} >/etc/systemd/zram-generator.conf.d/00-zram.conf
 
 # Services
 # rfkill unblock bluetooth
