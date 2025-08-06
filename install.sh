@@ -182,9 +182,6 @@ if [[ "$cpu_vendor" == "GenuineIntel" ]]; then
   microcode_pkg="intel-ucode"
 elif [[ "$cpu_vendor" == "AuthenticAMD" ]]; then
   microcode_pkg="amd-ucode"
-else
-  microcode_pkg=""
-  echo "Warning: Unknown CPU vendor. No microcode package will be installed."
 fi
 
 # Pacstrap stuff
