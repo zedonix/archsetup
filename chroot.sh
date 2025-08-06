@@ -47,8 +47,6 @@ if [[ "$microcode_pkg" == "intel-ucode" ]]; then
   microcode_img="initrd /intel-ucode.img"
 elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
   microcode_img="initrd /amd-ucode.img"
-else
-  microcode_img=""
 fi
 bootctl install
 
@@ -61,7 +59,7 @@ EOF
 {
   echo "title   Arch Linux"
   echo "linux   /vmlinuz-linux"
-  [[ -n "$microcode_img" ]] && echo "$microcode_img"
+  echo "$microcode_img"
   echo "initrd  /initramfs-linux.img"
   echo "options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4"
 } >/boot/loader/entries/arch.conf
