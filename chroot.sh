@@ -79,14 +79,14 @@ fi
 # Reflector and pacman Setup
 sed -i '/^#Color$/c\Color' /etc/pacman.conf
 mkdir -p /etc/xdg/reflector
-cat >/etc/xdg/reflector/reflector.conf <<REFCONF
---save /etc/pacman.d/mirrorlist
---protocol https
---country India
---latest 10
---age 24
---sort rate
-REFCONF
+{
+  echo "--save /etc/pacman.d/mirrorlist"
+  echo "--protocol https"
+  echo "--country India"
+  echo "--latest 10"
+  echo "--age 24"
+  echo "--sort rate"
+} >/etc/xdg/reflector/reflector.conf
 
 reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
 systemctl enable reflector.timer
