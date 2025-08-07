@@ -187,7 +187,7 @@ if [[ "$recon" == "no" ]]; then
     exit 1
   fi
   # Create thin pool with extents instead of GB
-  lvcreate --type thin-pool -l "$pool_extents" --poolmetadatasize 2G -n thinpool vg0
+  lvcreate --type thin-pool -l "$pool_extents" --poolmetadatasize 3G -n thinpool vg0
   # Make thin volumes
   lvcreate --thin -V "${rootSize}G" -n root vg0/thinpool
   # Compute how big 'home' can be:
