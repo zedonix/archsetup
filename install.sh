@@ -187,14 +187,15 @@ if [[ "$recon" == "no" ]]; then
     exit 1
   fi
   # Create thin pool with extents instead of GB
-  lvcreate --type thin-pool -l "$pool_extents" --poolmetadatasize 3G -n thinpool vg0
+  lvcreate --type thin-pool -l "$pool_extents" --poolmetadatasize 2G -n thinpool vg0
   # Make thin volumes
   lvcreate --thin -V "${rootSize}G" -n root vg0/thinpool
   # Compute how big 'home' can be:
   # Calculate free extents in pool
-  thinpool_extents=$(lvs --noheadings --units k -o size --nosuffix vg0/thinpool | awk '{print int($1/4)}')
-  used_extents=$(lvs --noheadings --units k -o data_percent --nosuffix vg0/thinpool | awk '{printf "%.0f\n", $1 * thinpool_extents / 100}')
-  free_extents=$((thinpool_extents - used_extents - 64)) # Reserve 64 extents = 256 MiB safety
+  extent_size=$(vgdisplay vg0 | awk '/PE Size/ {print int($3)}') # in MiB
+  meta_extents=$((2048 / extent_size))                           # 2048 MiB = 2 GiB
+  free_extents=$(vgdisplay vg0 | awk '/Free  PE/ {print $5}')
+  pool_extents=$((free_extents - meta_extents))
   # Ensure it's enough
   if ((free_extents > 0)); then
     home_gib=$(echo "$free_extents * 4 / 1024" | bc)
