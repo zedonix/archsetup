@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Redirect all output (stdout & stderr) into the user’s home directory log
-LOGFILE="${HOME}/log"
-# ensure log exists and is owned by the user
-: >"${LOGFILE}"
-exec > >(tee -a "$LOGFILE") 2>&1
-
 trap 'echo "Aborted. Cleaning up..."; umount -R /mnt >/dev/null 2>&1 || true' EXIT
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 cd "$SCRIPT_DIR"
@@ -48,22 +42,15 @@ fi
 
 part1="${part_prefix}1"
 part2="${part_prefix}2"
+part3="${part_prefix}3"
 
 if [[ "$recon" == "yes" ]]; then
-  for p in "$part1" "$part2"; do
+  for p in "$part1" "$part2" "$part3"; do
     [[ ! -b "$p" ]] && echo "Missing partition $p. Recovery mode expects disk to be pre-partitioned." && exit 1
   done
-  vgscan           # detect any VG on $part2
-  vgchange -ay vg0 # activate vg0 so /dev/vg0/{root,home} appear
-  # verify expected LVs
-  for lv in root home; do
-    if [[ ! -e /dev/vg0/$lv ]]; then
-      echo "ERROR: /dev/vg0/$lv not found. Cannot continue recovery." >&2
-      exit 1
-    fi
-  done
-  echo "LVM recovery: vg0 and its LVs are active."
-else
+fi
+
+if [[ $recon == "no" ]]; then
   # --- Disk Size Calculation ---
   total_mib=$(($(blockdev --getsize64 "$disk") / 1024 / 1024))
   total_gb=$(echo "$total_mib / 1024" | bc)
@@ -171,53 +158,23 @@ if [[ "$recon" == "no" ]]; then
   parted -s "$disk" mklabel gpt
   parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
   parted -s "$disk" set 1 esp on
-  parted -s "$disk" mkpart primary ext4 2049MiB 100%
-  # pv, vg
-  pvcreate "${disk}2"
-  vgcreate vg0 "${disk}2"
-  # Activate the VG
-  vgchange -ay vg0
-  # Creating the Thin-Pool
-  # Get total free extents from vg
-  free_extents=$(vgdisplay vg0 | awk '/Free  PE/ {print $5}')
-  # Reserve 512 extents for safety (~2 GiB)
-  pool_extents=$((free_extents - 512))
-  if ((pool_extents <= 0)); then
-    echo "ERROR: Not enough space for thin pool after reserving metadata."
-    exit 1
-  fi
-  # Create thin pool with extents instead of GB
-  lvcreate --type thin-pool -l "$pool_extents" --poolmetadatasize 2G -n thinpool vg0
-  # Make thin volumes
-  lvcreate --thin -V "${rootSize}G" -n root vg0/thinpool
-  # Compute how big 'home' can be:
-  # Calculate free extents in pool
-  extent_size=$(vgdisplay vg0 | awk '/PE Size/ {print int($3)}') # in MiB
-  meta_extents=$((2048 / extent_size))                           # 2048 MiB = 2 GiB
-  free_extents=$(vgdisplay vg0 | awk '/Free  PE/ {print $5}')
-  pool_extents=$((free_extents - meta_extents))
-  # Ensure it's enough
-  if ((free_extents > 0)); then
-    home_gib=$(echo "$free_extents * 4 / 1024" | bc)
-    lvcreate --thin -V "${home_gib}G" -n home vg0/thinpool
-  else
-    echo "WARNING: Not enough space to create home LV. You can manually create it later."
-  fi
+  root_end=$((2049 + $rootSize * 1024))
+  parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
+  parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
 fi
 
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
-mkfs.ext4 /dev/vg0/root
+mkfs.ext4 -L ROOT "$part2"
 if [[ "$recon" == "no" ]]; then
-  mkfs.ext4 /dev/vg0/home
+  mkfs.ext4 -L HOME "$part3"
 fi
 
 # Mounting
-udevadm settle
+mount "$part2" /mnt
 mkdir -p /mnt/boot /mnt/home
-mount /dev/vg0/root /mnt
-mount /dev/vg0/home /mnt/home
 mount "$part1" /mnt/boot
+mount "$part3" /mnt/home
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
