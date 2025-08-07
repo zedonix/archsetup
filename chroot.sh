@@ -180,7 +180,7 @@ mkdir -p /etc/systemd/zram-generator.conf.d
 systemctl enable NetworkManager NetworkManager-dispatcher
 if [[ "$howMuch" == "max" ]]; then
   if [[ "$hardware" == "hardware" ]]; then
-    systemctl enable ly fstrim.timer acpid cronie libvirtd.socket cups ipp-usb docker.socket sshd e2scrub_all.timer
+    systemctl enable ly fstrim.timer acpid cronie libvirtd.socket cups ipp-usb docker.socket sshd
   else
     systemctl enable ly cronie sshd cronie
   fi
