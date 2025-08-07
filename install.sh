@@ -180,12 +180,21 @@ if [[ "$recon" == "no" ]]; then
   # Creating the Thin-Pool
   lvcreate -l 100%FREE -T vg0/thinpool
   # Make thin volumes
-  lvcreate -V "${rootSize}G" -n root vg0/thinpool
+  lvcreate --thin -V "${rootSize}G" -n root vg0/thinpool
   # Compute how big 'home' can be:
-  free_mib=$(vgs vg0 --units m --noheadings -o vg_free | awk '{print int($1)}')
+  read used_percent pool_size_mib <<<$(
+    lvs --noheadings --units m \
+      -o data_percent,lv_size vg0/thinpool |
+      awk '{print int($1) " " int($2)}'
+  )
+  free_mib=$((pool_size_mib * (100 - used_percent) / 100))
   home_mib=$((free_mib - 256))
-  home_gb=$(printf "%.2f" "$(bc -l <<<"$home_mib/1024")")
-  lvcreate -V "${home_gb}G" -T vg0/thinpool -n home
+  if ((home_mib > 0)); then
+    home_gb=$(printf "%.2f" "$(bc -l <<<"$home_mib/1024")")
+    lvcreate --thin -V "${home_gb}G" -n home vg0/thinpool
+  else
+    echo "WARNING: not enough thin-pool space left for home LV; skipping."
+  fi
 fi
 
 # Formatting
