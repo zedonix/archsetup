@@ -178,7 +178,7 @@ if [[ "$recon" == "no" ]]; then
   # Activate the VG
   vgchange -ay vg0
   # Creating the Thin-Pool
-  lvcreate -L 100%FREE -T vg0/thinpool
+  lvcreate -l 100%FREE -T vg0/thinpool
   # Make thin volumes
   lvcreate -V "${rootSize}G" -n root vg0/thinpool
   # Compute how big 'home' can be:
