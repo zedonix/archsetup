@@ -178,7 +178,7 @@ if [[ "$recon" == "no" ]]; then
   # Activate the VG
   vgchange -ay vg0
   # Creating the Thin-Pool
-  lvcreate -l 100%FREE -T vg0/thinpool
+  lvcreate --type thin-pool -L 100G -n thinpool vg0
   # Make thin volumes
   lvcreate --thin -V "${rootSize}G" -n root vg0/thinpool
   # Compute how big 'home' can be:
@@ -204,12 +204,10 @@ if [[ "$recon" == "no" ]]; then
 fi
 
 # Mounting
-mkdir -p /mnt/boot
+udevadm settle
+mkdir -p /mnt/boot /mnt/home
 mount /dev/vg0/root /mnt
-if [[ -e /dev/vg0/home ]]; then
-  mkdir -p /mnt/home
-  mount /dev/vg0/home /mnt/home
-fi
+mount /dev/vg0/home /mnt/home
 mount "$part1" /mnt/boot
 
 # Detect CPU vendor and set microcode package
