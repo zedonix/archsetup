@@ -191,15 +191,14 @@ if [[ "$recon" == "no" ]]; then
   # Make thin volumes
   lvcreate --thin -V "${rootSize}G" -n root vg0/thinpool
   # Compute how big 'home' can be:
-  read -r used_pct pool_mib < <(
-    lvs --noheadings --units m -o data_percent,lv_size vg0/thinpool |
-      awk '{print int($1) " " int($2)}'
-  )
-  free_mib=$((pool_mib * (100 - used_pct) / 100))
-  home_mib=$((free_mib - 256))
-  if ((home_mib > 0)); then
-    home_gb=$(printf "%.2f" "$(bc -l <<<"$home_mib/1024")")
-    lvcreate --thin -V "${home_gb}G" -n home vg0/thinpool
+  # Calculate free extents in pool
+  thinpool_extents=$(lvs --noheadings --units k -o size --nosuffix vg0/thinpool | awk '{print int($1/4)}')
+  used_extents=$(lvs --noheadings --units k -o data_percent --nosuffix vg0/thinpool | awk '{printf "%.0f\n", $1 * thinpool_extents / 100}')
+  free_extents=$((thinpool_extents - used_extents - 64)) # Reserve 64 extents = 256 MiB safety
+  # Ensure it's enough
+  if ((free_extents > 0)); then
+    home_gib=$(echo "$free_extents * 4 / 1024" | bc)
+    lvcreate --thin -V "${home_gib}G" -n home vg0/thinpool
   else
     echo "WARNING: Not enough space to create home LV. You can manually create it later."
   fi
