@@ -42,15 +42,22 @@ fi
 
 part1="${part_prefix}1"
 part2="${part_prefix}2"
-part3="${part_prefix}3"
 
 if [[ "$recon" == "yes" ]]; then
-  for p in "$part1" "$part2" "$part3"; do
+  for p in "$part1" "$part2"; do
     [[ ! -b "$p" ]] && echo "Missing partition $p. Recovery mode expects disk to be pre-partitioned." && exit 1
   done
-fi
-
-if [[ $recon == "no" ]]; then
+  vgscan           # detect any VG on $part2
+  vgchange -ay vg0 # activate vg0 so /dev/vg0/{root,home} appear
+  # verify expected LVs
+  for lv in root home; do
+    if [[ ! -e /dev/vg0/$lv ]]; then
+      echo "ERROR: /dev/vg0/$lv not found. Cannot continue recovery." >&2
+      exit 1
+    fi
+  done
+  echo "LVM recovery: vg0 and its LVs are active."
+else
   # --- Disk Size Calculation ---
   total_mib=$(($(blockdev --getsize64 "$disk") / 1024 / 1024))
   total_gb=$(echo "$total_mib / 1024" | bc)
@@ -158,23 +165,37 @@ if [[ "$recon" == "no" ]]; then
   parted -s "$disk" mklabel gpt
   parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
   parted -s "$disk" set 1 esp on
-  root_end=$((2049 + $rootSize * 1024))
-  parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
-  parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
+  parted -s "$disk" mkpart primary ext4 2049MiB 100%
+  # pv, vg
+  pvcreate "${disk}2"
+  vgcreate vg0 "${disk}2"
+  # Activate the VG
+  vgchange -ay vg0
+  # Creating the Thin-Pool
+  # carve out 10 GiB for metadata, rest for data
+  lvcreate -L 10G -n thinpoolmeta vg0
+  lvcreate -l 100%FREE -T vg0/thinpoolmeta --name thinpool vg0
+  # Make thin volumes
+  lvcreate -V "${rootSize}G" -n root vg0/thinpool
+  # Compute how big 'home' can be:
+  free_mib=$(vgs vg0 --units m --noheadings -o vg_free | awk '{print int($1)}')
+  home_mib=$((free_mib - 256))
+  home_gb=$(printf "%.2f" "$(bc -l <<<"$home_mib/1024")")
+  lvcreate --thin -V "${home_gb}G" -n home vg0/thinpool
 fi
 
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
-mkfs.ext4 -L ROOT "$part2"
+mkfs.ext4 /dev/vg0/root
 if [[ "$recon" == "no" ]]; then
-  mkfs.ext4 -L HOME "$part3"
+  mkfs.ext4 /dev/vg0/home
 fi
 
 # Mounting
-mount "$part2" /mnt
 mkdir -p /mnt/boot /mnt/home
+mount /dev/vg0/root /mnt
+mount /dev/vg0/home /mnt/home
 mount "$part1" /mnt/boot
-mount "$part3" /mnt/home
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)

@@ -42,6 +42,10 @@ echo "%wheel ALL=(ALL) ALL" >/etc/sudoers.d/wheel
 echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
 chmod 440 /etc/sudoers.d/wheel /etc/sudoers.d/timestamp
 
+# Setting up mkinitcpio cuz of lvm
+sed -i '/^HOOKS=/ s/\(block\)/\1 lvm2/' /etc/mkinitcpio.conf
+mkinitcpio -P
+
 # Boot Manager setup
 if [[ "$microcode_pkg" == "intel-ucode" ]]; then
   microcode_img="initrd /intel-ucode.img"
@@ -176,7 +180,7 @@ mkdir -p /etc/systemd/zram-generator.conf.d
 systemctl enable NetworkManager NetworkManager-dispatcher
 if [[ "$howMuch" == "max" ]]; then
   if [[ "$hardware" == "hardware" ]]; then
-    systemctl enable ly fstrim.timer acpid cronie libvirtd.socket cups ipp-usb docker.socket sshd
+    systemctl enable ly fstrim.timer acpid cronie libvirtd.socket cups ipp-usb docker.socket sshd e2scrub_all.timer
   else
     systemctl enable ly cronie sshd cronie
   fi
