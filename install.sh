@@ -178,8 +178,16 @@ if [[ "$recon" == "no" ]]; then
   # Activate the VG
   vgchange -ay vg0
   # Creating the Thin-Pool
-  total=$((total_gb - 2))
-  lvcreate --type thin-pool -L "${total}G" --poolmetadatasize 2G -n thinpool vg0
+  # Get total free extents from vg
+  free_extents=$(vgdisplay vg0 | awk '/Free  PE/ {print $5}')
+  # Reserve 512 extents for safety (~2 GiB)
+  pool_extents=$((free_extents - 512))
+  if ((pool_extents <= 0)); then
+    echo "ERROR: Not enough space for thin pool after reserving metadata."
+    exit 1
+  fi
+  # Create thin pool with extents instead of GB
+  lvcreate --type thin-pool -l "$pool_extents" --poolmetadatasize 2G -n thinpool vg0
   # Make thin volumes
   lvcreate --thin -V "${rootSize}G" -n root vg0/thinpool
   # Compute how big 'home' can be:
