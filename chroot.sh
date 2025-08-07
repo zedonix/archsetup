@@ -42,10 +42,6 @@ echo "%wheel ALL=(ALL) ALL" >/etc/sudoers.d/wheel
 echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
 chmod 440 /etc/sudoers.d/wheel /etc/sudoers.d/timestamp
 
-# Setting up mkinitcpio cuz of lvm
-sed -i '/^HOOKS=/ s/\(block\)/\1 lvm2/' /etc/mkinitcpio.conf
-mkinitcpio -P
-
 # Boot Manager setup
 if [[ "$microcode_pkg" == "intel-ucode" ]]; then
   microcode_img="initrd /intel-ucode.img"
