@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Redirect all output (stdout & stderr) into the user’s home directory log
-LOGFILE="${HOME}/fedora_setup.log"
+LOGFILE="${HOME}/log"
 # ensure log exists and is owned by the user
 : >"${LOGFILE}"
 exec > >(tee -a "$LOGFILE") 2>&1
@@ -178,16 +178,14 @@ if [[ "$recon" == "no" ]]; then
   # Activate the VG
   vgchange -ay vg0
   # Creating the Thin-Pool
-  # carve out 10 GiB for metadata, rest for data
-  lvcreate -L 10G -n thinpoolmeta vg0
-  lvcreate -l 100%FREE -T vg0/thinpoolmeta --name thinpool vg0
+  lvcreate -L 100%FREE -T vg0/thinpool
   # Make thin volumes
   lvcreate -V "${rootSize}G" -n root vg0/thinpool
   # Compute how big 'home' can be:
   free_mib=$(vgs vg0 --units m --noheadings -o vg_free | awk '{print int($1)}')
   home_mib=$((free_mib - 256))
   home_gb=$(printf "%.2f" "$(bc -l <<<"$home_mib/1024")")
-  lvcreate --thin -V "${home_gb}G" -n home vg0/thinpool
+  lvcreate -V "${home_gb}G" -T vg0/thinpool -n home
 fi
 
 # Formatting
