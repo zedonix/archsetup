@@ -170,6 +170,12 @@ if [[ "$recon" == "no" ]]; then
   mkfs.ext4 -L HOME "$part3"
 fi
 
+# Enable fast_commit for ext4 partitions
+tune2fs -O fast_commit "$part2"
+if [[ "$recon" == "no" ]]; then
+  tune2fs -O fast_commit "$part3"
+fi
+
 # Mounting
 mount "$part2" /mnt
 mkdir -p /mnt/boot /mnt/home
