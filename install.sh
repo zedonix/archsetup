@@ -192,7 +192,6 @@ if [[ "$recon" == "no" ]]; then
     home_gb=$(printf "%.2f" "$(bc -l <<<"$home_mib/1024")")
     lvcreate --thin -V "${home_gb}G" -n home vg0/thinpool
   else
-    echo "WARNING: not enough thin‐pool space left for home LV; skipping."
     echo "WARNING: Not enough space to create home LV. You can manually create it later."
   fi
 fi
@@ -205,9 +204,12 @@ if [[ "$recon" == "no" ]]; then
 fi
 
 # Mounting
-mkdir -p /mnt/boot /mnt/home
+mkdir -p /mnt/boot
 mount /dev/vg0/root /mnt
-mount /dev/vg0/home /mnt/home
+if [[ -e /dev/vg0/home ]]; then
+  mkdir -p /mnt/home
+  mount /dev/vg0/home /mnt/home
+fi
 mount "$part1" /mnt/boot
 
 # Detect CPU vendor and set microcode package
