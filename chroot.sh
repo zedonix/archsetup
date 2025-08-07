@@ -176,9 +176,9 @@ mkdir -p /etc/systemd/zram-generator.conf.d
 systemctl enable NetworkManager NetworkManager-dispatcher
 if [[ "$howMuch" == "max" ]]; then
   if [[ "$hardware" == "hardware" ]]; then
-    systemctl enable ly fstrim.timer acpid cronie ananicy-cpp libvirtd.socket cups ipp-usb docker.socket sshd
+    systemctl enable ly fstrim.timer acpid cronie libvirtd.socket cups ipp-usb docker.socket sshd
   else
-    systemctl enable ly cronie ananicy-cpp sshd cronie
+    systemctl enable ly cronie sshd cronie
   fi
   if [[ "$extra" == "laptop" || "$extra" == "bluetooth" ]]; then
     systemctl enable bluetooth

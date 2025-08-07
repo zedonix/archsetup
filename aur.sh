@@ -35,14 +35,13 @@ done
 
 kvantummanager
 
-rustup toolchain install stable
-rustup default stable
+sudo systemctl enable ananicy-cpp
 
-flatpak install -y org.gtk.Gtk3theme.Adwaita-dark
+flatpak install -y --user org.gtk.Gtk3theme.Adwaita-dark
 flatpak override --user --env=GTK_THEME=Adwaita-dark --env=QT_STYLE_OVERRIDE=Adwaita-Dark
-flatpak install -y flathub org.gimp.GIMP
-flatpak install -y flathub com.github.wwmm.easyeffects
-flatpak install -y flathub com.github.d4nj1.tlpui
+flatpak install -y --user flathub org.gimp.GIMP
+flatpak install -y --user flathub com.github.wwmm.easyeffects
+flatpak install -y --user flathub com.github.d4nj1.tlpui
 
 #ollama pull gemma3:1b
 #ollama pull codellama:7b-instruct

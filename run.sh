@@ -79,7 +79,7 @@ sudo ufw logging on
 sudo systemctl enable ufw
 
 # Flatpak setup
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # Libvirt setup
 sudo virsh net-autostart default
