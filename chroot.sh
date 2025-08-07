@@ -127,7 +127,7 @@ fi
 if [[ "$recon" == "no" ]]; then
   su - "$username" -c '
   mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates/wiki ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.local/state/zsh
-  mkdir -p ~/.local/share/npm ~/.cache/npm ~/.config/npm/config ~/.local/bin ~/.cache/cargo-target
+  mkdir -p ~/.local/bin ~/.cache/cargo-target
   touch ~/.local/state/bash/history ~/.local/state/zsh/history ~/Templates/wiki/index.md
 
   # Copy and link files (only if dotfiles exists)
