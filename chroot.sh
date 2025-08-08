@@ -109,6 +109,14 @@ if [[ "$howMuch" == "max" ]]; then
   ln -sf /home/$username/Documents/default/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
   ln -sf /home/$username/Documents/default/dotfiles/.config/nvim/ ~/.config
 
+  # ly config
+  sudo sed -i \
+    -e 's/^allow_empty_password *= *.*/allow_empty_password = false/' \
+    -e 's/^bigclock *= *.*/bigclock = en/' \
+    -e 's/^clear_password *= *.*/clear_password = true/' \
+    -e 's/^clock *= *.*/clock = %a %d\/%m %H:%M/' \
+    /etc/ly/config.ini
+
   # Setup QT theme
   THEME_SRC="/home/$username/Documents/default/GruvboxQT/"
   THEME_DEST="/usr/share/Kvantum/Gruvbox"
