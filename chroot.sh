@@ -185,6 +185,7 @@ if [[ "$howMuch" == "max" ]]; then
   fi
   if [[ "$extra" == "laptop" ]]; then
     systemctl enable tlp
+    cpupower frequency-set -g schedutil
   fi
 fi
 systemctl mask systemd-rfkill systemd-rfkill.socket
