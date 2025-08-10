@@ -106,24 +106,40 @@ sudo snapper -c root create-config /
 sudo snapper -c home create-config /home
 sudo mount -a
 
-sudo systemctl enable --now snapper-timeline.timer
-sudo systemctl enable --now snapper-cleanup.timer
-sudo systemctl enable --now grub-btrfsd
+sudo systemctl enable --now snapper-timeline.timer snapper-cleanup.timer grub-btrfsd
 
 sudo sed -i \
-  -e 's/^TIMELINE_MIN_AGE="3600"/TIMELINE_MIN_AGE="1800"/' \
-  -e 's/^TIMELINE_LIMIT_HOURLY="10"/TIMELINE_LIMIT_HOURLY="5"/' \
-  -e 's/^TIMELINE_LIMIT_DAILY="10"/TIMELINE_LIMIT_DAILY="7"/' \
-  -e 's/^TIMELINE_LIMIT_MONTHLY="10"/TIMELINE_LIMIT_MONTHLY="0"/' \
-  -e 's/^TIMELINE_LIMIT_YEARLY="10"/TIMELINE_LIMIT_YEARLY="0"/' \
-  "/etc/snapper/configs/root"
+  -e 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE="yes"/' \
+  -e 's/^TIMELINE_CLEANUP=.*/TIMELINE_CLEANUP="yes"/' \
+  -e 's/^TIMELINE_MIN_AGE=.*/TIMELINE_MIN_AGE="1800"/' \
+  -e 's/^TIMELINE_LIMIT_HOURLY=.*/TIMELINE_LIMIT_HOURLY="5"/' \
+  -e 's/^TIMELINE_LIMIT_DAILY=.*/TIMELINE_LIMIT_DAILY="7"/' \
+  -e 's/^TIMELINE_LIMIT_WEEKLY=.*/TIMELINE_LIMIT_WEEKLY="0"/' \
+  -e 's/^TIMELINE_LIMIT_MONTHLY=.*/TIMELINE_LIMIT_MONTHLY="0"/' \
+  -e 's/^TIMELINE_LIMIT_YEARLY=.*/TIMELINE_LIMIT_YEARLY="0"/' \
+  -e 's/^NUMBER_CLEANUP=.*/NUMBER_CLEANUP="yes"/' \
+  -e 's/^NUMBER_MIN_AGE=.*/NUMBER_MIN_AGE="1800"/' \
+  -e 's/^NUMBER_LIMIT=.*/NUMBER_LIMIT="10"/' \
+  -e 's/^NUMBER_LIMIT_IMPORTANT=.*/NUMBER_LIMIT_IMPORTANT="3"/' \
+  -e 's/^EMPTY_PRE_POST_CLEANUP=.*/EMPTY_PRE_POST_CLEANUP="yes"/' \
+  -e 's/^EMPTY_PRE_POST_MIN_AGE=.*/EMPTY_PRE_POST_MIN_AGE="1800"/' \
+  /etc/snapper/configs/root
 
 sudo sed -i \
-  -e 's/^TIMELINE_MIN_AGE="3600"/TIMELINE_MIN_AGE="1800"/' \
-  -e 's/^TIMELINE_LIMIT_HOURLY="10"/TIMELINE_LIMIT_HOURLY="5"/' \
-  -e 's/^TIMELINE_LIMIT_DAILY="10"/TIMELINE_LIMIT_DAILY="0"/' \
-  -e 's/^TIMELINE_LIMIT_MONTHLY="10"/TIMELINE_LIMIT_MONTHLY="0"/' \
-  -e 's/^TIMELINE_LIMIT_YEARLY="10"/TIMELINE_LIMIT_YEARLY="0"/' \
+  -e 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE="yes"/' \
+  -e 's/^TIMELINE_CLEANUP=.*/TIMELINE_CLEANUP="yes"/' \
+  -e 's/^TIMELINE_MIN_AGE=.*/TIMELINE_MIN_AGE="1800"/' \
+  -e 's/^TIMELINE_LIMIT_HOURLY=.*/TIMELINE_LIMIT_HOURLY="5"/' \
+  -e 's/^TIMELINE_LIMIT_DAILY=.*/TIMELINE_LIMIT_DAILY="7"/' \
+  -e 's/^TIMELINE_LIMIT_WEEKLY=.*/TIMELINE_LIMIT_WEEKLY="0"/' \
+  -e 's/^TIMELINE_LIMIT_MONTHLY=.*/TIMELINE_LIMIT_MONTHLY="0"/' \
+  -e 's/^TIMELINE_LIMIT_YEARLY=.*/TIMELINE_LIMIT_YEARLY="0"/' \
+  -e 's/^NUMBER_CLEANUP=.*/NUMBER_CLEANUP="yes"/' \
+  -e 's/^NUMBER_MIN_AGE=.*/NUMBER_MIN_AGE="1800"/' \
+  -e 's/^NUMBER_LIMIT=.*/NUMBER_LIMIT="10"/' \
+  -e 's/^NUMBER_LIMIT_IMPORTANT=.*/NUMBER_LIMIT_IMPORTANT="3"/' \
+  -e 's/^EMPTY_PRE_POST_CLEANUP=.*/EMPTY_PRE_POST_CLEANUP="yes"/' \
+  -e 's/^EMPTY_PRE_POST_MIN_AGE=.*/EMPTY_PRE_POST_MIN_AGE="1800"/' \
   "/etc/snapper/configs/home"
 
 # A cron job
