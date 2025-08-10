@@ -25,7 +25,8 @@ chmod 440 /etc/sudoers.d/wheel /etc/sudoers.d/timestamp
 # Grub setup
 grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
 sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-sed -i 's|^GRUB_DEFAULT=.*|GRUB_DEFAULT="Arch Linux, with Linux linux"|' /etc/default/grub
+sed -i 's|^GRUB_DEFAULT=.*|GRUB_DEFAULT=saved|' /etc/default/grub
+sed -i 's|^GRUB_SAVEDEFAULT=.*|GRUB_SAVEDEFAULT=true|' /etc/default/grub
 #sed -i 's/^#GRUB_DISABLE_SUBMENU=y/GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
