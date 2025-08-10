@@ -97,6 +97,35 @@ nameserver 1.0.0.1
 EOF
 sudo systemctl restart NetworkManager
 
+# Snapper setup
+if mountpoint -q /.snapshots; then
+  sudo umount /.snapshots/
+fi
+[[ -d /.snapshots ]] && sudo rm -rf /.snapshots/
+sudo snapper -c root create-config /
+sudo snapper -c home create-config /home
+sudo mount -a
+
+sudo systemctl enable --now snapper-timeline.timer
+sudo systemctl enable --now snapper-cleanup.timer
+sudo systemctl enable --now grub-btrfsd
+
+sudo sed -i \
+  -e 's/^TIMELINE_MIN_AGE="3600"/TIMELINE_MIN_AGE="1800"/' \
+  -e 's/^TIMELINE_LIMIT_HOURLY="10"/TIMELINE_LIMIT_HOURLY="5"/' \
+  -e 's/^TIMELINE_LIMIT_DAILY="10"/TIMELINE_LIMIT_DAILY="7"/' \
+  -e 's/^TIMELINE_LIMIT_MONTHLY="10"/TIMELINE_LIMIT_MONTHLY="0"/' \
+  -e 's/^TIMELINE_LIMIT_YEARLY="10"/TIMELINE_LIMIT_YEARLY="0"/' \
+  "/etc/snapper/configs/root"
+
+sudo sed -i \
+  -e 's/^TIMELINE_MIN_AGE="3600"/TIMELINE_MIN_AGE="1800"/' \
+  -e 's/^TIMELINE_LIMIT_HOURLY="10"/TIMELINE_LIMIT_HOURLY="5"/' \
+  -e 's/^TIMELINE_LIMIT_DAILY="10"/TIMELINE_LIMIT_DAILY="0"/' \
+  -e 's/^TIMELINE_LIMIT_MONTHLY="10"/TIMELINE_LIMIT_MONTHLY="0"/' \
+  -e 's/^TIMELINE_LIMIT_YEARLY="10"/TIMELINE_LIMIT_YEARLY="0"/' \
+  "/etc/snapper/configs/home"
+
 # A cron job
 (
   crontab -l 2>/dev/null

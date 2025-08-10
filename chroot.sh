@@ -1,34 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Variable set
-timezone="Asia/Kolkata"
-username="piyush"
-
 # Load variables from install.conf
 source /root/install.conf
-uuid=$(blkid -s UUID -o value "$part2")
 
 # --- Set hostname ---
 echo "$hostname" >/etc/hostname
 echo "127.0.0.1  localhost" >/etc/hosts
 echo "::1        localhost" >>/etc/hosts
 echo "127.0.1.1  $hostname.localdomain  $hostname" >>/etc/hosts
-
-# --- Set root password ---
-echo "root:$root_password" | chpasswd
-
-# --- Create user and set password ---
-if ! id "$username" &>/dev/null; then
-  if [[ "$howMuch" == "max" && "$hardware" == "hardware" ]]; then
-    useradd -m -G wheel,storage,video,audio,lp,scanner,sys,kvm,libvirt,docker -s /bin/bash "$username"
-  else
-    useradd -m -G wheel,storage,video,audio,lp,sys -s /bin/bash "$username"
-  fi
-  echo "$username:$user_password" | chpasswd
-else
-  echo "User $username already exists, skipping creation."
-fi
 
 # Local Setup
 ln -sf "/usr/share/zoneinfo/$timezone" /etc/localtime
@@ -42,37 +22,11 @@ echo "%wheel ALL=(ALL) ALL" >/etc/sudoers.d/wheel
 echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
 chmod 440 /etc/sudoers.d/wheel /etc/sudoers.d/timestamp
 
-# Boot Manager setup
-if [[ "$microcode_pkg" == "intel-ucode" ]]; then
-  microcode_img="initrd /intel-ucode.img"
-elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
-  microcode_img="initrd /amd-ucode.img"
-fi
-bootctl install
-
-cat >/boot/loader/loader.conf <<EOF
-default arch
-timeout 3
-editor no
-EOF
-
-{
-  echo "title   Arch Linux"
-  echo "linux   /vmlinuz-linux"
-  echo "$microcode_img"
-  echo "initrd  /initramfs-linux.img"
-  echo "options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4"
-} >/boot/loader/entries/arch.conf
-
-if [[ "$howMuch" == "max" ]]; then
-  {
-    echo "title   Arch Linux (LTS)"
-    echo "linux   /vmlinuz-linux-lts"
-    [[ -n "$microcode_img" ]] && echo "$microcode_img"
-    echo "initrd  /initramfs-linux-lts.img"
-    echo "options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4"
-  } >/boot/loader/entries/arch-lts.conf
-fi
+# Grub setup
+grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
+sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+#sed -i 's/^#GRUB_DISABLE_SUBMENU=y/GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
+grub-mkconfig -o /boot/grub/grub.cfg
 
 # Reflector and pacman Setup
 sed -i '/^#Color$/c\Color' /etc/pacman.conf
@@ -181,7 +135,6 @@ mkdir -p /etc/systemd/zram-generator.conf.d
 # Services
 # rfkill unblock bluetooth
 # modprobe btusb || true
-systemctl enable NetworkManager NetworkManager-dispatcher
 if [[ "$howMuch" == "max" ]]; then
   if [[ "$hardware" == "hardware" ]]; then
     systemctl enable ly fstrim.timer acpid cronie libvirtd.socket cups ipp-usb docker.socket sshd
@@ -194,8 +147,11 @@ if [[ "$howMuch" == "max" ]]; then
   if [[ "$extra" == "laptop" ]]; then
     systemctl enable tlp
     cpupower frequency-set -g schedutil
+    # setup schedutil and tlp together
   fi
 fi
+systemctl enable NetworkManager NetworkManager-dispatcher
+systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved
 

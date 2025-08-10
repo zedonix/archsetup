@@ -5,6 +5,10 @@ trap 'echo "Aborted. Cleaning up..."; umount -R /mnt >/dev/null 2>&1 || true' EX
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 cd "$SCRIPT_DIR"
 
+# Variable set
+timezone="Asia/Kolkata"
+username="piyush"
+
 # --- Prompt Section (collect all user input here) ---
 # Prompt for home recovery Installation
 while true; do
@@ -42,55 +46,10 @@ fi
 
 part1="${part_prefix}1"
 part2="${part_prefix}2"
-part3="${part_prefix}3"
 
 if [[ "$recon" == "yes" ]]; then
-  for p in "$part1" "$part2" "$part3"; do
+  for p in "$part1" "$part2"; do
     [[ ! -b "$p" ]] && echo "Missing partition $p. Recovery mode expects disk to be pre-partitioned." && exit 1
-  done
-fi
-
-if [[ $recon == "no" ]]; then
-  # --- Disk Size Calculation ---
-  total_mib=$(($(blockdev --getsize64 "$disk") / 1024 / 1024))
-  total_gb=$(echo "$total_mib / 1024" | bc)
-  half_gb=$(echo "$total_gb / 2" | bc)
-
-  # --- Root Partition Size Selection ---
-  while true; do
-    echo "Choose root partition size (total gb: $total_gb):"
-    echo "1) 40GB"
-    echo "2) 50GB"
-    echo "3) 50% of disk ($half_gb GB)"
-    echo "4) Custom"
-
-    read -p "Enter choice [1-4]: " choice
-    case "$choice" in
-    1) rootSize=40 ;;
-    2) rootSize=50 ;;
-    3) rootSize=$half_gb ;;
-    4)
-      read -p "Enter custom size in GB (max: $half_gb GB): " rootSize
-      if ! [[ "$rootSize" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
-        echo "Invalid number. Enter a positive number (e.g., 45 or 45.5)."
-        continue
-      fi
-      if (($(echo "$rootSize > $half_gb" | bc -l))); then
-        echo "Root size exceeds 50% of total disk size ($half_gb GB). Try again."
-        continue
-      fi
-      ;;
-    *)
-      echo "Invalid option. Try again."
-      continue
-      ;;
-    esac
-
-    if ((rootSize > half_gb)); then
-      echo "Root size exceeds 50% of total disk size ($total_gb GB). Try again."
-    else
-      break
-    fi
   done
 fi
 
@@ -158,29 +117,39 @@ if [[ "$recon" == "no" ]]; then
   parted -s "$disk" mklabel gpt
   parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
   parted -s "$disk" set 1 esp on
-  root_end=$((2049 + $rootSize * 1024))
-  parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
-  parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
+  parted -s "$disk" mkpart primary btrfs 2049MiB 100%
 fi
 
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
-mkfs.ext4 -L ROOT "$part2"
 if [[ "$recon" == "no" ]]; then
-  mkfs.ext4 -L HOME "$part3"
-fi
-
-# Enable fast_commit for ext4 partitions
-tune2fs -O fast_commit "$part2"
-if [[ "$recon" == "no" ]]; then
-  tune2fs -O fast_commit "$part3"
+  mkfs.btrfs -f -L ROOT "$part2"
 fi
 
 # Mounting
 mount "$part2" /mnt
-mkdir -p /mnt/boot /mnt/home
+if [[ "$recon" == "yes" ]]; then
+  mount -o subvolid=5 "$part2" /mnt || {
+    echo "Cannot mount top-level; abort"
+    exit 1
+  }
+  btrfs subvolume delete /mnt/@ || true
+fi
+btrfs subvolume create /mnt/@
+newid=$(btrfs subvolume list /mnt | awk '/ path @$/ {print $2; exit}')
+btrfs subvolume set-default "$newid" /mnt
+[ ! -d /mnt/@home ] && btrfs subvolume create /mnt/@home
+[ ! -d /mnt/@var ] && btrfs subvolume create /mnt/@var
+[ ! -d /mnt/@snapshots ] && btrfs subvolume create /mnt/@snapshots
+
+umount /mnt
+
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@ "$part2" /mnt
+mkdir -p /mnt/{boot,home,var,.snapshots}
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$part2" /mnt/home
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$part2" /mnt/var
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$part2" /mnt/.snapshots
 mount "$part1" /mnt/boot
-mount "$part3" /mnt/home
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
@@ -276,39 +245,59 @@ fi
 
 # Pacstrap with error handling
 reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
-if ! pacstrap /mnt - <pkglist.txt; then
-  echo "pacstrap failed. Please check the package list and network connection."
+pacstrap /mnt - < pkglist.txt || {
+  echo "pacstrap failed"
   exit 1
-fi
+}
 
 # System Configuration
 genfstab -U /mnt >/mnt/etc/fstab
 
 # Exporting variables for chroot
+mkdir -p /mnt/root/_tmp
+mount -t tmpfs tmpfs /mnt/root/_tmp
 cat >/mnt/root/install.conf <<EOF
 hostname=$hostname
-root_password=$root_password
-user_password=$user_password
 hardware=$hardware
 howMuch=$howMuch
 extra=$extra
 microcode_pkg=$microcode_pkg
-part2=$part2
 recon=$recon
+timezone=$timezone
+username=$username
+EOF
+cat >/mnt/root/_tmp/setup_creds.sh <<EOF
+echo "root:$root_password" | chpasswd
+if ! id "$username" &>/dev/null; then
+  if [[ "$howMuch" == "max" && "$hardware" == "hardware" ]]; then
+    useradd -m -G wheel,storage,video,audio,lp,scanner,sys,kvm,libvirt,docker -s /bin/bash "$username"
+  else
+    useradd -m -G wheel,storage,video,audio,lp,sys -s /bin/bash "$username"
+  fi
+  echo "$username:$user_password" | chpasswd
+else
+  echo "User $username already exists, skipping creation."
+fi
+rm -f /root/_tmp/setup_creds.sh
 EOF
 
-chmod 600 /mnt/root/install.conf
+chmod 700 /mnt/root/_tmp/setup_creds.sh
+chmod 700 /mnt/root/install.conf
 
 # Run chroot.sh
 cp chroot.sh /mnt/root/chroot.sh
-chmod +x /mnt/root/chroot.sh
-arch-chroot /mnt /root/chroot.sh
+arch-chroot /mnt /bin/bash -c '/root/_tmp/setup_creds.sh && /root/chroot.sh; if [ -f /root/_tmp/setup_creds.sh ]; then shred -u /root/_tmp/setup_creds.sh; fi'
+
+# Cleanup tmpfs used for credentials
+umount /mnt/root/_tmp || true
+rmdir /mnt/root/_tmp 2>/dev/null || true
+unset user_password user_password2 root_password root_password2
 
 # Unmount and finalize
+fuser -k /mnt || true
 if mountpoint -q /mnt; then
   umount -R /mnt || {
     echo "Failed to unmount /mnt. Please check."
     exit 1
   }
 fi
-echo "Installation completed. Please reboot your system."
