@@ -82,8 +82,10 @@ sudo systemctl enable ufw
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # Libvirt setup
-sudo virsh net-autostart default
-sudo virsh net-start default
+if pacman -Qq libvirt &>/dev/null; then
+  sudo virsh net-autostart default
+  sudo virsh net-start default
+fi
 
 # Configure static IP, gateway, and custom DNS
 sudo tee /etc/NetworkManager/conf.d/dns.conf >/dev/null <<EOF
@@ -96,54 +98,6 @@ nameserver 1.1.1.1
 nameserver 1.0.0.1
 EOF
 sudo systemctl restart NetworkManager
-
-# Snapper setup
-if mountpoint -q /.snapshots; then
-    sudo umount /.snapshots/
-fi
-[[ -d /.snapshots ]] && sudo rm -r /.snapshots/
-sudo snapper -c home create-config /home
-sudo snapper -c root create-config /
-sudo mount -a
-
-sudo rm -f /etc/cron.hourly/snapper /etc/cron.daily/snapper
-echo 'NoExtract = etc/cron.hourly/snapper' | sudo tee -a /etc/pacman.conf >/dev/null
-echo 'NoExtract = etc/cron.daily/snapper' | sudo tee -a /etc/pacman.conf >/dev/null
-sudo systemctl enable --now snapper-timeline.timer snapper-cleanup.timer grub-btrfsd
-
-sudo sed -i \
-  -e 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE="yes"/' \
-  -e 's/^TIMELINE_CLEANUP=.*/TIMELINE_CLEANUP="yes"/' \
-  -e 's/^TIMELINE_MIN_AGE=.*/TIMELINE_MIN_AGE="1800"/' \
-  -e 's/^TIMELINE_LIMIT_HOURLY=.*/TIMELINE_LIMIT_HOURLY="5"/' \
-  -e 's/^TIMELINE_LIMIT_DAILY=.*/TIMELINE_LIMIT_DAILY="7"/' \
-  -e 's/^TIMELINE_LIMIT_WEEKLY=.*/TIMELINE_LIMIT_WEEKLY="0"/' \
-  -e 's/^TIMELINE_LIMIT_MONTHLY=.*/TIMELINE_LIMIT_MONTHLY="0"/' \
-  -e 's/^TIMELINE_LIMIT_YEARLY=.*/TIMELINE_LIMIT_YEARLY="0"/' \
-  -e 's/^NUMBER_CLEANUP=.*/NUMBER_CLEANUP="yes"/' \
-  -e 's/^NUMBER_MIN_AGE=.*/NUMBER_MIN_AGE="1800"/' \
-  -e 's/^NUMBER_LIMIT=.*/NUMBER_LIMIT="10"/' \
-  -e 's/^NUMBER_LIMIT_IMPORTANT=.*/NUMBER_LIMIT_IMPORTANT="3"/' \
-  -e 's/^EMPTY_PRE_POST_CLEANUP=.*/EMPTY_PRE_POST_CLEANUP="yes"/' \
-  -e 's/^EMPTY_PRE_POST_MIN_AGE=.*/EMPTY_PRE_POST_MIN_AGE="1800"/' \
-  "/etc/snapper/configs/home"
-
-sudo sed -i \
-  -e 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE="yes"/' \
-  -e 's/^TIMELINE_CLEANUP=.*/TIMELINE_CLEANUP="yes"/' \
-  -e 's/^TIMELINE_MIN_AGE=.*/TIMELINE_MIN_AGE="1800"/' \
-  -e 's/^TIMELINE_LIMIT_HOURLY=.*/TIMELINE_LIMIT_HOURLY="5"/' \
-  -e 's/^TIMELINE_LIMIT_DAILY=.*/TIMELINE_LIMIT_DAILY="7"/' \
-  -e 's/^TIMELINE_LIMIT_WEEKLY=.*/TIMELINE_LIMIT_WEEKLY="0"/' \
-  -e 's/^TIMELINE_LIMIT_MONTHLY=.*/TIMELINE_LIMIT_MONTHLY="0"/' \
-  -e 's/^TIMELINE_LIMIT_YEARLY=.*/TIMELINE_LIMIT_YEARLY="0"/' \
-  -e 's/^NUMBER_CLEANUP=.*/NUMBER_CLEANUP="yes"/' \
-  -e 's/^NUMBER_MIN_AGE=.*/NUMBER_MIN_AGE="1800"/' \
-  -e 's/^NUMBER_LIMIT=.*/NUMBER_LIMIT="10"/' \
-  -e 's/^NUMBER_LIMIT_IMPORTANT=.*/NUMBER_LIMIT_IMPORTANT="3"/' \
-  -e 's/^EMPTY_PRE_POST_CLEANUP=.*/EMPTY_PRE_POST_CLEANUP="yes"/' \
-  -e 's/^EMPTY_PRE_POST_MIN_AGE=.*/EMPTY_PRE_POST_MIN_AGE="1800"/' \
-  "/etc/snapper/configs/root"
 
 # A cron job
 (

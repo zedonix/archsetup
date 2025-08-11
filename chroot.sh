@@ -3,6 +3,7 @@ set -euo pipefail
 
 # Load variables from install.conf
 source /root/install.conf
+uuid=$(blkid -s UUID -o value "$part2")
 
 # --- Set hostname ---
 echo "$hostname" >/etc/hostname
@@ -22,13 +23,37 @@ echo "%wheel ALL=(ALL) ALL" >/etc/sudoers.d/wheel
 echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
 chmod 440 /etc/sudoers.d/wheel /etc/sudoers.d/timestamp
 
-# Grub setup
-grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
-sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-sed -i 's|^GRUB_DEFAULT=.*|GRUB_DEFAULT=saved|' /etc/default/grub
-sed -i 's|^GRUB_SAVEDEFAULT=.*|GRUB_SAVEDEFAULT=true|' /etc/default/grub
-#sed -i 's/^#GRUB_DISABLE_SUBMENU=y/GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
-grub-mkconfig -o /boot/grub/grub.cfg
+# Boot Manager setup
+if [[ "$microcode_pkg" == "intel-ucode" ]]; then
+  microcode_img="initrd /intel-ucode.img"
+elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
+  microcode_img="initrd /amd-ucode.img"
+fi
+bootctl install
+
+cat >/boot/loader/loader.conf <<EOF
+default arch
+timeout 3
+editor no
+EOF
+
+{
+  echo "title   Arch Linux"
+  echo "linux   /vmlinuz-linux"
+  echo "$microcode_img"
+  echo "initrd  /initramfs-linux.img"
+  echo "options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4"
+} >/boot/loader/entries/arch.conf
+
+if [[ "$howMuch" == "max" ]]; then
+  {
+    echo "title   Arch Linux (LTS)"
+    echo "linux   /vmlinuz-linux-lts"
+    [[ -n "$microcode_img" ]] && echo "$microcode_img"
+    echo "initrd  /initramfs-linux-lts.img"
+    echo "options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4"
+  } >/boot/loader/entries/arch-lts.conf
+fi
 
 # Reflector and pacman Setup
 sed -i '/^#Color$/c\Color' /etc/pacman.conf

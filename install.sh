@@ -265,6 +265,7 @@ microcode_pkg=$microcode_pkg
 recon=$recon
 timezone=$timezone
 username=$username
+part2=$part2
 EOF
 cat >/mnt/root/_tmp/setup_creds.sh <<EOF
 echo "root:$root_password" | chpasswd
