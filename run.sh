@@ -110,6 +110,9 @@ sudo mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@sna
 sudo snapper -c home create-config /home
 sudo mount -a
 
+sudo rm -f /etc/cron.hourly/snapper /etc/cron.daily/snapper
+echo 'NoExtract = etc/cron.hourly/snapper' | sudo tee -a /etc/pacman.conf >/dev/null
+echo 'NoExtract = etc/cron.daily/snapper' | sudo tee -a /etc/pacman.conf >/dev/null
 sudo systemctl enable --now snapper-timeline.timer snapper-cleanup.timer grub-btrfsd
 
 sudo sed -i \
