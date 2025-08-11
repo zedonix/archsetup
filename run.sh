@@ -97,16 +97,27 @@ nameserver 1.0.0.1
 EOF
 sudo systemctl restart NetworkManager
 
-# Snapper setup
-if mountpoint -q /.snapshots; then
-  sudo umount /.snapshots/
+# Make sure parent volume is mounted
+root_dev=$(findmnt -no SOURCE /)
+mnt_dir=$(mktemp -d)
+sudo mount "$root_dev" "$mnt_dir"
+
+# Delete old subvolume if it exists
+if sudo btrfs subvolume show "$mnt_dir/.snapshots" &>/dev/null; then
+  sudo btrfs subvolume delete "$mnt_dir/.snapshots"
 fi
-[[ -d /.snapshots ]] && sudo rm -rf /.snapshots/
-sudo btrfs subvolume delete /.snapshots
-sudo btrfs subvolume create /.snapshots
+
+# Create new subvolume
+sudo btrfs subvolume create "$mnt_dir/.snapshots"
+
+sudo umount "$mnt_dir"
+rmdir "$mnt_dir"
+
+# Create mountpoint and mount it
 sudo mkdir -p /.snapshots
-disk=$(lsblk -no pkname "$(df / | tail -1 | awk '{print $1}')" | xargs -I{} echo /dev/{})
-sudo mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "{$disk}2" /.snapshots
+sudo mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$root_dev" /.snapshots
+
+# Snapper config
 sudo snapper -c home create-config /home
 sudo mount -a
 
