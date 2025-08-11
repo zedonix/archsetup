@@ -102,6 +102,11 @@ if mountpoint -q /.snapshots; then
   sudo umount /.snapshots/
 fi
 [[ -d /.snapshots ]] && sudo rm -rf /.snapshots/
+sudo btrfs subvolume delete /.snapshots
+sudo btrfs subvolume create /.snapshots
+sudo mkdir -p /.snapshots
+disk=$(lsblk -no pkname "$(df / | tail -1 | awk '{print $1}')" | xargs -I{} echo /dev/{})
+sudo mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "{$disk}2" /.snapshots
 sudo snapper -c home create-config /home
 sudo mount -a
 
