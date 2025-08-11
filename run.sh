@@ -103,6 +103,7 @@ if mountpoint -q /.snapshots; then
 fi
 [[ -d /.snapshots ]] && sudo rm -r /.snapshots/
 sudo snapper -c home create-config /home
+sudo snapper -c root create-config /
 sudo mount -a
 
 sudo rm -f /etc/cron.hourly/snapper /etc/cron.daily/snapper
@@ -126,6 +127,23 @@ sudo sed -i \
   -e 's/^EMPTY_PRE_POST_CLEANUP=.*/EMPTY_PRE_POST_CLEANUP="yes"/' \
   -e 's/^EMPTY_PRE_POST_MIN_AGE=.*/EMPTY_PRE_POST_MIN_AGE="1800"/' \
   "/etc/snapper/configs/home"
+
+sudo sed -i \
+  -e 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE="yes"/' \
+  -e 's/^TIMELINE_CLEANUP=.*/TIMELINE_CLEANUP="yes"/' \
+  -e 's/^TIMELINE_MIN_AGE=.*/TIMELINE_MIN_AGE="1800"/' \
+  -e 's/^TIMELINE_LIMIT_HOURLY=.*/TIMELINE_LIMIT_HOURLY="5"/' \
+  -e 's/^TIMELINE_LIMIT_DAILY=.*/TIMELINE_LIMIT_DAILY="7"/' \
+  -e 's/^TIMELINE_LIMIT_WEEKLY=.*/TIMELINE_LIMIT_WEEKLY="0"/' \
+  -e 's/^TIMELINE_LIMIT_MONTHLY=.*/TIMELINE_LIMIT_MONTHLY="0"/' \
+  -e 's/^TIMELINE_LIMIT_YEARLY=.*/TIMELINE_LIMIT_YEARLY="0"/' \
+  -e 's/^NUMBER_CLEANUP=.*/NUMBER_CLEANUP="yes"/' \
+  -e 's/^NUMBER_MIN_AGE=.*/NUMBER_MIN_AGE="1800"/' \
+  -e 's/^NUMBER_LIMIT=.*/NUMBER_LIMIT="10"/' \
+  -e 's/^NUMBER_LIMIT_IMPORTANT=.*/NUMBER_LIMIT_IMPORTANT="3"/' \
+  -e 's/^EMPTY_PRE_POST_CLEANUP=.*/EMPTY_PRE_POST_CLEANUP="yes"/' \
+  -e 's/^EMPTY_PRE_POST_MIN_AGE=.*/EMPTY_PRE_POST_MIN_AGE="1800"/' \
+  "/etc/snapper/configs/root"
 
 # A cron job
 (
