@@ -66,9 +66,9 @@ if [[ "$howMuch" == "max" ]]; then
   ln -sf /home/$username/Documents/default/dotfiles/.config/nvim/ ~/.config
 
   # ly config
+  # -e 's/^bigclock *= *.*/bigclock = en/' \
   sudo sed -i \
     -e 's/^allow_empty_password *= *.*/allow_empty_password = false/' \
-    -e 's/^bigclock *= *.*/bigclock = en/' \
     -e 's/^clear_password *= *.*/clear_password = true/' \
     -e 's/^clock *= *.*/clock = %a %d\/%m %H:%M/' \
     /etc/ly/config.ini
