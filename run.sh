@@ -99,7 +99,7 @@ sudo systemctl restart NetworkManager
 
 # Snapper setup
 sudo umount /.snapshots/
-sudo rm -rf /.snapshots/
+sudo rm -r /.snapshots/
 sudo snapper -c home create-config /home
 sudo mount -a
 
