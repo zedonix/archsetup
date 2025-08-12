@@ -92,7 +92,7 @@ if [[ "$howMuch" == "max" ]]; then
 
   # ly config
   # -e 's/^bigclock *= *.*/bigclock = en/' \
-  sudo sed -i \
+  sed -i \
     -e 's/^allow_empty_password *= *.*/allow_empty_password = false/' \
     -e 's/^clear_password *= *.*/clear_password = true/' \
     -e 's/^clock *= *.*/clock = %a %d\/%m %H:%M/' \
@@ -166,7 +166,7 @@ if [[ "$howMuch" == "max" ]]; then
   if [[ "$hardware" == "hardware" ]]; then
     systemctl enable ly fstrim.timer acpid cronie libvirtd.socket cups ipp-usb docker.socket sshd
   else
-    systemctl enable ly cronie sshd cronie
+    systemctl enable ly cronie sshd
   fi
   if [[ "$extra" == "laptop" || "$extra" == "bluetooth" ]]; then
     systemctl enable bluetooth

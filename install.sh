@@ -287,7 +287,8 @@ chmod 700 /mnt/root/install.conf
 
 # Run chroot.sh
 cp chroot.sh /mnt/root/chroot.sh
-arch-chroot /mnt /bin/bash -c '/root/_tmp/setup_creds.sh && /root/chroot.sh; shred -u /root/_tmp/setup_creds.sh'
+chmod 700 /mnt/root/chroot.sh
+arch-chroot /mnt /bin/bash -c '/root/_tmp/setup_creds.sh && /root/chroot.sh; if [ -f /root/_tmp/setup_creds.sh ]; then shred -u /root/_tmp/setup_creds.sh; fi'
 
 # Cleanup tmpfs used for credentials
 umount /mnt/root/_tmp || true
