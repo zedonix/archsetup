@@ -9,6 +9,7 @@ aur_pkgs=(
   bemoji
   newsraft
   networkmanager-dmenu-git
+  poweralertd
   cnijfilter2
 )
 
