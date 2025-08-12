@@ -42,7 +42,7 @@ EOF
   echo "linux   /vmlinuz-linux"
   echo "$microcode_img"
   echo "initrd  /initramfs-linux.img"
-  echo "options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4"
+  echo "options root=UUID=$uuid rw zswap.enabled=0 rootflags=subvol=@ noatime compress=zstd ssd space_cache=v2 discard=async"
 } >/boot/loader/entries/arch.conf
 
 if [[ "$howMuch" == "max" ]]; then
@@ -51,7 +51,7 @@ if [[ "$howMuch" == "max" ]]; then
     echo "linux   /vmlinuz-linux-lts"
     [[ -n "$microcode_img" ]] && echo "$microcode_img"
     echo "initrd  /initramfs-linux-lts.img"
-    echo "options root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4"
+    echo "options root=UUID=$uuid rw zswap.enabled=0 rootflags=subvol=@ noatime compress=zstd ssd space_cache=v2 discard=async"
   } >/boot/loader/entries/arch-lts.conf
 fi
 

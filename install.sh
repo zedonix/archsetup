@@ -245,7 +245,7 @@ fi
 
 # Pacstrap with error handling
 reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
-pacstrap /mnt - < pkglist.txt || {
+pacstrap /mnt - <pkglist.txt || {
   echo "pacstrap failed"
   exit 1
 }
@@ -287,7 +287,7 @@ chmod 700 /mnt/root/install.conf
 
 # Run chroot.sh
 cp chroot.sh /mnt/root/chroot.sh
-arch-chroot /mnt /bin/bash -c '/root/_tmp/setup_creds.sh && /root/chroot.sh; if [ -f /root/_tmp/setup_creds.sh ]; then shred -u /root/_tmp/setup_creds.sh; fi'
+arch-chroot /mnt /bin/bash -c '/root/_tmp/setup_creds.sh && /root/chroot.sh; shred -u /root/_tmp/setup_creds.sh'
 
 # Cleanup tmpfs used for credentials
 umount /mnt/root/_tmp || true
