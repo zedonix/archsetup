@@ -13,7 +13,7 @@ aur_pkgs=(
   cnijfilter2
 )
 
-aur_dir="$HOME/Templates/aur"
+aur_dir="$HOME/Documents/aur"
 mkdir -p "$aur_dir"
 cd "$aur_dir" || exit 1
 

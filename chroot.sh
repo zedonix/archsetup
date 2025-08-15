@@ -73,22 +73,22 @@ systemctl enable reflector.timer
 # Copy config and dotfiles as the user
 if [[ "$howMuch" == "max" ]]; then
   su - "$username" -c '
-    mkdir -p ~/Documents/default
+    mkdir -p ~/Projects/personal
     # Clone scripts
-    git clone https://github.com/zedonix/scripts.git ~/Documents/default/scripts
-    git clone https://github.com/zedonix/dotfiles.git ~/Documents/default/dotfiles
-    git clone https://github.com/zedonix/archsetup.git ~/Documents/default/archsetup
-    git clone https://github.com/zedonix/notes.git ~/Documents/default/notes
-    git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/default/GruvboxGtk
-    git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/default/GruvboxQT
+    git clone https://github.com/zedonix/scripts.git ~/Projects/personal/scripts
+    git clone https://github.com/zedonix/dotfiles.git ~/Projects/personal/dotfiles
+    git clone https://github.com/zedonix/archsetup.git ~/Projects/personal/archsetup
+    git clone https://github.com/zedonix/notes.git ~/Projects/personal/notes
+    git clone https://github.com/zedonix/GruvboxGtk.git ~/Projects/personal/GruvboxGtk
+    git clone https://github.com/zedonix/GruvboxQT.git ~/Projects/personal/GruvboxQT
   '
   # Root .config
   mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
   echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
   touch ~/.local/state/zsh/history ~/.local/state/bash/history
-  ln -sf /home/$username/Documents/default/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-  ln -sf /home/$username/Documents/default/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
-  ln -sf /home/$username/Documents/default/dotfiles/.config/nvim/ ~/.config
+  ln -sf /home/$username/Projects/personal/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+  ln -sf /home/$username/Projects/personal/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+  ln -sf /home/$username/Projects/personal/dotfiles/.config/nvim/ ~/.config
 
   # ly config
   # -e 's/^bigclock *= *.*/bigclock = en/' \
@@ -99,7 +99,7 @@ if [[ "$howMuch" == "max" ]]; then
     /etc/ly/config.ini
 
   # Setup QT theme
-  THEME_SRC="/home/$username/Documents/default/GruvboxQT/"
+  THEME_SRC="/home/$username/Projects/personal/GruvboxQT/"
   THEME_DEST="/usr/share/Kvantum/Gruvbox"
   mkdir -p "$THEME_DEST"
   cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig" 2>/dev/null || true
@@ -107,26 +107,28 @@ if [[ "$howMuch" == "max" ]]; then
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
-  ln -sf "/home/$username/Documents/default/dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
+  ln -sf "/home/$username/Projects/personal/dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
 fi
 if [[ "$recon" == "no" ]]; then
   su - "$username" -c '
-  mkdir -p ~/Downloads ~/Documents/projects ~/Public ~/Templates/wiki ~/Videos ~/Pictures/Screenshots ~/.config ~/.local/state/bash ~/.local/state/zsh
-  mkdir -p ~/.local/bin ~/.cache/cargo-target
-  touch ~/.local/state/bash/history ~/.local/state/zsh/history ~/Templates/wiki/index.md
+  mkdir -p ~/Downloads ~/Documents ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config
+  mkdir -p ~/Projects/work ~/Projects/sandbox
+  mkdir -p ~/Knowledge/wiki ~/Knowledge/reference ~/Knowledge/notes
+  mkdir -p ~/.local/bin ~/.cache/cargo-target ~/.local/state/bash ~/.local/state/zsh
+  touch ~/.local/state/bash/history ~/.local/state/zsh/history
 
   # Copy and link files (only if dotfiles exists)
-  if [[ -d ~/Documents/default/dotfiles ]]; then
-    cp ~/Documents/default/dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
-    cp ~/Documents/default/dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
-    cp -r ~/Documents/default/dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
-    ln -sf ~/Documents/default/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-    ln -sf ~/Documents/default/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+  if [[ -d ~/Projects/personal/dotfiles ]]; then
+    cp ~/Projects/personal/dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
+    cp ~/Projects/personal/dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
+    cp -r ~/Projects/personal/dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
+    ln -sf ~/Projects/personal/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+    ln -sf ~/Projects/personal/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
 
-    for link in ~/Documents/default/dotfiles/.config/*; do
+    for link in ~/Projects/personal/dotfiles/.config/*; do
       ln -sf "$link" ~/.config/ 2>/dev/null || true
     done
-    for link in ~/Documents/default/scripts/bin/*; do
+    for link in ~/Projects/personal/scripts/bin/*; do
       ln -sf "$link" ~/.local/bin 2>/dev/null || true
     done
   fi
