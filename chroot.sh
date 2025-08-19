@@ -111,7 +111,7 @@ if [[ "$howMuch" == "max" ]]; then
 fi
 if [[ "$recon" == "no" ]]; then
   su - "$username" -c '
-  mkdir -p ~/Downloads ~/Documents ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots ~/.config
+  mkdir -p ~/Downloads ~/Documents ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots/temp ~/.config
   mkdir -p ~/Projects/work ~/Projects/sandbox
   mkdir -p ~/Knowledge/wiki ~/Knowledge/reference ~/Knowledge/notes
   mkdir -p ~/.local/bin ~/.cache/cargo-target ~/.local/state/bash ~/.local/state/zsh
@@ -180,7 +180,6 @@ if [[ "$howMuch" == "max" ]]; then
   fi
 fi
 systemctl enable NetworkManager NetworkManager-dispatcher
-systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved
 

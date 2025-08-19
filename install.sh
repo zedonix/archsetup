@@ -37,22 +37,6 @@ while true; do
 done
 mount | grep -q "$disk" && echo "Disk appears to be in use!" && exit 1
 
-# Partition Naming
-if [[ "$disk" == *nvme* ]]; then
-  part_prefix="${disk}p"
-else
-  part_prefix="${disk}"
-fi
-
-part1="${part_prefix}1"
-part2="${part_prefix}2"
-
-if [[ "$recon" == "yes" ]]; then
-  for p in "$part1" "$part2"; do
-    [[ ! -b "$p" ]] && echo "Missing partition $p. Recovery mode expects disk to be pre-partitioned." && exit 1
-  done
-fi
-
 # Which type of install?
 #
 # First choice: vm or hardware
@@ -117,39 +101,29 @@ if [[ "$recon" == "no" ]]; then
   parted -s "$disk" mklabel gpt
   parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
   parted -s "$disk" set 1 esp on
-  parted -s "$disk" mkpart primary btrfs 2049MiB 100%
+  root_end=$((2049 + $rootSize * 1024))
+  parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
+  parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
 fi
 
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
+mkfs.ext4 -L ROOT "$part2"
 if [[ "$recon" == "no" ]]; then
-  mkfs.btrfs -f -L ROOT "$part2"
+  mkfs.ext4 -L HOME "$part3"
+fi
+
+# Enable fast_commit for ext4 partitions
+tune2fs -O fast_commit "$part2"
+if [[ "$recon" == "no" ]]; then
+  tune2fs -O fast_commit "$part3"
 fi
 
 # Mounting
 mount "$part2" /mnt
-if [[ "$recon" == "yes" ]]; then
-  mount -o subvolid=5 "$part2" /mnt || {
-    echo "Cannot mount top-level; abort"
-    exit 1
-  }
-  btrfs subvolume delete /mnt/@ || true
-fi
-btrfs subvolume create /mnt/@
-newid=$(btrfs subvolume list /mnt | awk '/ path @$/ {print $2; exit}')
-btrfs subvolume set-default "$newid" /mnt
-[ ! -d /mnt/@home ] && btrfs subvolume create /mnt/@home
-[ ! -d /mnt/@var ] && btrfs subvolume create /mnt/@var
-[ ! -d /mnt/@snapshots ] && btrfs subvolume create /mnt/@snapshots
-
-umount /mnt
-
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@ "$part2" /mnt
-mkdir -p /mnt/{boot,home,var,.snapshots}
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$part2" /mnt/home
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$part2" /mnt/var
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$part2" /mnt/.snapshots
+mkdir -p /mnt/boot /mnt/home
 mount "$part1" /mnt/boot
+mount "$part3" /mnt/home
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
