@@ -37,6 +37,67 @@ while true; do
 done
 mount | grep -q "$disk" && echo "Disk appears to be in use!" && exit 1
 
+# Partition Naming
+if [[ "$disk" == *nvme* ]]; then
+  part_prefix="${disk}p"
+else
+  part_prefix="${disk}"
+fi
+
+part1="${part_prefix}1"
+part2="${part_prefix}2"
+part3="${part_prefix}3"
+
+if [[ "$recon" == "yes" ]]; then
+  for p in "$part1" "$part2" "$part3"; do
+    [[ ! -b "$p" ]] && echo "Missing partition $p. Recovery mode expects disk to be pre-partitioned." && exit 1
+  done
+fi
+
+if [[ $recon == "no" ]]; then
+  # --- Disk Size Calculation ---
+  total_mib=$(($(blockdev --getsize64 "$disk") / 1024 / 1024))
+  total_gb=$(echo "$total_mib / 1024" | bc)
+  half_gb=$(echo "$total_gb / 2" | bc)
+
+  # --- Root Partition Size Selection ---
+  while true; do
+    echo "Choose root partition size (total gb: $total_gb):"
+    echo "1) 40GB"
+    echo "2) 50GB"
+    echo "3) 50% of disk ($half_gb GB)"
+    echo "4) Custom"
+
+    read -p "Enter choice [1-4]: " choice
+    case "$choice" in
+    1) rootSize=40 ;;
+    2) rootSize=50 ;;
+    3) rootSize=$half_gb ;;
+    4)
+      read -p "Enter custom size in GB (max: $half_gb GB): " rootSize
+      if ! [[ "$rootSize" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+        echo "Invalid number. Enter a positive number (e.g., 45 or 45.5)."
+        continue
+      fi
+      if (($(echo "$rootSize > $half_gb" | bc -l))); then
+        echo "Root size exceeds 50% of total disk size ($half_gb GB). Try again."
+        continue
+      fi
+      ;;
+    *)
+      echo "Invalid option. Try again."
+      continue
+      ;;
+    esac
+
+    if ((rootSize > half_gb)); then
+      echo "Root size exceeds 50% of total disk size ($total_gb GB). Try again."
+    else
+      break
+    fi
+  done
+fi
+
 # Which type of install?
 #
 # First choice: vm or hardware
