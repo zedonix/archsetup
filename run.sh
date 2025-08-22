@@ -102,7 +102,6 @@ sudo systemctl restart NetworkManager
 # A cron job
 (
   crontab -l 2>/dev/null
-  echo "*/5 * * * * battery-alert.sh"
   echo "@daily $(which trash-empty) 30"
 ) | crontab -
 
