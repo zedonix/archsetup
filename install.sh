@@ -12,8 +12,17 @@ username="piyush"
 # --- Prompt Section (collect all user input here) ---
 # Prompt for home recovery Installation
 while true; do
-  read -p "Recovery Install (yes/no)? " recon
-  case "$recon" in
+  read -p "Recovery Install (yes/no)? " recovery
+  case "$recovery" in
+  yes | no) break ;;
+  *) echo "Invalid input. Please enter 'yes' or 'no'." ;;
+  esac
+done
+
+# Prompt for if ddos on arch
+while true; do
+  read -p "ddos attack ongoing (yes/no)? " ddos
+  case "$ddos" in
   yes | no) break ;;
   *) echo "Invalid input. Please enter 'yes' or 'no'." ;;
   esac
@@ -48,13 +57,13 @@ part1="${part_prefix}1"
 part2="${part_prefix}2"
 part3="${part_prefix}3"
 
-if [[ "$recon" == "yes" ]]; then
+if [[ "$recovery" == "yes" ]]; then
   for p in "$part1" "$part2" "$part3"; do
     [[ ! -b "$p" ]] && echo "Missing partition $p. Recovery mode expects disk to be pre-partitioned." && exit 1
   done
 fi
 
-if [[ $recon == "no" ]]; then
+if [[ $recovery == "no" ]]; then
   # --- Disk Size Calculation ---
   total_mib=$(($(blockdev --getsize64 "$disk") / 1024 / 1024))
   total_gb=$(echo "$total_mib / 1024" | bc)
@@ -157,7 +166,7 @@ while true; do
   break
 done
 
-if [[ "$recon" == "no" ]]; then
+if [[ "$recovery" == "no" ]]; then
   # Partitioning
   parted -s "$disk" mklabel gpt
   parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
@@ -170,13 +179,13 @@ fi
 # Formatting
 mkfs.fat -F 32 -n EFI "$part1"
 mkfs.ext4 -L ROOT "$part2"
-if [[ "$recon" == "no" ]]; then
+if [[ "$recovery" == "no" ]]; then
   mkfs.ext4 -L HOME "$part3"
 fi
 
 # Enable fast_commit for ext4 partitions
 tune2fs -O fast_commit "$part2"
-if [[ "$recon" == "no" ]]; then
+if [[ "$recovery" == "no" ]]; then
   tune2fs -O fast_commit "$part3"
 fi
 
@@ -279,7 +288,9 @@ if [[ "$hardware" == "hardware" && "$howMuch" == "max" ]]; then
 fi
 
 # Pacstrap with error handling
-reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
+if [[ "$ddos" == "yes" ]]; then
+  reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
+fi
 pacstrap /mnt - <pkglist.txt || {
   echo "pacstrap failed"
   exit 1
@@ -297,7 +308,8 @@ hardware=$hardware
 howMuch=$howMuch
 extra=$extra
 microcode_pkg=$microcode_pkg
-recon=$recon
+recovery=$recovery
+ddos=$ddos
 timezone=$timezone
 username=$username
 part2=$part2

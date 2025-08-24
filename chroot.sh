@@ -67,7 +67,9 @@ mkdir -p /etc/xdg/reflector
   echo "--sort rate"
 } >/etc/xdg/reflector/reflector.conf
 
-reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
+if [[ "$ddos" == "yes" ]]; then
+  reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
+fi
 systemctl enable reflector.timer
 
 # Copy config and dotfiles as the user
@@ -109,7 +111,7 @@ if [[ "$howMuch" == "max" ]]; then
   mkdir -p /etc/firefox/policies
   ln -sf "/home/$username/personal/default/dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
 fi
-if [[ "$recon" == "no" ]]; then
+if [[ "$recovery" == "no" ]]; then
   su - "$username" -c '
   mkdir -p ~/Downloads ~/Desktop ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots/temp ~/.config
   mkdir -p ~/Documents/Projects/work ~/Documents/Projects/sandbox ~/Documents/personal/wiki ~/Documents/personal/aur
