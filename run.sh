@@ -67,6 +67,7 @@ done
 sudo ufw allow 80/tcp              # http
 sudo ufw allow 443/tcp             # https
 sudo ufw allow from 192.168.0.0/24 #lan
+sudo ufw deny 631/tcp # cups stuff
 sudo ufw allow in on virbr0 to any port 67 proto udp
 sudo ufw allow out on virbr0 to any port 68 proto udp
 sudo ufw allow in on virbr0 to any port 53

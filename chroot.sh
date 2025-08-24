@@ -111,9 +111,8 @@ if [[ "$howMuch" == "max" ]]; then
 fi
 if [[ "$recon" == "no" ]]; then
   su - "$username" -c '
-  mkdir -p ~/Downloads ~/Documents ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots/temp ~/.config
-  mkdir -p ~/Projects/work ~/Projects/sandbox
-  mkdir -p ~/Knowledge/wiki ~/Knowledge/reference ~/Knowledge/notes
+  mkdir -p ~/Downloads ~/Documents/personal/wiki ~/Desktop ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots/temp ~/.config
+  mkdir -p ~/Documents/Projects/work ~/Documents/Projects/sandbox
   mkdir -p ~/.local/bin ~/.cache/cargo-target ~/.local/state/bash ~/.local/state/zsh
   touch ~/.local/state/bash/history ~/.local/state/zsh/history
 
