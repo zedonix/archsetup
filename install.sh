@@ -19,6 +19,15 @@ while true; do
   esac
 done
 
+# Prompt for if ddos on arch
+while true; do
+  read -p "ddos attack ongoing (yes/no)? " ddos
+  case "$ddos" in
+  yes | no) break ;;
+  *) echo "Invalid input. Please enter 'yes' or 'no'." ;;
+  esac
+done
+
 # Disk Selection
 disks=($(lsblk -dno NAME,TYPE,RM | awk '$2 == "disk" && $3 == "0" {print $1}'))
 echo "Available disks:"
@@ -279,7 +288,17 @@ if [[ "$hardware" == "hardware" && "$howMuch" == "max" ]]; then
 fi
 
 # Pacstrap with error handling
-reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
+if [[ "$ddos" == "no" ]]; then
+  reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
+else
+  cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
+  cat >/etc/pacman.d/mirrorlist <<'EOF'
+Server = https://in.arch.niranjan.co/$repo/os/$arch
+Server = https://mirrors.saswata.cc/archlinux/$repo/os/$arch
+Server = https://mirror.del2.albony.in/archlinux/$repo/os/$arch
+Server = https://in-mirror.garudalinux.org/archlinux/$repo/os/$arch
+EOF
+fi
 pacstrap /mnt - <pkglist.txt || {
   echo "pacstrap failed"
   exit 1
@@ -298,6 +317,7 @@ howMuch=$howMuch
 extra=$extra
 microcode_pkg=$microcode_pkg
 recovery=$recovery
+ddos=$ddos
 timezone=$timezone
 username=$username
 part2=$part2
