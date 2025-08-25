@@ -182,7 +182,7 @@ if [[ "$howMuch" == "max" ]]; then
 fi
 systemctl enable NetworkManager NetworkManager-dispatcher
 systemctl mask systemd-rfkill systemd-rfkill.socket
-systemctl disable NetworkManager-wait-online.service systemd-networkd.service systemd-resolved
+systemctl disable NetworkManager-wait-online.service
 
 # Clean up package cache and Wrapping up
 pacman -Scc --noconfirm

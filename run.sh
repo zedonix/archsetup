@@ -89,16 +89,21 @@ if pacman -Qq libvirt &>/dev/null; then
 fi
 
 # Configure static IP, gateway, and custom DNS
-sudo tee /etc/NetworkManager/conf.d/dns.conf >/dev/null <<EOF
-[main]
-dns=none
-systemd-resolved=false
-EOF
-sudo tee /etc/resolv.conf >/dev/null <<EOF
-nameserver 1.1.1.1
-nameserver 1.0.0.1
-EOF
-sudo systemctl restart NetworkManager
+# sudo tee /etc/systemd/resolved.conf >/dev/null <<EOF
+# [Resolve]
+# DNS=8.8.8.8 8.8.4.4
+# EOF
+# sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+# sudo tee /etc/NetworkManager/conf.d/dns.conf >/dev/null <<EOF
+# [main]
+# dns=none
+# systemd-resolved=false
+# EOF
+# sudo tee /etc/resolv.conf >/dev/null <<EOF
+# nameserver 1.1.1.1
+# nameserver 1.0.0.1
+# EOF
+# sudo systemctl restart NetworkManager
 
 # A cron job
 (
