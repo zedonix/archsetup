@@ -67,9 +67,7 @@ mkdir -p /etc/xdg/reflector
   echo "--sort rate"
 } >/etc/xdg/reflector/reflector.conf
 
-if [[ "$ddos" == "no" ]]; then
-  reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
-fi
+reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
 systemctl enable reflector.timer
 
 # Copy config and dotfiles as the user
