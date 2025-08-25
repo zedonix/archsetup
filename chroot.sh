@@ -96,9 +96,9 @@ if [[ "$howMuch" == "max" ]]; then
   mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
   echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
   touch ~/.local/state/zsh/history ~/.local/state/bash/history
-  ln -sf /home/$username/personal/default/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-  ln -sf /home/$username/personal/default/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
-  ln -sf /home/$username/personal/default/dotfiles/.config/nvim/ ~/.config
+  ln -sf /home/$username/Documents/personal/default/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
+  ln -sf /home/$username/Documents/personal/default/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+  ln -sf /home/$username/Documents/personal/default/dotfiles/.config/nvim/ ~/.config
 
   # ly config
   # -e 's/^bigclock *= *.*/bigclock = en/' \
@@ -122,7 +122,7 @@ fi
 if [[ "$recovery" == "no" ]]; then
   su - "$username" -c '
   mkdir -p ~/Downloads ~/Desktop ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots/temp ~/.config
-  mkdir -p ~/Documents/Projects/work ~/Documents/Projects/sandbox ~/Documents/personal/wiki ~/Documents/personal/aur
+  mkdir -p ~/Documents/projects/work ~/Documents/projects/sandbox ~/Documents/personal/wiki ~/Documents/personal/aur
   mkdir -p ~/.local/bin ~/.cache/cargo-target ~/.local/state/bash ~/.local/state/zsh
   touch ~/.local/state/bash/history ~/.local/state/zsh/history ~/Documents/personal/wiki/index.md
 
