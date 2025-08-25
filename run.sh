@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-SRC_DIR="$HOME/Projects/personal/GruvboxGtk"
+SRC_DIR="$HOME/Documents/personal/default/GruvboxGtk"
 DEST_DIR="$HOME/.local/share/themes"
 THEME_NAME="Gruvbox-Dark"
 THEME_DIR="${DEST_DIR}/${THEME_NAME}"
@@ -54,11 +54,11 @@ for key in "${!gsettings_keys[@]}"; do
 done
 
 # Firefox user.js linking
-echo "/home/$USER/Projects/personal/dotfiles/ublock.txt" | wl-copy
+echo "/home/$USER/Documents/personal/default/dotfiles/ublock.txt" | wl-copy
 gh auth login
 for dir in ~/.mozilla/firefox/*.default-release/; do
   [ -d "$dir" ] || continue
-  ln -sf ~/Projects/personal/dotfiles/user.js "$dir/user.js"
+  ln -sf ~/Documents/personal/default/dotfiles/user.js "$dir/user.js"
   break
 done
 
@@ -67,7 +67,7 @@ done
 sudo ufw allow 80/tcp              # http
 sudo ufw allow 443/tcp             # https
 sudo ufw allow from 192.168.0.0/24 #lan
-sudo ufw deny 631/tcp # cups stuff
+sudo ufw deny 631/tcp              # cups stuff
 sudo ufw allow in on virbr0 to any port 67 proto udp
 sudo ufw allow out on virbr0 to any port 68 proto udp
 sudo ufw allow in on virbr0 to any port 53
