@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-SRC_DIR="$HOME/Documents/personal/default/GruvboxGtk"
+SRC_DIR="$HOME/Documents/projects/default/GruvboxGtk"
 DEST_DIR="$HOME/.local/share/themes"
 THEME_NAME="Gruvbox-Dark"
 THEME_DIR="${DEST_DIR}/${THEME_NAME}"
@@ -54,11 +54,11 @@ for key in "${!gsettings_keys[@]}"; do
 done
 
 # Firefox user.js linking
-echo "/home/$USER/Documents/personal/default/dotfiles/ublock.txt" | wl-copy
+echo "/home/$USER/Documents/projects/default/dotfiles/ublock.txt" | wl-copy
 gh auth login
 for dir in ~/.mozilla/firefox/*.default-release/; do
   [ -d "$dir" ] || continue
-  ln -sf ~/Documents/personal/default/dotfiles/user.js "$dir/user.js"
+  ln -sf ~/Documents/projects/default/dotfiles/user.js "$dir/user.js"
   break
 done
 
@@ -116,4 +116,4 @@ foot -e nvim +MasonToolsInstall &
 foot -e sudo nvim +MasonToolsInstall &
 
 # Running aur.sh
-bash ~/Projects/personal/archsetup/aur.sh
+bash ~/Projects/projects/archsetup/aur.sh
