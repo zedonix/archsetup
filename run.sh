@@ -116,4 +116,4 @@ foot -e nvim +MasonToolsInstall &
 foot -e sudo nvim +MasonToolsInstall &
 
 # Running aur.sh
-bash ~/Projects/projects/archsetup/aur.sh
+bash ~/Documents/projects/default/archsetup/aur.sh

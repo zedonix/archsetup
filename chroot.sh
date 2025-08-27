@@ -124,7 +124,7 @@ if [[ "$recovery" == "no" ]]; then
   mkdir -p ~/Downloads ~/Desktop ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots/temp ~/.config
   mkdir -p ~/Documents/projects/work ~/Documents/projects/sandbox ~/Documents/personal/wiki
   mkdir -p ~/.local/bin ~/.cache/cargo-target ~/.local/state/bash ~/.local/state/zsh
-  touch ~/.local/state/bash/history ~/.local/state/zsh/history ~/Documents/personal/wiki/index.md
+  touch ~/.local/state/bash/history ~/.local/state/zsh/history ~/Documents/personal/wiki/index.txt
 
   # Copy and link files (only if dotfiles exists)
   if [[ -d ~/Documents/projects/default/dotfiles ]]; then
