@@ -59,6 +59,7 @@ gh auth login
 for dir in ~/.mozilla/firefox/*.default-release/; do
   [ -d "$dir" ] || continue
   ln -sf ~/Documents/projects/default/dotfiles/user.js "$dir/user.js"
+  cp -f ~/Documents/projects/default/dotfiles/book*.jsonlz4 "$dir/firefox-bookmarks.jsonlz4"
   break
 done
 
