@@ -109,7 +109,7 @@ if [[ "$howMuch" == "max" ]]; then
   #   /etc/ly/config.ini
 
   # Greetd setup for tuigreet
-  cp -f "/home/$username/Documents/projects/dotfiles/config.toml" /etc/greetd/
+  cp -f /home/$username/Documents/projects/default/dotfiles/config.toml /etc/greetd/
 
   # Setup QT theme
   THEME_SRC="/home/$username/projects/default/GruvboxQT/"
