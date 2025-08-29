@@ -21,7 +21,8 @@ echo "LANG=en_US.UTF-8" >/etc/locale.conf
 # Sudo Configuration
 echo "%wheel ALL=(ALL) ALL" >/etc/sudoers.d/wheel
 echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
-chmod 440 /etc/sudoers.d/wheel /etc/sudoers.d/timestamp
+echo "Defaults pwfeedback" >/etc/sudoers.d/pwfeedback
+sudo chmod 440 /etc/sudoers.d/{wheel,timestamp,pwfeedback}
 
 # Boot Manager setup
 if [[ "$microcode_pkg" == "intel-ucode" ]]; then
