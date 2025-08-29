@@ -126,7 +126,7 @@ if [[ "$howMuch" == "max" ]]; then
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
-  ln -sf "/home/$username/projects/default/dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
+  ln -sf "/home/$username/Documents/projects/default/dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
 fi
 if [[ "$recovery" == "no" ]]; then
   su - "$username" -c '

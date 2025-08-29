@@ -58,7 +58,7 @@ echo "/home/$USER/Documents/projects/default/dotfiles/ublock.txt" | wl-copy
 gh auth login
 dir=$(echo ~/.mozilla/firefox/*.default-release)
 ln -sf ~/Documents/projects/default/dotfiles/user.js "$dir/user.js"
-cp -f ~/Documents/projects/default/dotfiles/book* "$dir/BookmarkBackups/"
+cp -f ~/Documents/projects/default/dotfiles/book* "$dir/bookmarkbackups/"
 
 # UFW setup
 # sudo ufw limit 22/tcp              # ssh
