@@ -56,12 +56,9 @@ done
 # Firefox user.js linking
 echo "/home/$USER/Documents/projects/default/dotfiles/ublock.txt" | wl-copy
 gh auth login
-for dir in ~/.mozilla/firefox/*.default-release/; do
-  [ -d "$dir" ] || continue
-  ln -sf ~/Documents/projects/default/dotfiles/user.js "$dir/user.js"
-  cp -f ~/Documents/projects/default/dotfiles/book*.jsonlz4 "$dir/firefox-bookmarks.jsonlz4"
-  break
-done
+dir=$(echo ~/.mozilla/firefox/*.default-release)
+ln -sf ~/Documents/projects/default/dotfiles/user.js "$dir/user.js"
+cp -f ~/Documents/projects/default/dotfiles/book* "$dir/BookmarkBackups/"
 
 # UFW setup
 # sudo ufw limit 22/tcp              # ssh

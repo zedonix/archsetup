@@ -115,6 +115,15 @@ if [[ "$howMuch" == "max" ]]; then
   cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig" 2>/dev/null || true
   cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg" 2>/dev/null || true
 
+  # Anancy-cpp rules
+  git clone --depth=1 https://github.com/RogueScholar/ananicy.git
+  git clone --depth=1 https://github.com/CachyOS/ananicy-rules.git
+  mkdir -p /etc/ananicy.d/roguescholar /etc/ananicy.d/zz-cachyos
+  cp -r ananicy/ananicy.d/* /etc/ananicy.d/roguescholar/
+  cp -r ananicy-rules/00-default/* /etc/ananicy.d/zz-cachyos/
+  cp -r ananicy-rules/00-types.types /etc/ananicy.d/zz-cachyos/
+  cp -r ananicy-rules/00-cgroups.cgroups /etc/ananicy.d/zz-cachyos/
+
   # Firefox policy
   mkdir -p /etc/firefox/policies
   ln -sf "/home/$username/projects/default/dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
@@ -174,10 +183,9 @@ mkdir -p /etc/systemd/zram-generator.conf.d
 # rfkill unblock bluetooth
 # modprobe btusb || true
 if [[ "$howMuch" == "max" ]]; then
+  systemctl enable ananicy-cpp ly cronie sshd
   if [[ "$hardware" == "hardware" ]]; then
-    systemctl enable ly fstrim.timer acpid cronie libvirtd.socket cups ipp-usb docker.socket sshd
-  else
-    systemctl enable ly cronie sshd
+    systemctl enable fstrim.timer acpid libvirtd.socket cups ipp-usb docker.socket
   fi
   if [[ "$extra" == "laptop" || "$extra" == "bluetooth" ]]; then
     systemctl enable bluetooth
