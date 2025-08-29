@@ -96,8 +96,9 @@ if [[ "$howMuch" == "max" ]]; then
   mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
   echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
   touch ~/.local/state/zsh/history ~/.local/state/bash/history
-  ln -sf /home/$username/Documents/projects/default/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-  ln -sf /home/$username/Documents/projects/default/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+  ln -sf /home/$username/Documents/projects/default/dotfiles/.bashrc ~/.bashrc
+  ln -sf /home/$username/Documents/projects/default/dotfiles/.zshrc ~/.zshrc
+  ln -sf /home/$username/Documents/projects/default/dotfiles/.config/starship.toml ~/.config
   ln -sf /home/$username/Documents/projects/default/dotfiles/.config/nvim/ ~/.config
 
   # ly config
@@ -121,11 +122,11 @@ polkit.addRule(function(action, subject) {
 EOF
 
   # Setup QT theme
-  THEME_SRC="/home/$username/projects/default/GruvboxQT/"
+  THEME_SRC="/home/$username/Documents/projects/default/GruvboxQT"
   THEME_DEST="/usr/share/Kvantum/Gruvbox"
   mkdir -p "$THEME_DEST"
-  cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig" 2>/dev/null || true
-  cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg" 2>/dev/null || true
+  cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig"
+  cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg"
 
   # Anancy-cpp rules
   git clone --depth=1 https://github.com/RogueScholar/ananicy.git
@@ -138,7 +139,7 @@ EOF
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
-  ln -sf "/home/$username/Documents/projects/default/dotfiles/policies.json" /etc/firefox/policies/policies.json 2>/dev/null || true
+  ln -sf "/home/$username/Documents/projects/default/dotfiles/policies.json" /etc/firefox/policies/policies.json
 fi
 if [[ "$recovery" == "no" ]]; then
   su - "$username" -c '
@@ -149,17 +150,17 @@ if [[ "$recovery" == "no" ]]; then
 
   # Copy and link files (only if dotfiles exists)
   if [[ -d ~/Documents/projects/default/dotfiles ]]; then
-    cp ~/Documents/projects/default/dotfiles/.config/sway/archLogo.png ~/Pictures/ 2>/dev/null || true
-    cp ~/Documents/projects/default/dotfiles/pics/* ~/Pictures/ 2>/dev/null || true
-    cp -r ~/Documents/projects/default/dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/ 2>/dev/null || true
-    ln -sf ~/Documents/projects/default/dotfiles/.bashrc ~/.bashrc 2>/dev/null || true
-    ln -sf ~/Documents/projects/default/dotfiles/.zshrc ~/.zshrc 2>/dev/null || true
+    cp ~/Documents/projects/default/dotfiles/.config/sway/archLogo.png ~/Pictures/
+    cp ~/Documents/projects/default/dotfiles/pics/* ~/Pictures/
+    cp -r ~/Documents/projects/default/dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/
+    ln -sf ~/Documents/projects/default/dotfiles/.bashrc ~/.bashrc
+    ln -sf ~/Documents/projects/default/dotfiles/.zshrc ~/.zshrc 
 
     for link in ~/Documents/projects/default/dotfiles/.config/*; do
-      ln -sf "$link" ~/.config/ 2>/dev/null || true
+      ln -sf "$link" ~/.config/ 
     done
     for link in ~/Documents/projects/default/scripts/bin/*; do
-      ln -sf "$link" ~/.local/bin 2>/dev/null || true
+      ln -sf "$link" ~/.local/bin 
     done
   fi
 
