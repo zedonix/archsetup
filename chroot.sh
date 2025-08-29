@@ -102,11 +102,14 @@ if [[ "$howMuch" == "max" ]]; then
 
   # ly config
   # -e 's/^bigclock *= *.*/bigclock = en/' \
-  sed -i \
-    -e 's/^allow_empty_password *= *.*/allow_empty_password = false/' \
-    -e 's/^clear_password *= *.*/clear_password = true/' \
-    -e 's/^clock *= *.*/clock = %a %d\/%m %H:%M/' \
-    /etc/ly/config.ini
+  # sed -i \
+  #   -e 's/^allow_empty_password *= *.*/allow_empty_password = false/' \
+  #   -e 's/^clear_password *= *.*/clear_password = true/' \
+  #   -e 's/^clock *= *.*/clock = %a %d\/%m %H:%M/' \
+  #   /etc/ly/config.ini
+
+  # Greetd setup for tuigreet
+  cp -f "/home/$username/Documents/projects/dotfiles/config.toml" /etc/greetd/
 
   # Setup QT theme
   THEME_SRC="/home/$username/projects/default/GruvboxQT/"
@@ -183,7 +186,7 @@ mkdir -p /etc/systemd/zram-generator.conf.d
 # rfkill unblock bluetooth
 # modprobe btusb || true
 if [[ "$howMuch" == "max" ]]; then
-  systemctl enable ananicy-cpp ly cronie sshd
+  systemctl enable ananicy-cpp greetd cronie sshd
   if [[ "$hardware" == "hardware" ]]; then
     systemctl enable fstrim.timer acpid libvirtd.socket cups ipp-usb docker.socket
   fi
