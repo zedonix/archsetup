@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 aur_pkgs=(
+  cachyos-ananicy-rules
   systemd-boot-pacman-hook
   sway-audio-idle-inhibit-git
   bashmount

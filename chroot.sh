@@ -113,30 +113,12 @@ if [[ "$howMuch" == "max" ]]; then
   # Greetd setup for tuigreet
   # cp -f /home/$username/Documents/projects/default/dotfiles/config.toml /etc/greetd/
 
-  # Fuck polkit ig
-  tee /etc/polkit-1/rules.d/49-nopasswd-wheel.rules >/dev/null <<'EOF'
-polkit.addRule(function(action, subject) {
-    if (subject.isInGroup("wheel")) {
-        return polkit.Result.YES;
-    }
-});
-EOF
-
   # Setup QT theme
   THEME_SRC="/home/$username/Documents/projects/default/GruvboxQT"
   THEME_DEST="/usr/share/Kvantum/Gruvbox"
   mkdir -p "$THEME_DEST"
   cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig"
   cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg"
-
-  # Anancy-cpp rules
-  git clone --depth=1 https://github.com/RogueScholar/ananicy.git
-  git clone --depth=1 https://github.com/CachyOS/ananicy-rules.git
-  mkdir -p /etc/ananicy.d/roguescholar /etc/ananicy.d/zz-cachyos
-  cp -r ananicy/ananicy.d/* /etc/ananicy.d/roguescholar/
-  cp -r ananicy-rules/00-default/* /etc/ananicy.d/zz-cachyos/
-  cp -r ananicy-rules/00-types.types /etc/ananicy.d/zz-cachyos/
-  cp -r ananicy-rules/00-cgroups.cgroups /etc/ananicy.d/zz-cachyos/
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
