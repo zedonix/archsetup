@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-trap 'echo "Aborted. Cleaning up..."; umount -R /mnt >/dev/null 2>&1 || true' EXIT
+cleanup() {
+  rc=$?
+  # try to unmount /mnt if mounted
+  if mountpoint -q /mnt; then
+    umount -R /mnt >/dev/null 2>&1 || true
+  fi
+  if ((rc != 0)); then
+    echo "Aborted. Cleaning up..."
+  fi
+  return $rc
+}
+trap cleanup EXIT
+
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 cd "$SCRIPT_DIR"
 
@@ -84,9 +96,9 @@ if [[ $recovery == "no" ]]; then
     3) rootSize=$half_gb ;;
     4)
       read -p "Enter custom size in GB (max: $half_gb GB): " rootSize
-      if ! [[ "$rootSize" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
-        echo "Invalid number. Enter a positive number (e.g., 45 or 45.5)."
-        continue
+      if ! [[ "$rootSize" =~ ^[0-9]+$ ]]; then
+        echo "Invalid input: must be an integer (e.g. 40)"
+        exit 1
       fi
       if (($(echo "$rootSize > $half_gb" | bc -l))); then
         echo "Root size exceeds 50% of total disk size ($half_gb GB). Try again."
@@ -308,8 +320,20 @@ pacstrap /mnt - <pkglist.txt || {
 genfstab -U /mnt >/mnt/etc/fstab
 
 # Exporting variables for chroot
-mkdir -p /mnt/root/_tmp
-mount -t tmpfs tmpfs /mnt/root/_tmp
+arch-chroot /mnt /bin/bash -s <<EOF
+echo "root:$root_password" | chpasswd
+if ! id "$username" &>/dev/null; then
+  if [[ "$howMuch" == "max" && "$hardware" == "hardware" ]]; then
+    useradd -m -G wheel,storage,video,audio,lp,scanner,sys,kvm,libvirt,docker -s /bin/bash "$username"
+  else
+    useradd -m -G wheel,storage,video,audio,lp,sys -s /bin/bash "$username"
+  fi
+  echo "$username:$user_password" | chpasswd
+else
+  echo "User $username already exists, skipping creation."
+fi
+EOF
+
 cat >/mnt/root/install.conf <<EOF
 hostname=$hostname
 hardware=$hardware
@@ -322,33 +346,12 @@ timezone=$timezone
 username=$username
 part2=$part2
 EOF
-cat >/mnt/root/_tmp/setup_creds.sh <<EOF
-echo "root:$root_password" | chpasswd
-if ! id "$username" &>/dev/null; then
-  if [[ "$howMuch" == "max" && "$hardware" == "hardware" ]]; then
-    useradd -m -G wheel,storage,video,audio,lp,scanner,sys,kvm,libvirt,docker -s /bin/bash "$username"
-  else
-    useradd -m -G wheel,storage,video,audio,lp,sys -s /bin/bash "$username"
-  fi
-  echo "$username:$user_password" | chpasswd
-else
-  echo "User $username already exists, skipping creation."
-fi
-rm -f /root/_tmp/setup_creds.sh
-EOF
-
-chmod 700 /mnt/root/_tmp/setup_creds.sh
 chmod 700 /mnt/root/install.conf
 
 # Run chroot.sh
 cp chroot.sh /mnt/root/chroot.sh
 chmod 700 /mnt/root/chroot.sh
-arch-chroot /mnt /bin/bash -c '/root/_tmp/setup_creds.sh && /root/chroot.sh; if [ -f /root/_tmp/setup_creds.sh ]; then shred -u /root/_tmp/setup_creds.sh; fi'
-
-# Cleanup tmpfs used for credentials
-umount /mnt/root/_tmp || true
-rmdir /mnt/root/_tmp 2>/dev/null || true
-unset user_password user_password2 root_password root_password2
+arch-chroot /mnt /bin/bash -c /root/chroot.sh
 
 # Unmount and finalize
 fuser -k /mnt || true
