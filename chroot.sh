@@ -257,12 +257,17 @@ if [[ "$howMuch" == "max" ]]; then
   # Greetd setup for tuigreet
   # cp -f /home/$username/Documents/projects/default/dotfiles/config.toml /etc/greetd/
 
-  # Setup QT theme
+  # Setup Gruvbox theme
   THEME_SRC="/home/$username/Documents/projects/default/GruvboxQT"
   THEME_DEST="/usr/share/Kvantum/Gruvbox"
   mkdir -p "$THEME_DEST"
   cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig"
   cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg"
+
+  THEME_SRC="/home/$username/Documents/projects/default/GruvboxGtk"
+  THEME_DEST="/usr/share"
+  cp -r "$THEME_SRC/themes/*" "$THEME_DEST/themes"
+  cp -r "$THEME_SRC/icons/*" "$THEME_DEST/icons"
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
