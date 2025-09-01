@@ -166,7 +166,7 @@ elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
 fi
 mkinitcpio -P
 bootctl install
-bootctl update
+# bootctl update
 
 cat >/boot/loader/loader.conf <<EOF
 default arch
