@@ -218,7 +218,8 @@ fi
 # Pacstrap stuff
 #
 #texlive-mathscience
-sed -i "s|microcode|$microcode_pkg|g" pkgs.txt
+cp pkgs.txt pkgss.txt
+sed -i "s|microcode|$microcode_pkg|g" pkgss.txt
 
 # Extracting exact firmware packages
 mapfile -t drivers < <(lspci -k 2>/dev/null | grep -A1 "Kernel driver in use:" | awk -F': ' '/Kernel driver in use:/ {print $2}' | awk '{print $1}')
@@ -262,23 +263,23 @@ firmware_string="${firmware_string% }"
 if [[ -z "$firmware_string" ]]; then
   firmware_string="linux-firmware"
 fi
-sed -i "s|linux-firmware|$firmware_string|g" pkgs.txt
+sed -i "s|linux-firmware|$firmware_string|g" pkgss.txt
 
 # Which type of packages?
 # Main package selection
 case "$hardware:$howMuch" in
 vm:min)
-  sed -n '1p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
+  sed -n '1p' pkgss.txt | tr ' ' '\n' | grep -v '^$' >pkglists.txt
   ;;
 vm:max)
-  sed -n '1p;3p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
+  sed -n '1p;3p' pkgss.txt | tr ' ' '\n' | grep -v '^$' >pkglists.txt
   ;;
 hardware:min)
-  sed -n '1,2p' pkgs.txt | head -n 2 | tr ' ' '\n' | grep -v '^$' >pkglist.txt
+  sed -n '1,2p' pkgss.txt | head -n 2 | tr ' ' '\n' | grep -v '^$' >pkglists.txt
   ;;
 hardware:max)
   # For hardware:max, we will add lines 5 and/or 6 later based on $extra
-  sed -n '1,4p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >pkglist.txt
+  sed -n '1,4p' pkgss.txt | tr ' ' '\n' | grep -v '^$' >pkglists.txt
   ;;
 esac
 
@@ -287,11 +288,11 @@ if [[ "$hardware" == "hardware" && "$howMuch" == "max" ]]; then
   case "$extra" in
   laptop)
     # Add both line 5 and 6
-    sed -n '5,6p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >>pkglist.txt
+    sed -n '5,6p' pkgss.txt | tr ' ' '\n' | grep -v '^$' >>pkglist.txt
     ;;
   bluetooth)
     # Add only line 5
-    sed -n '5p' pkgs.txt | tr ' ' '\n' | grep -v '^$' >>pkglist.txt
+    sed -n '5p' pkgss.txt | tr ' ' '\n' | grep -v '^$' >>pkglist.txt
     ;;
   none)
     # Do not add line 5 or 6

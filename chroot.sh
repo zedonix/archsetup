@@ -213,7 +213,7 @@ if [[ "$ddos" == "no" ]]; then
   reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
 else
   cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
-  cat >/etc/pacman.d/mirrorlist <<EOF'
+  cat >/etc/pacman.d/mirrorlist <<EOF
 Server = https://in.arch.niranjan.co/$repo/os/$arch
 Server = https://mirrors.saswata.cc/archlinux/$repo/os/$arch
 Server = https://mirror.del2.albony.in/archlinux/$repo/os/$arch
@@ -268,7 +268,7 @@ if [[ "$recovery" == "no" ]]; then
   su - "$username" -c '
   mkdir -p ~/Downloads ~/Desktop ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots/temp ~/.config
   mkdir -p ~/Documents/projects/work ~/Documents/projects/sandbox ~/Documents/personal/wiki
-  mkdir -p ~/.local/bin ~/.cache/cargo-target ~/.local/state/bash ~/.local/state/zsh
+  mkdir -p ~/.local/bin ~/.cache/cargo-target ~/.local/state/bash ~/.local/state/zsh ~/.local/share/wineprefixes
   touch ~/.local/state/bash/history ~/.local/state/zsh/history ~/Documents/personal/wiki/index.txt
 
   # Copy and link files (only if dotfiles exists)
