@@ -266,8 +266,8 @@ if [[ "$howMuch" == "max" ]]; then
 
   THEME_SRC="/home/$username/Documents/projects/default/GruvboxGtk"
   THEME_DEST="/usr/share"
-  cp -r "$THEME_SRC/themes/*" "$THEME_DEST/themes"
-  cp -r "$THEME_SRC/icons/*" "$THEME_DEST/icons"
+  cp -r "$THEME_SRC/themes/Gruvbox-Material-Dark" "$THEME_DEST/themes"
+  cp -r "$THEME_SRC/icons/Gruvbox-Material-Dark" "$THEME_DEST/icons"
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
