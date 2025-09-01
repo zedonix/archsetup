@@ -216,7 +216,7 @@ if [[ "$ddos" == "no" ]]; then
   reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
 else
   cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
-  cat >/etc/pacman.d/mirrorlist <<EOF
+  cat >/etc/pacman.d/mirrorlist <<'EOF'
 Server = https://in.arch.niranjan.co/$repo/os/$arch
 Server = https://mirrors.saswata.cc/archlinux/$repo/os/$arch
 Server = https://mirror.del2.albony.in/archlinux/$repo/os/$arch
