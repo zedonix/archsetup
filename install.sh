@@ -288,11 +288,11 @@ if [[ "$hardware" == "hardware" && "$howMuch" == "max" ]]; then
   case "$extra" in
   laptop)
     # Add both line 5 and 6
-    sed -n '5,6p' pkgss.txt | tr ' ' '\n' | grep -v '^$' >>pkglist.txt
+    sed -n '5,6p' pkgss.txt | tr ' ' '\n' | grep -v '^$' >>pkglists.txt
     ;;
   bluetooth)
     # Add only line 5
-    sed -n '5p' pkgss.txt | tr ' ' '\n' | grep -v '^$' >>pkglist.txt
+    sed -n '5p' pkgss.txt | tr ' ' '\n' | grep -v '^$' >>pkglists.txt
     ;;
   none)
     # Do not add line 5 or 6
@@ -312,7 +312,7 @@ Server = https://mirror.del2.albony.in/archlinux/$repo/os/$arch
 Server = https://in-mirror.garudalinux.org/archlinux/$repo/os/$arch
 EOF
 fi
-pacstrap /mnt - <pkglist.txt || {
+pacstrap /mnt - <pkglists.txt || {
   echo "pacstrap failed"
   exit 1
 }
