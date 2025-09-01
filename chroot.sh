@@ -28,6 +28,7 @@ chmod 440 /etc/sudoers.d/*
 # Robust detection: prefer explicit pstate driver dirs if present, fallback to scaling_driver text
 scaling_f="/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver"
 pstate_supported=false
+driver=""
 if [ -d /sys/devices/system/cpu/intel_pstate ]; then
   driver="intel_pstate"
   pstate_supported=true
