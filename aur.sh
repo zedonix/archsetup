@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 aur_pkgs=(
-  google-java-format
-  jdtls
   systemd-boot-pacman-hook
   sway-audio-idle-inhibit-git
   bashmount
@@ -36,9 +34,6 @@ for pkg in "${aur_pkgs[@]}"; do
 done
 
 kvantummanager
-
-sudo npm install -g @fsouza/prettierd --location=global
-cargo install tex-fmt
 
 flatpak install -y org.gtk.Gtk3theme.Adwaita-dark
 flatpak override --user --env=GTK_THEME=Adwaita-dark --env=QT_STYLE_OVERRIDE=Adwaita-Dark

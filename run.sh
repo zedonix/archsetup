@@ -76,5 +76,9 @@ fi
   echo "@daily $(which trash-empty) 30"
 ) | crontab -
 
+# Nvim tools install
+foot -e nvim +MasonToolsInstall &
+foot -e sudo nvim +MasonToolsInstall &
+
 # Running aur.sh
 bash ~/Documents/projects/default/archsetup/aur.sh
