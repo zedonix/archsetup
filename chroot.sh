@@ -286,13 +286,16 @@ if [[ "$recovery" == "no" ]]; then
     cp ~/Documents/projects/default/dotfiles/pics/* ~/Pictures/
     cp -r ~/Documents/projects/default/dotfiles/.local/share/themes/Gruvbox-Dark ~/.local/share/themes/
     ln -sf ~/Documents/projects/default/dotfiles/.bashrc ~/.bashrc
-    ln -sf ~/Documents/projects/default/dotfiles/.zshrc ~/.zshrc 
+    ln -sf ~/Documents/projects/default/dotfiles/.zshrc ~/.zshrc
 
     for link in ~/Documents/projects/default/dotfiles/.config/*; do
-      ln -sf "$link" ~/.config/ 
+      ln -sf "$link" ~/.config/
+    done
+    for link in ~/Documents/projects/default/dotfiles/.copy/*; do
+      cp -r "$link" ~/.config/
     done
     for link in ~/Documents/projects/default/scripts/bin/*; do
-      ln -sf "$link" ~/.local/bin 
+      ln -sf "$link" ~/.local/bin/
     done
   fi
 
