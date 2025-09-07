@@ -277,6 +277,22 @@ if [[ "$howMuch" == "max" ]]; then
   cp -r ananicy-rules/00-default/* /etc/ananicy.d/zz-cachyos/
   cp -r ananicy-rules/00-types.types /etc/ananicy.d/zz-cachyos/
   cp -r ananicy-rules/00-cgroups.cgroups /etc/ananicy.d/zz-cachyos/
+#   sudo tee /etc/ananicy.d/00-system-protect.rules >/dev/null <<'EOF'
+# [polkitd]
+# nice = 0
+# ionice = 0
+# sched = keep
+#
+# [dbus-daemon]
+# nice = 0
+# ionice = 0
+# sched = keep
+#
+# [systemd-logind]
+# nice = 0
+# ionice = 0
+# sched = keep
+# EOF
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
