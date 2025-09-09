@@ -292,11 +292,6 @@ loglevel = info
 log_applied_rule = false
 cgroup_realtime_workaround = false
 EOF
-  # tee /etc/ananicy.d/99-system-protect.rules >/dev/null <<'EOF'
-  # { "name": "polkitd", "nice": 0, "ioclass": "best-effort", "sched": "keep" }
-  # { "name": "dbus-daemon", "nice": 0, "ioclass": "best-effort", "sched": "keep" }
-  # { "name": "systemd-logind", "nice": 0, "ioclass": "best-effort", "sched": "keep" }
-  # EOF
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
