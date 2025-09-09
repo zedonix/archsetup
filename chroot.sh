@@ -269,6 +269,35 @@ if [[ "$howMuch" == "max" ]]; then
   cp -r "$THEME_SRC/themes/Gruvbox-Material-Dark" "$THEME_DEST/themes"
   cp -r "$THEME_SRC/icons/Gruvbox-Material-Dark" "$THEME_DEST/icons"
 
+  # Anancy-cpp rules
+  git clone --depth=1 https://github.com/RogueScholar/ananicy.git
+  git clone --depth=1 https://github.com/CachyOS/ananicy-rules.git
+  mkdir -p /etc/ananicy.d/roguescholar /etc/ananicy.d/zz-cachyos
+  cp -r ananicy/ananicy.d/* /etc/ananicy.d/roguescholar/
+  cp -r ananicy-rules/00-default/* /etc/ananicy.d/zz-cachyos/
+  cp -r ananicy-rules/00-types.types /etc/ananicy.d/zz-cachyos/
+  cp -r ananicy-rules/00-cgroups.cgroups /etc/ananicy.d/zz-cachyos/
+  tee /etc/ananicy.d/ananicy.conf >/dev/null <<'EOF'
+check_freq = 15
+cgroup_load = false
+type_load = true
+rule_load = true
+apply_nice = true
+apply_latnice = true
+apply_ionice = true
+apply_sched = true
+apply_oom_score_adj = true
+apply_cgroup = true
+loglevel = info
+log_applied_rule = false
+cgroup_realtime_workaround = false
+EOF
+  # tee /etc/ananicy.d/99-system-protect.rules >/dev/null <<'EOF'
+  # { "name": "polkitd", "nice": 0, "ioclass": "best-effort", "sched": "keep" }
+  # { "name": "dbus-daemon", "nice": 0, "ioclass": "best-effort", "sched": "keep" }
+  # { "name": "systemd-logind", "nice": 0, "ioclass": "best-effort", "sched": "keep" }
+  # EOF
+
   # Firefox policy
   mkdir -p /etc/firefox/policies
   ln -sf "/home/$username/Documents/projects/default/dotfiles/policies.json" /etc/firefox/policies/policies.json
@@ -331,7 +360,7 @@ mkdir -p /etc/systemd/zram-generator.conf.d
 # rfkill unblock bluetooth
 # modprobe btusb || true
 if [[ "$howMuch" == "max" ]]; then
-  systemctl enable ly cronie sshd reflector.timer
+  systemctl enable ananicy-cpp ly cronie sshd reflector.timer
   if [[ "$hardware" == "hardware" ]]; then
     systemctl enable fstrim.timer acpid libvirtd.socket cups ipp-usb docker.socket
   fi
