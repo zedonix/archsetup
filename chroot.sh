@@ -176,7 +176,7 @@ editor no
 EOF
 
 # common options base
-opts_base="root=UUID=$uuid rw zswap.enabled=0 rootfstype=ext4"
+opts_base="root=UUID=$uuid rw fsck.repair=yes zswap.enabled=0 rootfstype=ext4"
 if [[ -n "$pstate_param" ]]; then
   opts="$opts_base $pstate_param"
 else
