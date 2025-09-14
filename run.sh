@@ -48,9 +48,51 @@ sudo systemctl enable ufw
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # Libvirt setup
-if pacman -Qq libvirt &>/dev/null; then
-  sudo virsh net-autostart default
-  sudo virsh net-start default
+NEW="$HOME/Documents/libvirt"
+TMP="/tmp/default-pool.xml"
+VIRSH="virsh --connect qemu:///system"
+
+if pacman -Q libvirt >/dev/null 2>&1; then
+  sudo systemctl start libvirtd.service || true
+  sudo virsh net-autostart default >/dev/null 2>&1 || true
+  sudo virsh net-start default >/dev/null 2>&1 || true
+
+  mkdir -p "$NEW"
+  sudo chown -R root:libvirt "$NEW"
+  sudo chmod -R 2775 "$NEW"
+
+  for p in $($VIRSH pool-list --all --name); do
+    [ -z "$p" ] && continue
+    if $VIRSH pool-dumpxml "$p" 2>/dev/null | grep -q "<path>${NEW}</path>"; then
+      [ "$p" != "default" ] && sudo $VIRSH pool-destroy "$p" >/dev/null 2>&1 || true
+      [ "$p" != "default" ] && sudo $VIRSH pool-undefine "$p" >/dev/null 2>&1 || true
+    fi
+  done
+
+  if $VIRSH pool-list --all | awk 'NR>2{print $1}' | grep -qx default; then
+    sudo $VIRSH pool-destroy default >/dev/null 2>&1 || true
+    sudo $VIRSH pool-undefine default >/dev/null 2>&1 || true
+  fi
+
+  cat >"$TMP" <<EOF
+<pool type='dir'>
+  <name>default</name>
+  <target><path>${NEW}</path></target>
+</pool>
+EOF
+
+  sudo $VIRSH pool-define "$TMP"
+  sudo $VIRSH pool-start default
+  sudo $VIRSH pool-autostart default
+
+  if [ -d /var/lib/libvirt/images ] && [ "$(ls -A /var/lib/libvirt/images 2>/dev/null || true)" != "" ]; then
+    sudo rsync -aHAX --progress /var/lib/libvirt/images/ "$NEW/"
+    sudo chown -R root:libvirt "$NEW"
+    sudo find "$NEW" -type d -exec chmod 2775 {} +
+    sudo find "$NEW" -type f -exec chmod 0644 {} +
+  fi
+
+  sudo $VIRSH pool-refresh default
 fi
 
 # Configure static IP, gateway, and custom DNS
@@ -71,10 +113,7 @@ fi
 # sudo systemctl restart NetworkManager
 
 # A cron job
-(
-  crontab -l 2>/dev/null
-  echo "@daily $(which trash-empty) 30"
-) | crontab -
+echo "@daily $(which trash-empty) 30" | crontab -
 
 # Nvim tools install
 foot -e nvim +MasonToolsInstall &
