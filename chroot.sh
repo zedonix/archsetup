@@ -320,10 +320,8 @@ if [[ "$recovery" == "no" ]]; then
     for link in ~/Documents/projects/default/scripts/bin/*; do
       ln -sf "$link" ~/.local/bin/
     done
-  fi
-
-  # Clone tpm
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+  fi
   '
   # tldr wiki setup
   curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
