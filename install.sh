@@ -217,7 +217,6 @@ fi
 
 # Pacstrap stuff
 #
-#texlive-mathscience
 cp pkgs.txt pkgss.txt
 sed -i "s|microcode|$microcode_pkg|g" pkgss.txt
 
