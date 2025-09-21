@@ -148,9 +148,9 @@ mkfs.fat -F 32 -n BOOT "$part1"
 if [[ "$encryption" == "no" ]]; then
   mkfs.btrfs -L ROOT "$part2"
 else
-  "so there"
+  echo "so there"
   mkfs.btrfs -L ROOT /dev/mapper/cryptroot
-  "no there?"
+  echo "no there?"
 fi
 
 # Mounting & btfs subvolume
