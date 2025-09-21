@@ -137,9 +137,7 @@ parted -s "$disk" mkpart primary btrfs 2049MiB 100%
 if [[ "$encryption" == "yes" ]]; then
   cryptsetup luksFormat "$part2"
   cryptsetup open "$part2" cryptroot
-  echo "here"
   cryptsetup luksHeaderBackup "$part2" --header-backup-file /root/encryption-header.img
-  echo "after this?"
 fi
 
 # Formatting
@@ -148,9 +146,7 @@ mkfs.fat -F 32 -n BOOT "$part1"
 if [[ "$encryption" == "no" ]]; then
   mkfs.btrfs -L ROOT "$part2"
 else
-  echo "so there"
   mkfs.btrfs -L ROOT /dev/mapper/cryptroot
-  echo "no there?"
 fi
 
 # Mounting & btfs subvolume
@@ -168,9 +164,11 @@ btrfs subvolume create /mnt/@home
 btrfs subvolume create /mnt/@var
 btrfs subvolume create /mnt/@snapshots
 mkdir -p /mnt/{home,var,.snapshots}
+echo "so there"
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$part2" /mnt/home
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$part2" /mnt/var
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$part2" /mnt/.snapshots
+echo "not here?"
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
