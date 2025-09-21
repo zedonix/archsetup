@@ -155,8 +155,8 @@ if [[ "$encryption" == "no" ]]; then
 else
   mount /dev/mapper/cryptroot /mnt
 fi
-mkdir -p /mnt/boot/efi
-mount "$part1" /mnt/boot/efi
+mkdir -p /mnt/boot
+mount "$part1" /mnt/boot
 
 # Btrfs subvolume shit and mounting it
 btrfs subvolume create /mnt/@

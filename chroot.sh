@@ -160,46 +160,24 @@ EOF
 fi
 
 # Boot Manager setup
-if [[ "$microcode_pkg" == "intel-ucode" ]]; then
-  microcode_img="initrd /intel-ucode.img"
-elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
-  microcode_img="initrd /amd-ucode.img"
+if [[ "$encryption" == "no" ]]; then
+  GRUB_CMDLINE="root=${part2} rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
+else
+  uuid=$(blkid -s UUID -o value "$part2")
+  GRUB_CMDLINE="rd.luks.name=${uuid}=cryptroot root=/dev/mapper/cryptroot rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
+  sed -i '/^HOOKS=.*encrypt/! s/^\(HOOKS=.*\)filesystems/\1encrypt filesystems/' /etc/mkinitcpio.conf
 fi
 mkinitcpio -P
-bootctl install
-# bootctl update
-
-cat >/boot/loader/loader.conf <<EOF
-default arch
-timeout 3
-editor no
+cat >/etc/default/grub <<EOF
+GRUB_DEFAULT=saved
+GRUB_SAVEDEFAULT=true
+GRUB_TIMEOUT=3
+GRUB_DISTRIBUTOR="archlinux"
+GRUB_CMDLINE_LINUX="${GRUB_CMDLINE}"
+GRUB_DISABLE_OS_PROBER=false
 EOF
-
-# common options base
-opts_base="root=UUID=$uuid rw fsck.repair=yes zswap.enabled=0 rootfstype=ext4"
-if [[ -n "$pstate_param" ]]; then
-  opts="$opts_base $pstate_param"
-else
-  opts="$opts_base"
-fi
-
-cat >/boot/loader/entries/arch.conf <<ENTRY
-title   Arch Linux
-linux   /vmlinuz-linux
-$microcode_img
-initrd  /initramfs-linux.img
-options $opts
-ENTRY
-
-if [[ "${howMuch:-}" == "max" ]]; then
-  cat >/boot/loader/entries/arch-lts.conf <<ENTRY_LTS
-title   Arch Linux (LTS)
-linux   /vmlinuz-linux-lts
-$microcode_img
-initrd  /initramfs-linux-lts.img
-options $opts
-ENTRY_LTS
-fi
+grub2-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub2-mkconfig -o /boot/grub2/grub.cfg
 
 # Reflector and pacman Setup
 sed -i '/^#Color$/c\Color' /etc/pacman.conf
