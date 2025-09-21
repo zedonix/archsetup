@@ -283,7 +283,6 @@ hardware=$hardware
 howMuch=$howMuch
 extra=$extra
 microcode_pkg=$microcode_pkg
-recovery=$recovery
 ddos=$ddos
 timezone=$timezone
 username=$username
