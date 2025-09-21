@@ -3,7 +3,6 @@ set -euo pipefail
 
 # Load variables from install.conf
 source /root/install.conf
-uuid=$(blkid -s UUID -o value "$part2")
 
 # --- Set hostname ---
 echo "$hostname" >/etc/hostname
@@ -204,25 +203,44 @@ EOF
 fi
 
 # Copy config and dotfiles as the user
-if [[ "$howMuch" == "max" ]]; then
-  su - "$username" -c '
-    mkdir -p ~/Documents/projects/default
-    git clone https://github.com/zedonix/scripts.git ~/Documents/projects/default/scripts
-    git clone https://github.com/zedonix/dotfiles.git ~/Documents/projects/default/dotfiles
-    git clone https://github.com/zedonix/archsetup.git ~/Documents/projects/default/archsetup
-    git clone https://github.com/zedonix/notes.git ~/Documents/projects/default/notes
-    git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/projects/default/GruvboxGtk
-    git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/projects/default/GruvboxQT
-  '
-  # Root .config
-  mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
-  echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
-  touch ~/.local/state/zsh/history ~/.local/state/bash/history
-  ln -sf /home/$username/Documents/projects/default/dotfiles/.bashrc ~/.bashrc
-  ln -sf /home/$username/Documents/projects/default/dotfiles/.zshrc ~/.zshrc
-  ln -sf /home/$username/Documents/projects/default/dotfiles/.config/starship.toml ~/.config
-  ln -sf /home/$username/Documents/projects/default/dotfiles/.config/nvim/ ~/.config
+su - "$username" -c '
+  mkdir -p ~/Downloads ~/Desktop ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots/temp ~/.config
+  mkdir -p ~/Documents/projects/default ~/Documents/projects/work ~/Documents/projects/sandbox ~/Documents/personal/wiki
+  mkdir -p ~/.local/bin ~/.cache/cargo-target ~/.local/state/bash ~/.local/state/zsh ~/.local/share/wineprefixes
+  touch ~/.local/state/bash/history ~/.local/state/zsh/history ~/Documents/personal/wiki/index.txt
 
+  git clone https://github.com/zedonix/scripts.git ~/Documents/projects/default/scripts
+  git clone https://github.com/zedonix/dotfiles.git ~/Documents/projects/default/dotfiles
+  git clone https://github.com/zedonix/archsetup.git ~/Documents/projects/default/archsetup
+  git clone https://github.com/zedonix/notes.git ~/Documents/projects/default/notes
+  git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/projects/default/GruvboxGtk
+  git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/projects/default/GruvboxQT
+
+  cp ~/Documents/projects/default/dotfiles/.config/sway/archLogo.png ~/Pictures/
+  cp ~/Documents/projects/default/dotfiles/pics/* ~/Pictures/
+  ln -sf ~/Documents/projects/default/dotfiles/.bashrc ~/.bashrc
+  ln -sf ~/Documents/projects/default/dotfiles/.zshrc ~/.zshrc
+
+  for link in ~/Documents/projects/default/dotfiles/.config/*; do
+    ln -sf "$link" ~/.config/
+  done
+  for link in ~/Documents/projects/default/dotfiles/.copy/*; do
+    cp -r "$link" ~/.config/
+  done
+  for link in ~/Documents/projects/default/scripts/bin/*; do
+    ln -sf "$link" ~/.local/bin/
+  done
+'
+# Root .config
+mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
+echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
+touch ~/.local/state/zsh/history ~/.local/state/bash/history
+ln -sf /home/$username/Documents/projects/default/dotfiles/.bashrc ~/.bashrc
+ln -sf /home/$username/Documents/projects/default/dotfiles/.zshrc ~/.zshrc
+ln -sf /home/$username/Documents/projects/default/dotfiles/.config/starship.toml ~/.config
+ln -sf /home/$username/Documents/projects/default/dotfiles/.config/nvim/ ~/.config
+
+if [[ "$howMuch" == "max" ]]; then
   # ly config
   # -e 's/^bigclock *= *.*/bigclock = en/' \
   sed -i \
@@ -230,6 +248,13 @@ if [[ "$howMuch" == "max" ]]; then
     -e 's/^clear_password *= *.*/clear_password = true/' \
     -e 's/^clock *= *.*/clock = %a %d\/%m %H:%M/' \
     /etc/ly/config.ini
+
+  # TPM tmux
+  git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+
+  # Rustup
+  rustup default stable
+  rustup update
 
   # Setup Gruvbox theme
   THEME_SRC="/home/$username/Documents/projects/default/GruvboxQT"
@@ -271,31 +296,6 @@ EOF
   mkdir -p /etc/firefox/policies
   ln -sf "/home/$username/Documents/projects/default/dotfiles/policies.json" /etc/firefox/policies/policies.json
 fi
-su - "$username" -c '
-  mkdir -p ~/Downloads ~/Desktop ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots/temp ~/.config
-  mkdir -p ~/Documents/projects/work ~/Documents/projects/sandbox ~/Documents/personal/wiki
-  mkdir -p ~/.local/bin ~/.cache/cargo-target ~/.local/state/bash ~/.local/state/zsh ~/.local/share/wineprefixes
-  touch ~/.local/state/bash/history ~/.local/state/zsh/history ~/Documents/personal/wiki/index.txt
-
-  # Copy and link files (only if dotfiles exists)
-  if [[ -d ~/Documents/projects/default/dotfiles ]]; then
-    cp ~/Documents/projects/default/dotfiles/.config/sway/archLogo.png ~/Pictures/
-    cp ~/Documents/projects/default/dotfiles/pics/* ~/Pictures/
-    ln -sf ~/Documents/projects/default/dotfiles/.bashrc ~/.bashrc
-    ln -sf ~/Documents/projects/default/dotfiles/.zshrc ~/.zshrc
-
-    for link in ~/Documents/projects/default/dotfiles/.config/*; do
-      ln -sf "$link" ~/.config/
-    done
-    for link in ~/Documents/projects/default/dotfiles/.copy/*; do
-      cp -r "$link" ~/.config/
-    done
-    for link in ~/Documents/projects/default/scripts/bin/*; do
-      ln -sf "$link" ~/.local/bin/
-    done
-  git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
-  fi
-  '
 # tldr wiki setup
 curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
 make -f ./wikiman-makefile source-tldr
