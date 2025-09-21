@@ -22,10 +22,10 @@ timezone="Asia/Kolkata"
 username="piyush"
 
 # --- Prompt Section (collect all user input here) ---
-# Prompt for home recovery Installation
+# Ecryption
 while true; do
-  read -p "Recovery Install (yes/no)? " recovery
-  case "$recovery" in
+  read -p "Encryption (yes/no)? " encryption
+  case "$encryption" in
   yes | no) break ;;
   *) echo "Invalid input. Please enter 'yes' or 'no'." ;;
   esac
@@ -59,7 +59,7 @@ done
 mount | grep -q "$disk" && echo "Disk appears to be in use!" && exit 1
 
 # Partition Naming
-if [[ "$disk" == *nvme* ]]; then
+if [[ "$disk" == *nvme* ]] || [[ "$disk" == *mmcblk* ]]; then
   part_prefix="${disk}p"
 else
   part_prefix="${disk}"
@@ -67,57 +67,6 @@ fi
 
 part1="${part_prefix}1"
 part2="${part_prefix}2"
-part3="${part_prefix}3"
-
-if [[ "$recovery" == "yes" ]]; then
-  for p in "$part1" "$part2" "$part3"; do
-    [[ ! -b "$p" ]] && echo "Missing partition $p. Recovery mode expects disk to be pre-partitioned." && exit 1
-  done
-fi
-
-if [[ $recovery == "no" ]]; then
-  # --- Disk Size Calculation ---
-  total_mib=$(($(blockdev --getsize64 "$disk") / 1024 / 1024))
-  total_gb=$(echo "$total_mib / 1024" | bc)
-  half_gb=$(echo "$total_gb / 2" | bc)
-
-  # --- Root Partition Size Selection ---
-  while true; do
-    echo "Choose root partition size (total gb: $total_gb):"
-    echo "1) 40GB"
-    echo "2) 50GB"
-    echo "3) 50% of disk ($half_gb GB)"
-    echo "4) Custom"
-
-    read -p "Enter choice [1-4]: " choice
-    case "$choice" in
-    1) rootSize=40 ;;
-    2) rootSize=50 ;;
-    3) rootSize=$half_gb ;;
-    4)
-      read -p "Enter custom size in GB (max: $half_gb GB): " rootSize
-      if ! [[ "$rootSize" =~ ^[0-9]+$ ]]; then
-        echo "Invalid input: must be an integer (e.g. 40)"
-        exit 1
-      fi
-      if (($(echo "$rootSize > $half_gb" | bc -l))); then
-        echo "Root size exceeds 50% of total disk size ($half_gb GB). Try again."
-        continue
-      fi
-      ;;
-    *)
-      echo "Invalid option. Try again."
-      continue
-      ;;
-    esac
-
-    if ((rootSize > half_gb)); then
-      echo "Root size exceeds 50% of total disk size ($total_gb GB). Try again."
-    else
-      break
-    fi
-  done
-fi
 
 # Which type of install?
 #
@@ -178,34 +127,46 @@ while true; do
   break
 done
 
-if [[ "$recovery" == "no" ]]; then
-  # Partitioning
-  parted -s "$disk" mklabel gpt
-  parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
-  parted -s "$disk" set 1 esp on
-  root_end=$((2049 + $rootSize * 1024))
-  parted -s "$disk" mkpart primary ext4 2049MiB "${root_end}MiB" # root
-  parted -s "$disk" mkpart primary ext4 "${root_end}MiB" 100%    #home
+# Partitioning
+parted -s "$disk" mklabel gpt
+parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
+parted -s "$disk" set 1 esp on
+parted -s "$disk" mkpart primary btrfs 2049MiB 100%
+
+# Luks encryption
+if [[ "$encryption" == "yes" ]]; then
+  cryptsetup luksFormat "$part2"
+  cryptsetup open "$part2" cryptroot
+  cryptsetup luksHeaderBackup "$part2" --header-backup-file /root/encryption-header.img
 fi
 
 # Formatting
-mkfs.fat -F 32 -n EFI "$part1"
-mkfs.ext4 -L ROOT "$part2"
-if [[ "$recovery" == "no" ]]; then
-  mkfs.ext4 -L HOME "$part3"
+mkfs.fat -F 32 -n BOOT "$part1"
+
+if [[ "$encryption" == "no" ]]; then
+  mkfs.btrfs -L ROOT "$part2"
+else
+  mkfs.btrfs -L ROOT /dev/mapper/cryptroot
 fi
 
-# Enable fast_commit for ext4 partitions
-tune2fs -O fast_commit "$part2"
-if [[ "$recovery" == "no" ]]; then
-  tune2fs -O fast_commit "$part3"
+# Mounting & btfs subvolume
+if [[ "$encryption" == "no" ]]; then
+  mount "$part2" /mnt
+else
+  mount /dev/mapper/cryptroot /mnt
 fi
+mkdir -p /mnt/boot/efi
+mount "$part1" /mnt/boot/efi
 
-# Mounting
-mount "$part2" /mnt
-mkdir -p /mnt/boot /mnt/home
-mount "$part1" /mnt/boot
-mount "$part3" /mnt/home
+# Btrfs subvolume shit and mounting it
+btrfs subvolume create /mnt/@
+btrfs subvolume create /mnt/@home
+btrfs subvolume create /mnt/@var
+btrfs subvolume create /mnt/@snapshots
+mkdir -p /mnt/{home,var,.snapshots}
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$part2" /mnt/home
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$part2" /mnt/var
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$part2" /mnt/.snapshots
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
@@ -320,20 +281,6 @@ pacstrap /mnt - <pkglists.txt || {
 genfstab -U /mnt >/mnt/etc/fstab
 
 # Exporting variables for chroot
-arch-chroot /mnt /bin/bash -s <<EOF
-echo "root:$root_password" | chpasswd
-if ! id "$username" &>/dev/null; then
-  if [[ "$howMuch" == "max" && "$hardware" == "hardware" ]]; then
-    useradd -m -G wheel,storage,video,audio,lp,scanner,sys,kvm,libvirt,docker -s /bin/bash "$username"
-  else
-    useradd -m -G wheel,storage,video,audio,lp,sys -s /bin/bash "$username"
-  fi
-  echo "$username:$user_password" | chpasswd
-else
-  echo "User $username already exists, skipping creation."
-fi
-EOF
-
 cat >/mnt/root/install.conf <<EOF
 hostname=$hostname
 hardware=$hardware
@@ -351,7 +298,17 @@ chmod 700 /mnt/root/install.conf
 # Run chroot.sh
 cp chroot.sh /mnt/root/chroot.sh
 chmod 700 /mnt/root/chroot.sh
-arch-chroot /mnt /bin/bash -c /root/chroot.sh
+arch-chroot /mnt /bin/bash -s <<EOF
+echo "root:$root_password" | chpasswd
+if [[ "$howMuch" == "max" && "$hardware" == "hardware" ]]; then
+  useradd -m -G wheel,storage,video,audio,lp,scanner,sys,kvm,libvirt,docker -s /bin/bash "$username"
+else
+  useradd -m -G wheel,storage,video,audio,lp,sys -s /bin/bash "$username"
+fi
+echo "$username:$user_password" | chpasswd
+fi
+bash /root/chroot.sh
+EOF
 
 # Unmount and finalize
 fuser -k /mnt || true

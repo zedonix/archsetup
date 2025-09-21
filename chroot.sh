@@ -21,7 +21,7 @@ echo "LANG=en_US.UTF-8" >/etc/locale.conf
 # Sudo Configuration
 echo "%wheel ALL=(ALL) ALL" >/etc/sudoers.d/wheel
 echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
-# echo "Defaults pwfeedback" >/etc/sudoers.d/pwfeedback
+echo "Defaults pwfeedback" >/etc/sudoers.d/pwfeedback
 chmod 440 /etc/sudoers.d/*
 
 # Tlp setup
@@ -229,7 +229,6 @@ fi
 if [[ "$howMuch" == "max" ]]; then
   su - "$username" -c '
     mkdir -p ~/Documents/projects/default
-    # Clone scripts
     git clone https://github.com/zedonix/scripts.git ~/Documents/projects/default/scripts
     git clone https://github.com/zedonix/dotfiles.git ~/Documents/projects/default/dotfiles
     git clone https://github.com/zedonix/archsetup.git ~/Documents/projects/default/archsetup
@@ -253,9 +252,6 @@ if [[ "$howMuch" == "max" ]]; then
     -e 's/^clear_password *= *.*/clear_password = true/' \
     -e 's/^clock *= *.*/clock = %a %d\/%m %H:%M/' \
     /etc/ly/config.ini
-
-  # Greetd setup for tuigreet
-  # cp -f /home/$username/Documents/projects/default/dotfiles/config.toml /etc/greetd/
 
   # Setup Gruvbox theme
   THEME_SRC="/home/$username/Documents/projects/default/GruvboxQT"
@@ -297,8 +293,7 @@ EOF
   mkdir -p /etc/firefox/policies
   ln -sf "/home/$username/Documents/projects/default/dotfiles/policies.json" /etc/firefox/policies/policies.json
 fi
-if [[ "$recovery" == "no" ]]; then
-  su - "$username" -c '
+su - "$username" -c '
   mkdir -p ~/Downloads ~/Desktop ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots/temp ~/.config
   mkdir -p ~/Documents/projects/work ~/Documents/projects/sandbox ~/Documents/personal/wiki
   mkdir -p ~/.local/bin ~/.cache/cargo-target ~/.local/state/bash ~/.local/state/zsh ~/.local/share/wineprefixes
@@ -323,12 +318,11 @@ if [[ "$recovery" == "no" ]]; then
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
   fi
   '
-  # tldr wiki setup
-  curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
-  make -f ./wikiman-makefile source-tldr
-  make -f ./wikiman-makefile source-install
-  make -f ./wikiman-makefile clean
-fi
+# tldr wiki setup
+curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
+make -f ./wikiman-makefile source-tldr
+make -f ./wikiman-makefile source-install
+make -f ./wikiman-makefile clean
 
 # Delete variables
 shred -u /root/install.conf
@@ -364,6 +358,7 @@ if [[ "$howMuch" == "max" ]]; then
   fi
 fi
 systemctl enable NetworkManager NetworkManager-dispatcher
+systemctl enable btrfs-scrub@-.timer btrfs-scrub@home.timer btrfs-scrub@var.timer
 systemctl mask systemd-rfkill systemd-rfkill.socket
 systemctl disable NetworkManager-wait-online.service
 
