@@ -133,42 +133,36 @@ parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
 parted -s "$disk" set 1 esp on
 parted -s "$disk" mkpart primary btrfs 2049MiB 100%
 
-# Luks encryption
 if [[ "$encryption" == "yes" ]]; then
   cryptsetup luksFormat "$part2"
   cryptsetup open "$part2" cryptroot
-  cryptsetup luksHeaderBackup "$part2" --header-backup-file /root/encryption-header.img
-fi
-
-# Formatting
-mkfs.fat -F 32 -n BOOT "$part1"
-
-if [[ "$encryption" == "no" ]]; then
-  mkfs.btrfs -L ROOT "$part2"
+  rootdev="/dev/mapper/cryptroot"
 else
-  mkfs.btrfs -L ROOT /dev/mapper/cryptroot
+  rootdev="$part2"
 fi
 
-# Mounting & btfs subvolume
-if [[ "$encryption" == "no" ]]; then
-  mount "$part2" /mnt
-else
-  mount /dev/mapper/cryptroot /mnt
-fi
-mkdir -p /mnt/boot
-mount "$part1" /mnt/boot
+# Format
+mkfs.fat -F32 -n BOOT "$part1"
+mkfs.btrfs -L ROOT "$rootdev"
 
-# Btrfs subvolume shit and mounting it
+# Mount to create subvolumes
+mount "$rootdev" /mnt
 btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
 btrfs subvolume create /mnt/@var
 btrfs subvolume create /mnt/@snapshots
+umount /mnt
+
+# Mount subvolumes
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@ "$rootdev" /mnt
 mkdir -p /mnt/{home,var,.snapshots}
-echo "so there"
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$part2" /mnt/home
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$part2" /mnt/var
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$part2" /mnt/.snapshots
-echo "not here?"
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$rootdev" /mnt/home
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$rootdev" /mnt/var
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$rootdev" /mnt/.snapshots
+
+# Mount ESP
+mkdir -p /mnt/boot
+mount "$part1" /mnt/boot
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
