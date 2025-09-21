@@ -287,6 +287,7 @@ ddos=$ddos
 timezone=$timezone
 username=$username
 part2=$part2
+encryption=$encryption
 EOF
 chmod 700 /mnt/root/install.conf
 
