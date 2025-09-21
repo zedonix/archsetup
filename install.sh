@@ -137,7 +137,9 @@ parted -s "$disk" mkpart primary btrfs 2049MiB 100%
 if [[ "$encryption" == "yes" ]]; then
   cryptsetup luksFormat "$part2"
   cryptsetup open "$part2" cryptroot
+  echo "here"
   cryptsetup luksHeaderBackup "$part2" --header-backup-file /root/encryption-header.img
+  echo "after this?"
 fi
 
 # Formatting
@@ -146,7 +148,9 @@ mkfs.fat -F 32 -n BOOT "$part1"
 if [[ "$encryption" == "no" ]]; then
   mkfs.btrfs -L ROOT "$part2"
 else
+  "so there"
   mkfs.btrfs -L ROOT /dev/mapper/cryptroot
+  "no there?"
 fi
 
 # Mounting & btfs subvolume
