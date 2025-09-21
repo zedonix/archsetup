@@ -301,7 +301,6 @@ else
   useradd -m -G wheel,storage,video,audio,lp,sys -s /bin/bash "$username"
 fi
 echo "$username:$user_password" | chpasswd
-fi
 bash /root/chroot.sh
 EOF
 
