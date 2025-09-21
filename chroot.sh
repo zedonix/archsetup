@@ -163,8 +163,9 @@ if [[ "$encryption" == "no" ]]; then
   GRUB_CMDLINE="root=${part2} rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
 else
   uuid=$(blkid -s UUID -o value "$part2")
-  GRUB_CMDLINE="cryptdevice=UUID=${uuid}:cryptroot root=/dev/mapper/cryptroot rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
-  sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms consolefont block keyboard keymap encrypt filesystems fsck)/' /etc/mkinitcpio.conf
+  GRUB_CMDLINE="cryptdevice=UUID=${uuid}:cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
+  sed -i 's/^HOOKS=.*/HOOKS=(base autodetect microcode modconf block sd-vconsole sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
+  echo "cryptroot UUID=${uuid} none luks,tries=3" | tee /etc/crypttab
 fi
 mkinitcpio -P
 cat >/etc/default/grub <<EOF
