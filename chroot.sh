@@ -175,8 +175,8 @@ GRUB_DISTRIBUTOR="archlinux"
 GRUB_CMDLINE_LINUX="${GRUB_CMDLINE}"
 GRUB_DISABLE_OS_PROBER=false
 EOF
-grub2-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
-grub2-mkconfig -o /boot/grub2/grub.cfg
+grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
+grub-mkconfig -o /boot/grub/grub.cfg
 
 # Reflector and pacman Setup
 sed -i '/^#Color$/c\Color' /etc/pacman.conf
