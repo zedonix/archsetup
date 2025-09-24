@@ -184,8 +184,8 @@ GRUB_GFXPAYLOAD_LINUX=keep
 GRUB_DISABLE_RECOVERY=true
 GRUB_THEME="/boot/grub/themes/minimal/theme.txt"
 EOF
-mkdir -p /boot/grub/themes/
-git clone https://github.com/zedonix/minimal.git /boot/grub/themes/
+mkdir -p /boot/grub/themes/minimal/
+git clone https://github.com/zedonix/minimal.git /boot/grub/themes/minimal/
 rm -rf /boot/grub/themes/minimal/.git
 grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
 grub-mkconfig -o /boot/grub/grub.cfg
