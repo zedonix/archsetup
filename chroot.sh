@@ -160,11 +160,11 @@ fi
 
 # Boot Manager setup
 if [[ "$encryption" == "no" ]]; then
-  GRUB_CMDLINE="root=${part2} rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
+  GRUB_CMDLINE="root=${part2} SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
 else
   uuid=$(blkid -s UUID -o value "$part2")
-  GRUB_CMDLINE="rd.luks.name=${uuid}=cryptlvm root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
-  sed -i 's/^HOOKS=.*/HOOKS=(base autodetect microcode modconf block sd-vconsole sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
+  GRUB_CMDLINE="rd.luks.uuid=${uuid} root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
+  sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
   echo "cryptroot UUID=${uuid} none luks,tries=3" | tee /etc/crypttab
 fi
 tee /etc/vconsole.conf >/dev/null <<EOF
