@@ -176,10 +176,17 @@ cat >/etc/default/grub <<EOF
 GRUB_DEFAULT=saved
 GRUB_SAVEDEFAULT=true
 GRUB_TIMEOUT=3
-GRUB_DISTRIBUTOR="archlinux"
+GRUB_DISTRIBUTOR="Arch"
 GRUB_CMDLINE_LINUX="${GRUB_CMDLINE}"
 GRUB_DISABLE_OS_PROBER=false
+GRUB_GFXMODE=1920x1080x32,1366x768x32,auto
+GRUB_GFXPAYLOAD_LINUX=keep
+GRUB_DISABLE_RECOVERY=true
+GRUB_THEME="/boot/grub/themes/minimal/theme.txt"
 EOF
+mkdir -p /boot/grub/themes/
+git clone https://github.com/zedonix/minimal.git /boot/grub/themes/
+rm -rf /boot/grub/themes/minimal/.git
 grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
 grub-mkconfig -o /boot/grub/grub.cfg
 
