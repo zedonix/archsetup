@@ -268,7 +268,7 @@ Server = https://mirror.del2.albony.in/archlinux/$repo/os/$arch
 Server = https://in-mirror.garudalinux.org/archlinux/$repo/os/$arch
 EOF
 fi
-pacman -Sy archlinux-keyring
+# pacman -Sy archlinux-keyring
 pacman-key --init
 pacman-key --populate archlinux
 pacman-key --refresh-keys
