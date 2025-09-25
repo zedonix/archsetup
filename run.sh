@@ -112,29 +112,29 @@ fi
 # sudo systemctl restart NetworkManager
 
 # Snapper Config
-umount /.snapshots
-rm -rf /.snapshots
-snapper -c root create-config /
-snapper -c home create-config /home
-mount -a
+sudo umount /.snapshots
+sudo rm -rf /.snapshots
+sudo snapper -c root create-config /
+sudo snapper -c home create-config /home
+sudo mount -a
 # root
-snapper -c root set-config TIMELINE_CREATE=yes
-snapper -c root set-config TIMELINE_CLEANUP=yes
-snapper -c root set-config TIMELINE_LIMIT_DAILY=3
-snapper -c root set-config TIMELINE_LIMIT_WEEKLY=0
-snapper -c root set-config TIMELINE_LIMIT_MONTHLY=2
-snapper -c root set-config TIMELINE_MIN_AGE=3600
-snapper -c root set-config NUMBER_CLEANUP=yes
-snapper -c root set-config NUMBER_LIMIT=50
+sudo snapper -c root set-config TIMELINE_CREATE=yes
+sudo snapper -c root set-config TIMELINE_CLEANUP=yes
+sudo snapper -c root set-config TIMELINE_LIMIT_DAILY=3
+sudo snapper -c root set-config TIMELINE_LIMIT_WEEKLY=0
+sudo snapper -c root set-config TIMELINE_LIMIT_MONTHLY=2
+sudo snapper -c root set-config TIMELINE_MIN_AGE=3600
+sudo snapper -c root set-config NUMBER_CLEANUP=yes
+sudo snapper -c root set-config NUMBER_LIMIT=50
 # home
-snapper -c home set-config TIMELINE_CREATE=yes
-snapper -c home set-config TIMELINE_CLEANUP=yes
-snapper -c home set-config TIMELINE_LIMIT_DAILY=3
-snapper -c home set-config TIMELINE_LIMIT_WEEKLY=0
-snapper -c home set-config TIMELINE_LIMIT_MONTHLY=2
-snapper -c home set-config TIMELINE_MIN_AGE=3600
-snapper -c home set-config NUMBER_CLEANUP=yes
-snapper -c home set-config NUMBER_LIMIT=50
+sudo snapper -c home set-config TIMELINE_CREATE=yes
+sudo snapper -c home set-config TIMELINE_CLEANUP=yes
+sudo snapper -c home set-config TIMELINE_LIMIT_DAILY=3
+sudo snapper -c home set-config TIMELINE_LIMIT_WEEKLY=0
+sudo snapper -c home set-config TIMELINE_LIMIT_MONTHLY=2
+sudo snapper -c home set-config TIMELINE_MIN_AGE=3600
+sudo snapper -c home set-config NUMBER_CLEANUP=yes
+sudo snapper -c home set-config NUMBER_LIMIT=50
 
 # A cron job
 echo "@daily $(which trash-empty) 30" | crontab -
