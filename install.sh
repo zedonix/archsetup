@@ -258,7 +258,7 @@ fi
 
 # Pacstrap with error handling
 if [[ "$ddos" == "no" ]]; then
-  reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
+  reflector --protocol https --country India --country Singapore --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 else
   cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
   cat >/etc/pacman.d/mirrorlist <<'EOF'
