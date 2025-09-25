@@ -258,20 +258,24 @@ fi
 
 # Pacstrap with error handling
 if [[ "$ddos" == "no" ]]; then
-  reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
+  reflector --country 'India' --latest 40 --age 6 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+  sed -i '/niranjan/d' /etc/pacman.d/mirrorlist
+  sed -i '1i Server = https://mirror.sahil.world/archlinux/$repo/os/$arch' /etc/pacman.d/mirrorlist
+  sed -i '1i Server = https://mirrors.abhy.me/archlinux/$repo/os/$arch' /etc/pacman.d/mirrorlist
 else
   cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
   cat >/etc/pacman.d/mirrorlist <<'EOF'
-Server = https://in.arch.niranjan.co/$repo/os/$arch
+Server = https://mirrors.abhy.me/archlinux/$repo/os/$arch
+Server = https://mirror.sahil.world/archlinux/$repo/os/$arch
 Server = https://mirrors.saswata.cc/archlinux/$repo/os/$arch
 Server = https://mirror.del2.albony.in/archlinux/$repo/os/$arch
 Server = https://in-mirror.garudalinux.org/archlinux/$repo/os/$arch
 EOF
 fi
 # pacman -Sy archlinux-keyring
-pacman-key --init
-pacman-key --populate archlinux
-pacman-key --refresh-keys
+# pacman-key --init
+# pacman-key --populate archlinux
+# pacman-key --refresh-keys
 pacstrap /mnt - <pkglists.txt || {
   echo "pacstrap failed"
   exit 1
