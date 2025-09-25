@@ -15,7 +15,7 @@ for key in "${!gsettings_keys[@]}"; do
   subkey="${key#* }"
   value="${gsettings_keys[$key]}"
 
-  if gsettings describe "$schema" "$subkey"; then
+  if gsettings describe "$schema" "$subkey" >/dev/null; then
     gsettings set "$schema" "$subkey" "$value"
   fi
 done
