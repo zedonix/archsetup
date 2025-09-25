@@ -164,13 +164,13 @@ if [[ "$encryption" == "no" ]]; then
 else
   uuid=$(blkid -s UUID -o value "$part2")
   GRUB_CMDLINE="rd.luks.name=${uuid}=cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
-  sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
+  sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard consolefont block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
   echo "cryptroot UUID=${uuid} none luks,tries=3" | tee /etc/crypttab
 fi
-tee /etc/vconsole.conf >/dev/null <<EOF
-KEYMAP=us
-FONT=ter-112n
-EOF
+# tee /etc/vconsole.conf >/dev/null <<EOF
+# KEYMAP=us
+# FONT=ter-112n
+# EOF
 mkinitcpio -P
 cat >/etc/default/grub <<EOF
 GRUB_DEFAULT=saved
