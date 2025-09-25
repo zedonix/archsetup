@@ -169,7 +169,7 @@ else
 fi
 tee /etc/vconsole.conf >/dev/null <<EOF
 KEYMAP=us
-FONT=latarcyrheb-sun32
+FONT=ter-112n
 EOF
 mkinitcpio -P
 cat >/etc/default/grub <<EOF

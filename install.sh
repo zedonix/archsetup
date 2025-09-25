@@ -277,8 +277,6 @@ fi
 # pacman-key --init
 # pacman-key --populate archlinux
 # pacman-key --refresh-keys
-sed -i '/^XferCommand/ d' /etc/pacman.conf
-sed -i '/\[options\]/a XferCommand = /usr/bin/curl -C - -f -L --retry 3 --speed-time 30 --speed-limit 1 -o %o %u' /etc/pacman.conf
 pacstrap /mnt - <pkglists.txt || {
   echo "pacstrap failed"
   exit 1
