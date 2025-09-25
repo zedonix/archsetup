@@ -10,6 +10,7 @@ aur_pkgs=(
   networkmanager-dmenu-git
   poweralertd
   cnijfilter2
+  onlyoffice-bin
 )
 
 aur_dir="$HOME/Documents/aur"
