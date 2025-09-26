@@ -157,14 +157,14 @@ umount /mnt
 
 # Mount subvolumes
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@ "$rootdev" /mnt
-mkdir -p /mnt/{home,var/log,tmp,.snapshots}
+mkdir -p /mnt/{home,var,tmp,.snapshots}
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$rootdev" /mnt/home
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$rootdev" /mnt/var
+mkdir -p /mnt/var/log
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@varlog "$rootdev" /mnt/var/log
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@tmp "$rootdev" /mnt/tmp
 mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$rootdev" /mnt/.snapshots
-chattr +C /mnt/@varlog
-chattr +C /mnt/@tmp
+chattr +C /mnt/var/log /mnt/tmp
 
 # Mount ESP
 mkdir -p /mnt/boot
