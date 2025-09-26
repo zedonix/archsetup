@@ -125,20 +125,15 @@ parted -s "$disk" mkpart ESP fat32 1MiB 1025MiB
 parted -s "$disk" set 1 esp on
 parted -s "$disk" mkpart primary btrfs 1025MiB 100%
 
-if [[ "$encryption" == "yes" ]]; then
-  cryptsetup luksFormat "$part2"
-  cryptsetup open "$part2" cryptroot
-  rootdev="/dev/mapper/cryptroot"
-else
-  rootdev="$part2"
-fi
+cryptsetup luksFormat "$part2"
+cryptsetup open "$part2" cryptroot
 
 # Format
 mkfs.fat -F32 -n BOOT "$part1"
-mkfs.btrfs -L ROOT "$rootdev"
+mkfs.btrfs -L ROOT "$part2"
 
 # Mount to create subvolumes
-mount "$rootdev" /mnt
+mount "$part2" /mnt
 btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
 btrfs subvolume create /mnt/@var
@@ -148,14 +143,14 @@ btrfs subvolume create /mnt/@snapshots
 umount /mnt
 
 # Mount subvolumes
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@ "$rootdev" /mnt
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@ "$part2" /mnt
 mkdir -p /mnt/{home,var,tmp,.snapshots}
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$rootdev" /mnt/home
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$rootdev" /mnt/var
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$part2" /mnt/home
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$part2" /mnt/var
 mkdir -p /mnt/var/log
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@varlog "$rootdev" /mnt/var/log
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@tmp "$rootdev" /mnt/tmp
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$rootdev" /mnt/.snapshots
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@varlog "$part2" /mnt/var/log
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@tmp "$part2" /mnt/tmp
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$part2" /mnt/.snapshots
 chattr +C /mnt/var/log /mnt/tmp
 
 # Mount ESP
@@ -294,7 +289,6 @@ ddos=$ddos
 timezone=$timezone
 username=$username
 part2=$part2
-encryption=$encryption
 EOF
 chmod 700 /mnt/root/install.conf
 

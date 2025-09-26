@@ -159,14 +159,10 @@ EOF
 fi
 
 # Boot Manager setup
-if [[ "$encryption" == "no" ]]; then
-  GRUB_CMDLINE="root=${part2} SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
-else
-  uuid=$(blkid -s UUID -o value "$part2")
-  GRUB_CMDLINE="cryptdevice=UUID=${uuid}:cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
-  sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard consolefont block encrypt btrfs filesystems fsck)/' /etc/mkinitcpio.conf
-  echo "cryptroot UUID=${uuid} none luks,tries=3" | tee /etc/crypttab
-fi
+uuid=$(blkid -s UUID -o value "$part2")
+GRUB_CMDLINE="cryptdevice=UUID=${uuid}:cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
+sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard consolefont block encrypt btrfs filesystems fsck)/' /etc/mkinitcpio.conf
+echo "cryptroot UUID=${uuid} none luks,tries=3" | tee /etc/crypttab
 sudo sed -i 's/^BINARIES=.*$/BINARIES=(btrfsck)/' /etc/mkinitcpio.conf
 # tee /etc/vconsole.conf >/dev/null <<EOF
 # KEYMAP=us
