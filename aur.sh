@@ -4,12 +4,12 @@ aur_pkgs=(
   # systemd-boot-pacman-hook
   newsraft
   sway-audio-idle-inhibit-git
-  onlyoffice-bin
   bemoji
   bashmount
   ventoy-bin
   networkmanager-dmenu-git
   cnijfilter2
+  onlyoffice-bin
   # poweralertd
 )
 
