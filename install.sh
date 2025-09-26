@@ -22,23 +22,15 @@ timezone="Asia/Kolkata"
 username="piyush"
 
 # --- Prompt Section (collect all user input here) ---
-# Ecryption
-while true; do
-  read -p "Encryption (yes/no)? " encryption
-  case "$encryption" in
-  yes | no) break ;;
-  *) echo "Invalid input. Please enter 'yes' or 'no'." ;;
-  esac
-done
-
 # Prompt for if ddos on arch
-while true; do
-  read -p "ddos attack ongoing (yes/no)? " ddos
-  case "$ddos" in
-  yes | no) break ;;
-  *) echo "Invalid input. Please enter 'yes' or 'no'." ;;
-  esac
-done
+# while true; do
+#   read -p "ddos attack ongoing (yes/no)? " ddos
+#   case "$ddos" in
+#   yes | no) break ;;
+#   *) echo "Invalid input. Please enter 'yes' or 'no'." ;;
+#   esac
+# done
+ddos="no"
 
 # Disk Selection
 disks=($(lsblk -dno NAME,TYPE,RM | awk '$2 == "disk" && $3 == "0" {print $1}'))
@@ -129,9 +121,9 @@ done
 
 # Partitioning
 parted -s "$disk" mklabel gpt
-parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
+parted -s "$disk" mkpart ESP fat32 1MiB 1025MiB
 parted -s "$disk" set 1 esp on
-parted -s "$disk" mkpart primary btrfs 2049MiB 100%
+parted -s "$disk" mkpart primary btrfs 1025MiB 100%
 
 if [[ "$encryption" == "yes" ]]; then
   cryptsetup luksFormat "$part2"
@@ -167,8 +159,8 @@ mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshot
 chattr +C /mnt/var/log /mnt/tmp
 
 # Mount ESP
-mkdir -p /mnt/boot
-mount "$part1" /mnt/boot
+mkdir -p /mnt/boot/efi
+mount "$part1" /mnt/boot/efi
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
@@ -263,7 +255,7 @@ if [[ "$hardware" == "hardware" && "$howMuch" == "max" ]]; then
 fi
 
 # Pacstrap and mirrors
-pacman -Sy archlinux-keyring
+pacman -Sy --noconfirm archlinux-keyring
 if [[ "$ddos" == "no" ]]; then
   reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
   # sed -i '/niranjan/d' /etc/pacman.d/mirrorlist

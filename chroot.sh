@@ -163,8 +163,8 @@ if [[ "$encryption" == "no" ]]; then
   GRUB_CMDLINE="root=${part2} SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
 else
   uuid=$(blkid -s UUID -o value "$part2")
-  GRUB_CMDLINE="rd.luks.name=${uuid}=cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
-  sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard consolefont block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
+  GRUB_CMDLINE="cryptdevice=UUID=${uuid}:cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
+  sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard consolefont block encrypt btrfs filesystems fsck)/' /etc/mkinitcpio.conf
   echo "cryptroot UUID=${uuid} none luks,tries=3" | tee /etc/crypttab
 fi
 sudo sed -i 's/^BINARIES=.*$/BINARIES=(btrfsck)/' /etc/mkinitcpio.conf
@@ -179,6 +179,7 @@ GRUB_SAVEDEFAULT=true
 GRUB_TIMEOUT=3
 GRUB_DISTRIBUTOR="Arch"
 GRUB_CMDLINE_LINUX="${GRUB_CMDLINE}"
+GRUB_ENABLE_CRYPTODISK=y
 # GRUB_DISABLE_OS_PROBER=false
 GRUB_GFXMODE=1920x1080x32,1366x768x32,auto
 GRUB_GFXPAYLOAD_LINUX=keep
@@ -188,7 +189,7 @@ EOF
 mkdir -p /boot/grub/themes/minimal/
 git clone https://github.com/zedonix/minimal.git /boot/grub/themes/minimal/
 rm -rf /boot/grub/themes/minimal/.git
-grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --modules="part_gpt fat btrfs cryptodisk luks"
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Reflector and pacman Setup
