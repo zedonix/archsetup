@@ -127,13 +127,14 @@ parted -s "$disk" mkpart primary btrfs 1025MiB 100%
 
 cryptsetup luksFormat "$part2"
 cryptsetup open "$part2" cryptroot
+rootdev="/dev/mapper/cryptroot"
 
 # Format
 mkfs.fat -F32 -n BOOT "$part1"
-mkfs.btrfs -L ROOT "$part2"
+mkfs.btrfs -L ROOT "$rootdev"
 
 # Mount to create subvolumes
-mount "$part2" /mnt
+mount "$rootdev" /mnt
 btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
 btrfs subvolume create /mnt/@var
@@ -143,14 +144,14 @@ btrfs subvolume create /mnt/@snapshots
 umount /mnt
 
 # Mount subvolumes
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@ "$part2" /mnt
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@ "$rootdev" /mnt
 mkdir -p /mnt/{home,var,tmp,.snapshots}
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$part2" /mnt/home
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$part2" /mnt/var
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@home "$rootdev" /mnt/home
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@var "$rootdev" /mnt/var
 mkdir -p /mnt/var/log
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@varlog "$part2" /mnt/var/log
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@tmp "$part2" /mnt/tmp
-mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$part2" /mnt/.snapshots
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@varlog "$rootdev" /mnt/var/log
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@tmp "$rootdev" /mnt/tmp
+mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshots "$rootdev" /mnt/.snapshots
 chattr +C /mnt/var/log /mnt/tmp
 
 # Mount ESP
