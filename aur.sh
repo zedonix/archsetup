@@ -2,15 +2,15 @@
 
 aur_pkgs=(
   # systemd-boot-pacman-hook
-  newsraft
   sway-audio-idle-inhibit-git
-  onlyoffice-bin
-  bemoji
   bashmount
   ventoy-bin
+  bemoji
+  newsraft
   networkmanager-dmenu-git
+  poweralertd
   cnijfilter2
-  # poweralertd
+  onlyoffice-bin
 )
 
 aur_dir="$HOME/Documents/aur"

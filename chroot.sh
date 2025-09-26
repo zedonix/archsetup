@@ -167,11 +167,10 @@ else
   sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard consolefont block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
   echo "cryptroot UUID=${uuid} none luks,tries=3" | tee /etc/crypttab
 fi
-sudo sed -i 's/^BINARIES=.*$/BINARIES=(btrfsck)/' /etc/mkinitcpio.conf
-tee /etc/vconsole.conf >/dev/null <<EOF
-KEYMAP=us
-FONT=ter-112n
-EOF
+# tee /etc/vconsole.conf >/dev/null <<EOF
+# KEYMAP=us
+# FONT=ter-112n
+# EOF
 mkinitcpio -P
 cat >/etc/default/grub <<EOF
 GRUB_DEFAULT=saved
