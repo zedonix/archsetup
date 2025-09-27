@@ -3,6 +3,7 @@ set -euo pipefail
 
 # Load variables from install.conf
 source /root/install.conf
+uuid=$(blkid -s UUID -o value "$part2")
 
 # --- Set hostname ---
 echo "$hostname" >/etc/hostname
@@ -159,34 +160,63 @@ EOF
 fi
 
 # Boot Manager setup
-uuid=$(blkid -s UUID -o value "$part2")
-GRUB_CMDLINE="cryptdevice=UUID=${uuid}:cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 ${pstate_param:-}"
-sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard consolefont block encrypt btrfs filesystems fsck)/' /etc/mkinitcpio.conf
+if [[ "$microcode_pkg" == "intel-ucode" ]]; then
+  microcode_img="initrd /intel-ucode.img"
+elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
+  microcode_img="initrd /amd-ucode.img"
+fi
+
+sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard consolefont block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
 echo "cryptroot UUID=${uuid} none luks,tries=3" | tee /etc/crypttab
 sudo sed -i 's/^BINARIES=.*$/BINARIES=(btrfsck)/' /etc/mkinitcpio.conf
 # tee /etc/vconsole.conf >/dev/null <<EOF
 # KEYMAP=us
 # FONT=latarcyrheb-sun32
 # EOF
+
 mkinitcpio -P
-cat >/etc/default/grub <<EOF
-GRUB_DEFAULT=saved
-GRUB_SAVEDEFAULT=true
-GRUB_TIMEOUT=3
-GRUB_DISTRIBUTOR="Arch"
-GRUB_CMDLINE_LINUX="${GRUB_CMDLINE}"
-GRUB_ENABLE_CRYPTODISK=y
-# GRUB_DISABLE_OS_PROBER=false
-GRUB_GFXMODE=1920x1080x32,1366x768x32,auto
-GRUB_GFXPAYLOAD_LINUX=keep
-GRUB_DISABLE_RECOVERY=true
-# GRUB_THEME="/boot/grub/themes/minimal/theme.txt"
+bootctl install
+
+cat >/boot/loader/loader.conf <<EOF
+default arch
+timeout 3
+editor no
 EOF
-mkdir -p /boot/grub/themes/minimal/
-git clone https://github.com/zedonix/minimal.git /boot/grub/themes/minimal/
-rm -rf /boot/grub/themes/minimal/.git
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --modules="part_gpt fat btrfs cryptodisk luks"
-grub-mkconfig -o /boot/grub/grub.cfg
+
+# common options base
+opts_base="rd.luks.name=${uuid}=cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 rootfstype=btrfs"
+if [[ -n "$pstate_param" ]]; then
+  opts="$opts_base $pstate_param"
+else
+  opts="$opts_base"
+fi
+
+cat >/boot/loader/entries/arch.conf <<ENTRY
+title   Arch Linux
+linux   /vmlinuz-linux
+$microcode_img
+initrd  /initramfs-linux.img
+options $opts
+ENTRY
+
+if [[ "${howMuch:-}" == "max" ]]; then
+  cat >/boot/loader/entries/arch-lts.conf <<ENTRY_LTS
+title   Arch Linux (LTS)
+linux   /vmlinuz-linux-lts
+$microcode_img
+initrd  /initramfs-linux-lts.img
+options $opts
+ENTRY_LTS
+
+  opts="$opts rootflags=subvol=/.snapshots/NN/snapshot"
+  cat >/boot/loader/entries/arch-snapshotLatest.conf <<ENTRY_LTS
+title   Arch Linux (snapshot latest)
+linux   /vmlinuz-linux
+$microcode_img
+initrd  /initramfs-linux.img
+options $opts
+ENTRY_LTS
+fi
 
 # Reflector and pacman Setup
 sed -i '/^#Color$/c\Color' /etc/pacman.conf

@@ -155,8 +155,8 @@ mount -o noatime,compress=zstd,ssd,space_cache=v2,discard=async,subvol=@snapshot
 chattr +C /mnt/var/log /mnt/tmp
 
 # Mount ESP
-mkdir -p /mnt/boot/efi
-mount "$part1" /mnt/boot/efi
+mkdir -p /mnt/boot
+mount "$part1" /mnt/boot
 
 # Detect CPU vendor and set microcode package
 cpu_vendor=$(lscpu | awk -F: '/Vendor ID:/ {print $2}' | xargs)
