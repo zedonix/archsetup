@@ -2,6 +2,7 @@
 
 aur_pkgs=(
   systemd-boot-pacman-hook
+  archiso-systemd-boot
   newsraft
   sway-audio-idle-inhibit-git
   bemoji
