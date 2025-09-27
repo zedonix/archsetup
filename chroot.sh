@@ -208,7 +208,7 @@ initrd  /initramfs-linux-lts.img
 options $opts
 ENTRY_LTS
 
-  opts="$opts rootflags=subvol=/.snapshots/NN/snapshot"
+  opts="$opts rootflags=subvol=/.snapshots/1/snapshot"
   cat >/boot/loader/entries/arch-snapshotLatest.conf <<ENTRY_LTS
 title   Arch Linux (snapshot latest)
 linux   /vmlinuz-linux
