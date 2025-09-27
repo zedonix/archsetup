@@ -209,13 +209,34 @@ options $opts
 ENTRY_LTS
 
   opts=$(echo "$opts" | sed -E 's|rootflags=[^ ]*|rootflags=subvol=/.snapshots/1/snapshot|')
-  cat >/boot/loader/entries/arch-snapshotLatest.conf <<ENTRY_LTS
-title   Arch Linux (snapshot latest)
+  cat >/boot/loader/entries/snap-root-latest.conf <<ENTRY
+title   Arch Linux (snapshot root latest)
 linux   /vmlinuz-linux
 $microcode_img
 initrd  /initramfs-linux.img
 options $opts
-ENTRY_LTS
+ENTRY
+  cat >/boot/loader/entries/snap-home-latest.conf <<ENTRY
+title   Arch Linux (snapshot home latest)
+linux   /vmlinuz-linux
+$microcode_img
+initrd  /initramfs-linux.img
+options $opts
+ENTRY
+  cat >/boot/loader/entries/snap-root-monthly.conf <<ENTRY
+title   Arch Linux (snapshot root monthly)
+linux   /vmlinuz-linux
+$microcode_img
+initrd  /initramfs-linux.img
+options $opts
+ENTRY
+  cat >/boot/loader/entries/snap-home-monthly.conf <<ENTRY
+title   Arch Linux (snapshot home monthly)
+linux   /vmlinuz-linux
+$microcode_img
+initrd  /initramfs-linux.img
+options $opts
+ENTRY
 fi
 
 # Reflector and pacman Setup
