@@ -178,7 +178,7 @@ mkinitcpio -P
 bootctl install
 
 cat >/boot/loader/loader.conf <<EOF
-default arch
+default 00-arch
 timeout 3
 editor no
 EOF
@@ -191,7 +191,7 @@ else
   opts="$opts_base"
 fi
 
-cat >/boot/loader/entries/arch.conf <<ENTRY
+cat >/boot/loader/entries/00-arch.conf <<ENTRY
 title   Arch Linux
 linux   /vmlinuz-linux
 $microcode_img
@@ -200,7 +200,7 @@ options $opts
 ENTRY
 
 if [[ "${howMuch:-}" == "max" ]]; then
-  cat >/boot/loader/entries/arch-lts.conf <<ENTRY_LTS
+  cat >/boot/loader/entries/01-arch-lts.conf <<ENTRY_LTS
 title   Arch Linux (LTS)
 linux   /vmlinuz-linux-lts
 $microcode_img
@@ -209,28 +209,28 @@ options $opts
 ENTRY_LTS
 
   opts=$(echo "$opts" | sed -E 's|rootflags=[^ ]*|rootflags=subvol=/.snapshots/1/snapshot|')
-  cat >/boot/loader/entries/snap-root-latest.conf <<ENTRY
+  cat >/boot/loader/entries/10-snap-root-latest.conf <<ENTRY
 title   Arch Linux (snapshot root latest)
 linux   /vmlinuz-linux
 $microcode_img
 initrd  /initramfs-linux.img
 options $opts
 ENTRY
-  cat >/boot/loader/entries/snap-home-latest.conf <<ENTRY
+  cat >/boot/loader/entries/11-snap-home-latest.conf <<ENTRY
 title   Arch Linux (snapshot home latest)
 linux   /vmlinuz-linux
 $microcode_img
 initrd  /initramfs-linux.img
 options $opts
 ENTRY
-  cat >/boot/loader/entries/snap-root-monthly.conf <<ENTRY
+  cat >/boot/loader/entries/12-snap-root-monthly.conf <<ENTRY
 title   Arch Linux (snapshot root monthly)
 linux   /vmlinuz-linux
 $microcode_img
 initrd  /initramfs-linux.img
 options $opts
 ENTRY
-  cat >/boot/loader/entries/snap-home-monthly.conf <<ENTRY
+  cat >/boot/loader/entries/13-snap-home-monthly.conf <<ENTRY
 title   Arch Linux (snapshot home monthly)
 linux   /vmlinuz-linux
 $microcode_img
