@@ -227,6 +227,11 @@ $microcode_img
 initrd  /initramfs-linux.img
 options $opts
 ENTRY
+  cat >/boot/loader/entries/memtest.conf <<ENTRY
+title Memtest86+
+sort-key 60
+efi /memtest86+/memtest.efi
+ENTRY
 fi
 
 # Reflector and pacman Setup
