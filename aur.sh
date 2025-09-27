@@ -5,7 +5,6 @@ aur_pkgs=(
   newsraft
   sway-audio-idle-inhibit-git
   bemoji
-  bashmount
   ventoy-bin
   networkmanager-dmenu-git
   cnijfilter2
