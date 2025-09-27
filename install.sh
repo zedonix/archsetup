@@ -23,14 +23,14 @@ username="piyush"
 
 # --- Prompt Section (collect all user input here) ---
 # Prompt for if ddos on arch
-# while true; do
-#   read -p "ddos attack ongoing (yes/no)? " ddos
-#   case "$ddos" in
-#   yes | no) break ;;
-#   *) echo "Invalid input. Please enter 'yes' or 'no'." ;;
-#   esac
-# done
-ddos="no"
+while true; do
+  read -p "ddos attack ongoing (yes/no)? " ddos
+  case "$ddos" in
+  yes | no) break ;;
+  *) echo "Invalid input. Please enter 'yes' or 'no'." ;;
+  esac
+done
+# ddos="no"
 
 # Disk Selection
 disks=($(lsblk -dno NAME,TYPE,RM | awk '$2 == "disk" && $3 == "0" {print $1}'))
@@ -121,9 +121,9 @@ done
 
 # Partitioning
 parted -s "$disk" mklabel gpt
-parted -s "$disk" mkpart ESP fat32 1MiB 1025MiB
+parted -s "$disk" mkpart ESP fat32 1MiB 2049MiB
 parted -s "$disk" set 1 esp on
-parted -s "$disk" mkpart primary btrfs 1025MiB 100%
+parted -s "$disk" mkpart primary btrfs 2049MiB 100%
 
 cryptsetup luksFormat "$part2"
 cryptsetup open "$part2" cryptroot
