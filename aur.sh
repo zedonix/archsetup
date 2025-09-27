@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 aur_pkgs=(
-  # systemd-boot-pacman-hook
+  systemd-boot-pacman-hook
   newsraft
   sway-audio-idle-inhibit-git
   bemoji

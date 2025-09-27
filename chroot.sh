@@ -193,6 +193,7 @@ fi
 
 cat >/boot/loader/entries/arch.conf <<ENTRY
 title   Arch Linux
+sort-key 10
 linux   /vmlinuz-linux
 $microcode_img
 initrd  /initramfs-linux.img
@@ -202,6 +203,7 @@ ENTRY
 if [[ "${howMuch:-}" == "max" ]]; then
   cat >/boot/loader/entries/arch-lts.conf <<ENTRY_LTS
 title   Arch Linux (LTS)
+sort-key 20
 linux   /vmlinuz-linux-lts
 $microcode_img
 initrd  /initramfs-linux-lts.img
@@ -211,6 +213,7 @@ ENTRY_LTS
   opts=$(echo "$opts" | sed -E 's|rootflags=[^ ]*|rootflags=subvol=/.snapshots/1/snapshot|')
   cat >/boot/loader/entries/snapshot-root.conf <<ENTRY
 title   snapshot root
+sort-key 30
 linux   /vmlinuz-linux
 $microcode_img
 initrd  /initramfs-linux.img
@@ -218,6 +221,7 @@ options $opts
 ENTRY
   cat >/boot/loader/entries/snapshot-home.conf <<ENTRY
 title   snapshot home
+sort-key 40
 linux   /vmlinuz-linux
 $microcode_img
 initrd  /initramfs-linux.img
