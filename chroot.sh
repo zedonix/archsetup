@@ -181,6 +181,7 @@ cat >/boot/loader/loader.conf <<EOF
 default 00-arch
 timeout 3
 editor no
+sort-order=asc
 EOF
 
 # common options base
