@@ -184,7 +184,7 @@ editor no
 EOF
 
 # common options base
-opts_base="rd.luks.name=${uuid}=cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 rootfstype=btrfs"
+opts_base="rd.luks.name=${uuid}=cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 rootfstype=btrfs rootflags=subvol=@"
 if [[ -n "$pstate_param" ]]; then
   opts="$opts_base $pstate_param"
 else
@@ -208,7 +208,7 @@ initrd  /initramfs-linux-lts.img
 options $opts
 ENTRY_LTS
 
-  opts="$opts rootflags=subvol=/.snapshots/1/snapshot"
+  opts=$(echo "$opts" | sed -E 's|rootflags=[^ ]*|rootflags=subvol=/.snapshots/1/snapshot|')
   cat >/boot/loader/entries/arch-snapshotLatest.conf <<ENTRY_LTS
 title   Arch Linux (snapshot latest)
 linux   /vmlinuz-linux
