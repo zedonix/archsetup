@@ -253,7 +253,7 @@ fi
 # Pacstrap and mirrors
 pacman -Sy --noconfirm archlinux-keyring
 if [[ "$ddos" == "no" ]]; then
-  reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
+  reflector --country India,Japan,Singapore --latest 20 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
   # sed -i '/niranjan/d' /etc/pacman.d/mirrorlist
   # sed -i '1i Server = https://mirror.sahil.world/archlinux/$repo/os/$arch' /etc/pacman.d/mirrorlist
   # sed -i '1i Server = https://mirrors.abhy.me/archlinux/$repo/os/$arch' /etc/pacman.d/mirrorlist
