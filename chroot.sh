@@ -238,14 +238,20 @@ mkdir -p /etc/xdg/reflector
 } >/etc/xdg/reflector/reflector.conf
 
 if [[ "$ddos" == "no" ]]; then
-  reflector --country 'India' --latest 10 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
+  reflector --country India,Japan,Singapore --latest 20 --age 24 --sort rate --save /etc/pacman.d/mirrorlist
 else
   cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
   cat >/etc/pacman.d/mirrorlist <<'EOF'
+Server = https://in.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://in.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://mirror.sahil.world/archlinux/$repo/os/$arch
 Server = https://in.arch.niranjan.co/$repo/os/$arch
-Server = https://mirrors.saswata.cc/archlinux/$repo/os/$arch
 Server = https://mirror.del2.albony.in/archlinux/$repo/os/$arch
+Server = https://mirror.sahil.world/archlinux/$repo/os/$arch
+Server = rsync://mirror.del2.albony.in/archlinux/$repo/os/$arch
+Server = http://in-mirror.garudalinux.org/archlinux/$repo/os/$arch
 Server = https://in-mirror.garudalinux.org/archlinux/$repo/os/$arch
+Server = rsync://mirrors.saswata.cc/archlinux/$repo/os/$arch
 EOF
 fi
 
