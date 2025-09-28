@@ -10,6 +10,7 @@ aur_pkgs=(
   cnijfilter2
   onlyoffice-bin
   # poweralertd
+  archiso-systemd-boot
 )
 
 aur_dir="$HOME/Documents/aur"
@@ -44,5 +45,3 @@ flatpak override --user --env=GTK_THEME=Adwaita-dark --env=QT_STYLE_OVERRIDE=Adw
 
 #ollama pull gemma3:1b
 #ollama pull codellama:7b-instruct
-
-aur.sh archiso-systemd-boot
