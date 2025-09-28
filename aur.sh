@@ -2,7 +2,6 @@
 
 aur_pkgs=(
   systemd-boot-pacman-hook
-  archiso-systemd-boot
   newsraft
   sway-audio-idle-inhibit-git
   bemoji
@@ -45,3 +44,5 @@ flatpak override --user --env=GTK_THEME=Adwaita-dark --env=QT_STYLE_OVERRIDE=Adw
 
 #ollama pull gemma3:1b
 #ollama pull codellama:7b-instruct
+
+aur.sh archiso-systemd-boot
