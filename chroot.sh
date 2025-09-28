@@ -210,7 +210,7 @@ initrd  /initramfs-linux-lts.img
 options $opts
 ENTRY_LTS
 
-  opts=$(echo "$opts" | sed -E 's|rootflags=[^ ]*|rootflags=subvol=/.snapshots/1/snapshot|')
+  opts=$(echo "$opts" | sed -E 's|rootflags=[^ ]*|rootflags=subvol=@snapshots/1/snapshot|')
   cat >/boot/loader/entries/snapshot-root.conf <<ENTRY
 title   snapshot root
 sort-key 30
