@@ -292,6 +292,7 @@ su - "$username" -c '
   for link in ~/Documents/projects/default/scripts/bin/*; do
     ln -sf "$link" ~/.local/bin/
   done
+  git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 '
 # Root .config
 mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
@@ -310,9 +311,6 @@ if [[ "$howMuch" == "max" ]]; then
     -e 's/^clear_password *= *.*/clear_password = true/' \
     -e 's/^clock *= *.*/clock = %a %d\/%m %H:%M/' \
     /etc/ly/config.ini
-
-  # TPM tmux
-  git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 
   # Rustup
   rustup default stable

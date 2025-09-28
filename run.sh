@@ -148,6 +148,7 @@ sudo snapper -c root create --description "First snapshot"
 # Nvim tools install
 foot -e nvim +MasonToolsInstall &
 foot -e sudo nvim +MasonToolsInstall &
+foot -e tmux &
 
 # Running aur.sh
 bash ~/Documents/projects/default/archsetup/aur.sh
