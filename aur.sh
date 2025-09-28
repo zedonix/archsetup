@@ -34,8 +34,6 @@ for pkg in "${aur_pkgs[@]}"; do
   fi
 done
 
-kvantummanager
-
 flatpak install -y org.gtk.Gtk3theme.Adwaita-dark
 flatpak override --user --env=GTK_THEME=Adwaita-dark --env=QT_STYLE_OVERRIDE=Adwaita-Dark
 # flatpak install -y flathub org.gimp.GIMP
