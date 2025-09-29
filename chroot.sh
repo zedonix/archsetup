@@ -94,7 +94,7 @@ DISK_APM_LEVEL_ON_AC="254 254"
 DISK_APM_LEVEL_ON_BAT="128 128"
 
 # Per-disk IO scheduler: use mq-deadline as safe default (leave kernel default with 'keep')
-DISK_IOSCHED="mq-deadline"
+DISK_IOSCHED="none mq-deadline kyber bfq"
 
 SATA_LINKPWR_ON_AC=max_performance
 SATA_LINKPWR_ON_BAT=min_power
