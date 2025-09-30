@@ -126,7 +126,6 @@ sudo snapper -c root set-config TIMELINE_LIMIT_MONTHLY=2
 sudo snapper -c root set-config TIMELINE_MIN_AGE=3600
 sudo snapper -c root set-config NUMBER_CLEANUP=yes
 sudo snapper -c root set-config NUMBER_LIMIT=50
-sudo snapper -c root set-config POST_CREATE="/home/piyush/.local/bin/snap-root.sh"
 # home
 sudo snapper -c home set-config TIMELINE_CREATE=yes
 sudo snapper -c home set-config TIMELINE_CLEANUP=yes
@@ -136,7 +135,6 @@ sudo snapper -c home set-config TIMELINE_LIMIT_MONTHLY=2
 sudo snapper -c home set-config TIMELINE_MIN_AGE=3600
 sudo snapper -c home set-config NUMBER_CLEANUP=yes
 sudo snapper -c home set-config NUMBER_LIMIT=50
-sudo snapper -c home set-config POST_CREATE="/home/piyush/.local/bin/snap-home.sh"
 # services
 sudo systemctl enable --now snapper-timeline.timer snapper-cleanup.timer
 
