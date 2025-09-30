@@ -138,8 +138,8 @@ sudo snapper -c home set-config NUMBER_LIMIT=50
 # services
 sudo systemctl enable --now snapper-timeline.timer snapper-cleanup.timer
 
-# A cron job
-echo "@daily $(which trash-empty) 30" | crontab -
+# A anacron job
+echo "30 5 trash-empty-job su - piyush -c \"$(which trash-empty)\"" | sudo tee -a /etc/anacrontab
 
 sudo snapper -c root create --description "First snapshot"
 
