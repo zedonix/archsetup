@@ -140,6 +140,8 @@ sudo systemctl enable --now snapper-timeline.timer snapper-cleanup.timer
 
 # A anacron job
 echo "30 5 trash-empty-job su - piyush -c \"$(which trash-empty)\"" | sudo tee -a /etc/anacrontab
+echo "1 5 snap-root-job su - piyush -c \"/home/piyush/.local/bin/snap-root.sh\"" | sudo tee -a /etc/anacrontab
+echo "1 5 snap-root-job su - piyush -c \"/home/piyush/.local/bin/snap-home.sh\"" | sudo tee -a /etc/anacrontab
 
 sudo snapper -c root create --description "First snapshot"
 
