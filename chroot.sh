@@ -294,6 +294,7 @@ su - "$username" -c '
     ln -sf "$link" ~/.local/bin/
   done
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+  zoxide add /home/piyush/Documents/projects/default/archsetup
 '
 # Root .config
 mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
