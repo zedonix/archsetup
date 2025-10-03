@@ -21,11 +21,11 @@ for key in "${!gsettings_keys[@]}"; do
 done
 
 # Firefox user.js linking
-echo "/home/$USER/Documents/projects/default/dotfiles/ublock.txt" | wl-copy
+echo "/home/$USER/Documents/personal/default/dotfiles/ublock.txt" | wl-copy
 gh auth login
 dir=$(echo ~/.mozilla/firefox/*.default-release)
-ln -sf ~/Documents/projects/default/dotfiles/user.js "$dir/user.js"
-cp -f ~/Documents/projects/default/dotfiles/book* "$dir/bookmarkbackups/"
+ln -sf ~/Documents/personal/default/dotfiles/user.js "$dir/user.js"
+cp -f ~/Documents/personal/default/dotfiles/book* "$dir/bookmarkbackups/"
 
 # UFW setup
 # sudo ufw limit 22/tcp              # ssh
@@ -151,4 +151,4 @@ foot -e sudo nvim +MasonToolsInstall &
 foot -e tmux &
 
 # Running aur.sh
-bash ~/Documents/projects/default/archsetup/aur.sh
+bash ~/Documents/personal/default/archsetup/aur.sh

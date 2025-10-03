@@ -268,42 +268,43 @@ fi
 # Copy config and dotfiles as the user
 su - "$username" -c '
   mkdir -p ~/Downloads ~/Desktop ~/Public ~/Templates ~/Videos ~/Pictures/Screenshots/temp ~/.config
-  mkdir -p ~/Documents/projects/default ~/Documents/projects/work ~/Documents/projects/sandbox ~/Documents/personal/wiki
+  mkdir -p ~/Documents/personal/default ~/Documents/projects/work ~/Documents/projects/sandbox ~/Documents/personal/wiki
   mkdir -p ~/.local/bin ~/.cache/cargo-target ~/.local/state/bash ~/.local/state/zsh ~/.local/share/wineprefixes
   touch ~/.local/state/bash/history ~/.local/state/zsh/history ~/Documents/personal/wiki/index.txt ~/Documents/personal/wiki/clipboard.txt
 
-  git clone https://github.com/zedonix/scripts.git ~/Documents/projects/default/scripts
-  git clone https://github.com/zedonix/dotfiles.git ~/Documents/projects/default/dotfiles
-  git clone https://github.com/zedonix/archsetup.git ~/Documents/projects/default/archsetup
-  git clone https://github.com/zedonix/notes.git ~/Documents/projects/default/notes
-  git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/projects/default/GruvboxGtk
-  git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/projects/default/GruvboxQT
+  git clone https://github.com/zedonix/scripts.git ~/Documents/personal/default/scripts
+  git clone https://github.com/zedonix/dotfiles.git ~/Documents/personal/default/dotfiles
+  git clone https://github.com/zedonix/archsetup.git ~/Documents/personal/default/archsetup
+  git clone https://github.com/zedonix/notes.git ~/Documents/personal/default/notes
+  git clone https://github.com/zedonix/GruvboxGtk.git ~/Documents/personal/default/GruvboxGtk
+  git clone https://github.com/zedonix/GruvboxQT.git ~/Documents/personal/default/GruvboxQT
 
-  cp ~/Documents/projects/default/dotfiles/.config/sway/archLogo.png ~/Pictures/
-  cp ~/Documents/projects/default/dotfiles/pics/* ~/Pictures/
-  ln -sf ~/Documents/projects/default/dotfiles/.bashrc ~/.bashrc
-  ln -sf ~/Documents/projects/default/dotfiles/.zshrc ~/.zshrc
+  cp ~/Documents/personal/default/dotfiles/.config/sway/archLogo.png ~/Pictures/
+  cp ~/Documents/personal/default/dotfiles/pics/* ~/Pictures/
+  ln -sf ~/Documents/personal/default/dotfiles/.bashrc ~/.bashrc
+  ln -sf ~/Documents/personal/default/dotfiles/.zshrc ~/.zshrc
+  ln -sf ~/Documents/personal/default/dotfiles/.XCompose ~/.XCompose
 
-  for link in ~/Documents/projects/default/dotfiles/.config/*; do
+  for link in ~/Documents/personal/default/dotfiles/.config/*; do
     ln -sf "$link" ~/.config/
   done
-  for link in ~/Documents/projects/default/dotfiles/.copy/*; do
+  for link in ~/Documents/personal/default/dotfiles/.copy/*; do
     cp -r "$link" ~/.config/
   done
-  for link in ~/Documents/projects/default/scripts/bin/*; do
+  for link in ~/Documents/personal/default/scripts/bin/*; do
     ln -sf "$link" ~/.local/bin/
   done
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
-  zoxide add /home/piyush/Documents/projects/default/archsetup
+  zoxide add /home/piyush/Documents/personal/default/archsetup
 '
 # Root .config
 mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
 echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' >~/.bash_profile
 touch ~/.local/state/zsh/history ~/.local/state/bash/history
-ln -sf /home/$username/Documents/projects/default/dotfiles/.bashrc ~/.bashrc
-ln -sf /home/$username/Documents/projects/default/dotfiles/.zshrc ~/.zshrc
-ln -sf /home/$username/Documents/projects/default/dotfiles/.config/starship.toml ~/.config
-ln -sf /home/$username/Documents/projects/default/dotfiles/.config/nvim/ ~/.config
+ln -sf /home/$username/Documents/personal/default/dotfiles/.bashrc ~/.bashrc
+ln -sf /home/$username/Documents/personal/default/dotfiles/.zshrc ~/.zshrc
+ln -sf /home/$username/Documents/personal/default/dotfiles/.config/starship.toml ~/.config
+ln -sf /home/$username/Documents/personal/default/dotfiles/.config/nvim/ ~/.config
 
 if [[ "$howMuch" == "max" ]]; then
   # ly config
@@ -319,14 +320,14 @@ if [[ "$howMuch" == "max" ]]; then
   rustup update
 
   # Setup Gruvbox theme
-  THEME_SRC="/home/$username/Documents/projects/default/GruvboxQT"
+  THEME_SRC="/home/$username/Documents/personal/default/GruvboxQT"
   THEME_DEST="/usr/share/Kvantum/Gruvbox"
   mkdir -p "$THEME_DEST"
   cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig"
   cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg"
   kvantummanager --set Gruvbox
 
-  THEME_SRC="/home/$username/Documents/projects/default/GruvboxGtk"
+  THEME_SRC="/home/$username/Documents/personal/default/GruvboxGtk"
   THEME_DEST="/usr/share"
   cp -r "$THEME_SRC/themes/Gruvbox-Material-Dark" "$THEME_DEST/themes"
   cp -r "$THEME_SRC/icons/Gruvbox-Material-Dark" "$THEME_DEST/icons"
@@ -357,7 +358,7 @@ EOF
 
   # Firefox policy
   mkdir -p /etc/firefox/policies
-  ln -sf "/home/$username/Documents/projects/default/dotfiles/policies.json" /etc/firefox/policies/policies.json
+  ln -sf "/home/$username/Documents/personal/default/dotfiles/policies.json" /etc/firefox/policies/policies.json
 fi
 # tldr wiki setup
 curl -L "https://raw.githubusercontent.com/filiparag/wikiman/master/Makefile" -o "wikiman-makefile"
