@@ -325,7 +325,6 @@ if [[ "$howMuch" == "max" ]]; then
   mkdir -p "$THEME_DEST"
   cp "$THEME_SRC/gruvbox-kvantum.kvconfig" "$THEME_DEST/Gruvbox.kvconfig"
   cp "$THEME_SRC/gruvbox-kvantum.svg" "$THEME_DEST/Gruvbox.svg"
-  kvantummanager --set Gruvbox
 
   THEME_SRC="/home/$username/Documents/personal/default/GruvboxGtk"
   THEME_DEST="/usr/share"
