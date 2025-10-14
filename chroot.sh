@@ -400,7 +400,7 @@ chmod 755 /usr/local/bin/nohang-after-kill.sh
 # rfkill unblock bluetooth
 # modprobe btusb || true
 if [[ "$howMuch" == "max" ]]; then
-  systemctl enable nohang-desktop.service ananicy-cpp ly cronie sshd reflector.timer
+  systemctl enable ananicy-cpp ly cronie sshd reflector.timer
   if [[ "$hardware" == "hardware" ]]; then
     systemctl enable fstrim.timer acpid libvirtd.socket cups ipp-usb docker.socket
   fi
