@@ -401,7 +401,42 @@ sed -i.bak 's|^post_kill_exe.*$|post_kill_exe = /usr/local/bin/nohang-after-kill
 # rfkill unblock bluetooth
 # modprobe btusb || true
 if [[ "$howMuch" == "max" ]]; then
-  systemctl enable nohang-desktop.service ananicy-cpp ly cronie sshd reflector.timer
+  GUARD=/usr/local/bin/shutdown-guard
+  cat >"$GUARD" <<'SH'
+#!/usr/bin/env bash
+apps=("firefox" "virt-manager" "qemu-system" "qbittorrent" "foot")
+export XDG_RUNTIME_DIR="/run/user/1000"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+blocked=false
+for app in "${apps[@]}"; do
+    if pgrep -x "$app" >/dev/null 2>&1; then
+        sudo -u piyush env XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR" DBUS_SESSION_BUS_ADDRESS="$DBUS_SESSION_BUS_ADDRESS" \
+            notify-send "Shutdown blocked" "$app is running."
+        echo "Shutdown blocked: $app is running." >&2
+        blocked=true
+    fi
+done
+[ "$blocked" = true ] && exit 1 || exit 0
+SH
+  chmod 755 "$GUARD"
+  cat >"/etc/systemd/system/shutdown-guard.service" <<'UNIT'
+[Unit]
+Description=Shutdown guard: block poweroff/reboot/halt when certain apps run
+DefaultDependencies=no
+Before=poweroff.target reboot.target halt.target
+Wants=poweroff.target reboot.target halt.target
+ConditionPathExists=/usr/local/bin/shutdown-guard
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/usr/local/bin/shutdown-guard
+# Do not kill this service too early during shutdown
+TimeoutStartSec=10
+[Install]
+WantedBy=poweroff.target reboot.target halt.target
+UNIT
+  systemctl daemon-reload
+  systemctl enable nohang-desktop.service ananicy-cpp ly cronie sshd reflector.timer shutdown-guard.service
   if [[ "$hardware" == "hardware" ]]; then
     systemctl enable fstrim.timer acpid libvirtd.socket cups ipp-usb docker.socket
   fi
