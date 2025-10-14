@@ -37,6 +37,7 @@ done
 
 systemctl --user enable wayland-pipewire-idle-inhibit.service --now
 go install github.com/savedra1/clipse@v1.1.0
+bemoji --download all
 
 flatpak install -y org.gtk.Gtk3theme.Adwaita-dark
 flatpak override --user --env=GTK_THEME=Adwaita-dark --env=QT_STYLE_OVERRIDE=Adwaita-Dark

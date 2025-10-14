@@ -297,7 +297,6 @@ su - "$username" -c '
   done
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
   zoxide add /home/piyush/Documents/personal/default/archsetup
-  bemoji --download all
 '
 # Root .config
 mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
