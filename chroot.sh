@@ -395,7 +395,6 @@ fi
 EOF
 chown root:root /usr/local/bin/nohang-after-kill.sh
 chmod 755 /usr/local/bin/nohang-after-kill.sh
-sed -i.bak 's|^post_kill_exe.*$|post_kill_exe = /usr/local/bin/nohang-after-kill.sh $NAME $PID $UID|' /etc/nohang/nohang-desktop.conf
 
 # Services
 # rfkill unblock bluetooth

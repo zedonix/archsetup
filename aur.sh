@@ -35,6 +35,7 @@ for pkg in "${aur_pkgs[@]}"; do
   fi
 done
 
+sudo sed -i.bak 's|^post_kill_exe.*$|post_kill_exe = /usr/local/bin/nohang-after-kill.sh $NAME $PID $UID|' /etc/nohang/nohang-desktop.conf
 systemctl --user enable wayland-pipewire-idle-inhibit.service --now
 go install github.com/savedra1/clipse@v1.1.0
 bemoji --download all
