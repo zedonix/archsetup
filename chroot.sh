@@ -22,6 +22,7 @@ echo "LANG=en_US.UTF-8" >/etc/locale.conf
 echo "%wheel ALL=(ALL) ALL" >/etc/sudoers.d/wheel
 echo "Defaults timestamp_timeout=-1" >/etc/sudoers.d/timestamp
 echo "Defaults pwfeedback" >/etc/sudoers.d/pwfeedback
+echo 'Defaults env_keep += "XDG_RUNTIME_DIR WAYLAND_DISPLAY DBUS_SESSION_BUS_ADDRESS WAYLAND_SOCKET"' >/etc/sudoers.d/wayland
 echo "XDG_RUNTIME_DIR WAYLAND_DISPLAY DBUS_SESSION_BUS_ADDRESS WAYLAND_SOCKET" >/etc/sudoers.d/wayland
 chmod 440 /etc/sudoers.d/*
 
@@ -296,6 +297,7 @@ su - "$username" -c '
   done
   git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
   zoxide add /home/piyush/Documents/personal/default/archsetup
+  bemoji --download all
 '
 # Root .config
 mkdir -p ~/.config ~/.local/state/bash ~/.local/state/zsh
@@ -378,16 +380,29 @@ mkdir -p /etc/systemd/zram-generator.conf.d
 {
   echo "[zram0]"
   echo "zram-size = ${ZRAM_SIZE}"
-  echo "compression-algorithm = zstd #lzo-rle"
+  echo "compression-algorithm = zstd"
   echo "swap-priority = 100"
   echo "fs-type = swap"
 } >/etc/systemd/zram-generator.conf.d/00-zram.conf
+
+# nohang-desktop notifier
+tee /usr/local/bin/nohang-after-kill.sh <<'EOF'
+#!/usr/bin/env bash
+logger -t nohang "killed $1 pid=$2 uid=$3"
+if [ -e /run/user/"$3"/bus ]; then
+  sudo -u "#$3" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$3/bus" \
+    notify-send "nohang: killed $1" "pid $2"
+fi
+EOF
+chown root:root /usr/local/bin/nohang-after-kill.sh
+chmod 755 /usr/local/bin/nohang-after-kill.sh
+sed -i.bak 's|^post_kill_exe.*$|post_kill_exe = /usr/local/bin/nohang-after-kill.sh $NAME $PID $UID|' /etc/nohang/nohang-desktop.conf
 
 # Services
 # rfkill unblock bluetooth
 # modprobe btusb || true
 if [[ "$howMuch" == "max" ]]; then
-  systemctl enable ananicy-cpp ly cronie sshd reflector.timer
+  systemctl enable nohang-desktop.service ananicy-cpp ly cronie sshd reflector.timer
   if [[ "$hardware" == "hardware" ]]; then
     systemctl enable fstrim.timer acpid libvirtd.socket cups ipp-usb docker.socket
   fi

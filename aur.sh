@@ -2,8 +2,9 @@
 
 aur_pkgs=(
   systemd-boot-pacman-hook
+  nohang
+  wayland-pipewire-idle-inhibit
   newsraft
-  sway-audio-idle-inhibit-git
   bemoji
   ventoy-bin
   networkmanager-dmenu-git
@@ -33,6 +34,9 @@ for pkg in "${aur_pkgs[@]}"; do
     echo "Skipped $pkg"
   fi
 done
+
+systemctl --user enable wayland-pipewire-idle-inhibit.service --now
+go install github.com/savedra1/clipse@v1.1.0
 
 flatpak install -y org.gtk.Gtk3theme.Adwaita-dark
 flatpak override --user --env=GTK_THEME=Adwaita-dark --env=QT_STYLE_OVERRIDE=Adwaita-Dark

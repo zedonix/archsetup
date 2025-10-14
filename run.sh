@@ -121,18 +121,18 @@ sudo mount -a
 # root
 sudo snapper -c root set-config TIMELINE_CREATE=yes
 sudo snapper -c root set-config TIMELINE_CLEANUP=yes
-sudo snapper -c root set-config TIMELINE_LIMIT_DAILY=3
+sudo snapper -c root set-config TIMELINE_LIMIT_DAILY=1
 sudo snapper -c root set-config TIMELINE_LIMIT_WEEKLY=0
-sudo snapper -c root set-config TIMELINE_LIMIT_MONTHLY=2
+sudo snapper -c root set-config TIMELINE_LIMIT_MONTHLY=1
 sudo snapper -c root set-config TIMELINE_MIN_AGE=3600
 sudo snapper -c root set-config NUMBER_CLEANUP=yes
 sudo snapper -c root set-config NUMBER_LIMIT=50
 # home
 sudo snapper -c home set-config TIMELINE_CREATE=yes
 sudo snapper -c home set-config TIMELINE_CLEANUP=yes
-sudo snapper -c home set-config TIMELINE_LIMIT_DAILY=3
+sudo snapper -c home set-config TIMELINE_LIMIT_DAILY=1
 sudo snapper -c home set-config TIMELINE_LIMIT_WEEKLY=0
-sudo snapper -c home set-config TIMELINE_LIMIT_MONTHLY=2
+sudo snapper -c home set-config TIMELINE_LIMIT_MONTHLY=1
 sudo snapper -c home set-config TIMELINE_MIN_AGE=3600
 sudo snapper -c home set-config NUMBER_CLEANUP=yes
 sudo snapper -c home set-config NUMBER_LIMIT=50
