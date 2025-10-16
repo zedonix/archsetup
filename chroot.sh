@@ -168,7 +168,7 @@ elif [[ "$microcode_pkg" == "amd-ucode" ]]; then
   microcode_img="initrd /amd-ucode.img"
 fi
 
-sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms keyboard consolefont block encrypt filesystems fsck)/' /etc/mkinitcpio.conf
+sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard consolefont block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
 echo "cryptroot UUID=${uuid} none luks,tries=3" | tee /etc/crypttab
 sudo sed -i 's/^BINARIES=.*$/BINARIES=(btrfsck)/' /etc/mkinitcpio.conf
 # tee /etc/vconsole.conf >/dev/null <<EOF
@@ -186,7 +186,7 @@ editor no
 EOF
 
 # common options base
-opts_base="cryptdevice=UUID=${uuid}:cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 rootfstype=btrfs rootflags=subvol=@"
+opts_base="rd.luks.name=${uuid}=cryptroot root=/dev/mapper/cryptroot SYSTEMD_COLORS=1 rw fsck.repair=yes zswap.enabled=0 rootfstype=btrfs rootflags=subvol=@"
 if [[ -n "$pstate_param" ]]; then
   opts="$opts_base $pstate_param"
 else
@@ -395,12 +395,13 @@ fi
 EOF
 chown root:root /usr/local/bin/nohang-after-kill.sh
 chmod 755 /usr/local/bin/nohang-after-kill.sh
+sed -i.bak 's|^post_kill_exe.*$|post_kill_exe = /usr/local/bin/nohang-after-kill.sh $NAME $PID $UID|' /etc/nohang/nohang-desktop.conf
 
 # Services
 # rfkill unblock bluetooth
 # modprobe btusb || true
 if [[ "$howMuch" == "max" ]]; then
-  systemctl enable ananicy-cpp ly cronie sshd reflector.timer
+  systemctl enable nohang-desktop.service ananicy-cpp ly cronie sshd reflector.timer
   if [[ "$hardware" == "hardware" ]]; then
     systemctl enable fstrim.timer acpid libvirtd.socket cups ipp-usb docker.socket
   fi
