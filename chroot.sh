@@ -333,6 +333,7 @@ if [[ "$howMuch" == "max" ]]; then
   cp -r "$THEME_SRC/icons/Gruvbox-Material-Dark" "$THEME_DEST/icons"
 
   # Anancy-cpp rules
+  cd /root
   git clone --depth=1 https://github.com/RogueScholar/ananicy.git
   git clone --depth=1 https://github.com/CachyOS/ananicy-rules.git
   mkdir -p /etc/ananicy.d/roguescholar /etc/ananicy.d/zz-cachyos
